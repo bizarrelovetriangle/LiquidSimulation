@@ -1,11 +1,49 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <chrono>
+#include <thread>
+#include "Particle.h"
+#include "Line.h"
+
+int window_width = 1000;
+int window_height = 800;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML");
+
+    auto desktop = sf::VideoMode::getDesktopMode();
+    window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
+
+    sf::Vector2f center(-window_width / 2, -window_height / 2);
+    sf::Vector2f size(window_width, window_height);
+    sf::View view(sf::FloatRect(center, size));
+    window.setView(view);
+
+
+    std::vector<Line*> walls;
+
+    int wall_width = window_width - 100;
+    int wall_height = window_height - 100;
+
+    sf::Vector2f point_a(-wall_width / 2, -wall_height / 2);
+    sf::Vector2f point_b(wall_width / 2, -wall_height / 2);
+    sf::Vector2f point_c(wall_width / 2, wall_height / 2);
+    sf::Vector2f point_d(-wall_width / 2, wall_height / 2);
+
+    walls.emplace_back(new Line(window, point_a, point_b));
+    walls.emplace_back(new Line(window, point_b, point_c));
+    walls.emplace_back(new Line(window, point_c, point_d));
+    walls.emplace_back(new Line(window, point_d, point_a));
+
+    std::vector<Particle*> particles;
+
+    for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            sf::Vector2f position(x * 50 - 225, y * 50 - 100);
+            particles.emplace_back(new Particle(window, position, 10));
+        }
+    }
 
     while (window.isOpen())
     {
@@ -17,8 +55,19 @@ int main()
         }
 
         window.clear();
-        window.draw(shape);
+
+        for (auto& particle : particles) {
+            particle->update();
+            particle->draw();
+        }
+
+        for (auto& wall : walls) {
+            wall->draw();
+        }
+
         window.display();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return 0;

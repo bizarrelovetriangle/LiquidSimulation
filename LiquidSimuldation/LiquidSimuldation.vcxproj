@@ -144,6 +144,10 @@
   <ItemGroup>
     <ClCompile Include="LiquidSimuldation.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="Particle.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
