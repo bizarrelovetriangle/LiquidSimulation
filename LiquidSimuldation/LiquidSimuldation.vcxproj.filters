@@ -18,5 +18,11 @@
     <ClInclude Include="Line.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="FluidProcessor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorFunctions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

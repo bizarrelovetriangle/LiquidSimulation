@@ -1,0 +1,61 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <math.h>
+
+class VectorFunctions {
+public:
+	static sf::Vector2f normalize(sf::Vector2f vector) {
+		float len = length(vector);
+		return len == 0 ? sf::Vector2f() : vector / length(vector);
+	}
+
+	static sf::Vector2f perpendicular(sf::Vector2f vector, bool isClockwise) {
+		return isClockwise ? sf::Vector2f(vector.y, -vector.x) : sf::Vector2f(-vector.y, vector.x);
+	}
+
+	static bool isClockwise(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+		return crossProduct(line_a - line_b, point - line_b) < 0;
+	}
+
+	static float vectorPointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+		sf::Vector2f line_vector_normal = normalize(line_a - line_b);
+		sf::Vector2f proejction_point = dotProduct(line_vector_normal, point - line_b) * line_vector_normal + line_b;
+		return length(point - proejction_point);
+	}
+
+	static float linePointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+		sf::Vector2f line_vector_normal = normalize(line_a - line_b);
+		float dot_product = dotProduct(line_vector_normal, point - line_b);
+		
+		if (dot_product < 0) {
+			return length(point - line_b);
+		}
+		else if (dot_product > length(line_a - line_b)) {
+			return length(point - line_a);
+		}
+
+		sf::Vector2f proejction_point = dot_product * line_vector_normal + line_b;
+		return length(point - proejction_point);
+	}
+
+	static float length(sf::Vector2f vector) {
+		float res = sqrt(pow(vector.x, 2) + pow(vector.y, 2));
+		return isnan(res) ? 0 : res;
+	}
+
+	static float distanse(sf::Vector2f point_a, sf::Vector2f point_b) {
+		return length(point_a - point_b);
+	}
+
+	static float crossProduct(
+		sf::Vector2f vector_a, sf::Vector2f vector_b)
+	{
+		return vector_a.x * vector_b.y - vector_a.y * vector_b.x;
+	}
+
+	static float dotProduct(
+		sf::Vector2f vector_a, sf::Vector2f vector_b)
+	{
+		return vector_a.x * vector_b.x + vector_a.y * vector_b.y;
+	}
+};

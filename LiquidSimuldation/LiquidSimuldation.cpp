@@ -4,9 +4,12 @@
 #include <thread>
 #include "Particle.h"
 #include "Line.h"
+#include "FluidProcessor.h"
 
 int window_width = 1000;
 int window_height = 800;
+
+void createWalls(sf::RenderWindow& window, std::vector<Line*>& walls);
 
 int main()
 {
@@ -22,28 +25,21 @@ int main()
 
 
     std::vector<Line*> walls;
-
-    int wall_width = window_width - 100;
-    int wall_height = window_height - 100;
-
-    sf::Vector2f point_a(-wall_width / 2, -wall_height / 2);
-    sf::Vector2f point_b(wall_width / 2, -wall_height / 2);
-    sf::Vector2f point_c(wall_width / 2, wall_height / 2);
-    sf::Vector2f point_d(-wall_width / 2, wall_height / 2);
-
-    walls.emplace_back(new Line(window, point_a, point_b));
-    walls.emplace_back(new Line(window, point_b, point_c));
-    walls.emplace_back(new Line(window, point_c, point_d));
-    walls.emplace_back(new Line(window, point_d, point_a));
+    createWalls(window, walls);
 
     std::vector<Particle*> particles;
 
     for (int x = 0; x < 10; x++) {
-        for (int y = 0; y < 5; y++) {
-            sf::Vector2f position(x * 50 - 225, y * 50 - 100);
-            particles.emplace_back(new Particle(window, position, 10));
+        for (int y = 0; y < 20; y++) {
+            sf::Vector2f position(x * 50 - 225, y * 10 - 100);
+            Particle* particle = new Particle(window, position, 10);
+            //particle->velosity = sf::Vector2f(rand() % 10 - 5, rand() % 10 - 5);
+            particle->acceleration = sf::Vector2f(0, 0.3);
+            particles.emplace_back(particle);
         }
     }
+
+    FluidProcessor fluidProcessor(window);
 
     while (window.isOpen())
     {
@@ -56,6 +52,9 @@ int main()
 
         window.clear();
 
+        fluidProcessor.wallCollicionHandling(particles, walls);
+        fluidProcessor.particlesGravity(particles);
+
         for (auto& particle : particles) {
             particle->update();
             particle->draw();
@@ -67,8 +66,23 @@ int main()
 
         window.display();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return 0;
+}
+
+void createWalls(sf::RenderWindow& window, std::vector<Line*>& walls) {
+    int wall_width = window_width - 100;
+    int wall_height = window_height - 100;
+
+    sf::Vector2f point_a(-wall_width / 2, -wall_height / 2);
+    sf::Vector2f point_b(wall_width / 2, -wall_height / 2);
+    sf::Vector2f point_c(wall_width / 2, wall_height / 2);
+    sf::Vector2f point_d(-wall_width / 2, wall_height / 2);
+
+    walls.emplace_back(new Line(window, point_a, point_b));
+    walls.emplace_back(new Line(window, point_b, point_c));
+    walls.emplace_back(new Line(window, point_c, point_d));
+    walls.emplace_back(new Line(window, point_d, point_a));
 }
