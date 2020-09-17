@@ -19,56 +19,64 @@ public:
 				bool isClockwise = VectorFunctions::isClockwise(wall->a, wall->b, particle->position);
 				auto wallPerp = VectorFunctions::perpendicular(wallVector, isClockwise);
 
-				float dis = VectorFunctions::linePointDistance(wall->a, wall->b, particle->position);
+				float distanse = VectorFunctions::linePointDistance(wall->a, wall->b, particle->position);
 				
-				if (VectorFunctions::linePointDistance(wall->a, wall->b, particle->position) < particle->radius) {
-					particle->velosity -= wallPerp * VectorFunctions::dotProduct(particle->velosity, wallPerp) * 2.f;
+				if (distanse < particle->radius) {
+					particle->position += wallPerp * (particle->radius - distanse);
+					particle->velosity -= wallPerp * VectorFunctions::dotProduct(particle->velosity, wallPerp) * 1.5f;
+					particle->position += particle->velosity;
 				}
 
-				drawWallNormal(wall, particle->position);
+				//drawWallNormal(wall, particle->position);
 			}
 		}
 	}
 
-	float interactionRange = 100;
-	float restDensity = -100;
-	float k = 0.0000005;
-	float k_near = 0;
+	float interactionRange = 30;
+	float restDensity = 130;
+	float k = 0.0001;
+	float k_near = 0.0001 * 70;
 
 	void particlesGravity(std::vector<Particle*>& particles) {
+		//return;
 		for (auto particle : particles) {
 			particle->density = 0.f;
 			particle->density_near = 0.f;
 
 			for (auto neighbor : particles) {
-				float distance = VectorFunctions::distanse(
-					particle->position, neighbor->position);
+				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
+				float proximityCoefficient = 1 - distance / interactionRange;
 
 				if (distance < interactionRange) {
-					particle->density += pow(1 - distance / interactionRange, 2) - restDensity;
-					particle->density_near += pow(1 - distance / interactionRange, 3);
+					particle->density += pow(proximityCoefficient, 2);
+					particle->density_near += pow(proximityCoefficient, 3);
 				}
 			}
+
+			particle->density -= restDensity;
 		}
 
+		//return;
 		for (auto particle : particles) {
 			particle->pressure = sf::Vector2f();
 
 			for (auto neighbor : particles) {
-				float distance = VectorFunctions::distanse(
-					particle->position, neighbor->position);
+				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
 
 				if (distance < interactionRange) {
-					particle->pressure += 
-						k * (neighbor->density * (1 - distance / interactionRange) + 
-						k_near * neighbor->density_near * pow(1 - distance / interactionRange, 2)) *
-						VectorFunctions::normalize(particle->position - neighbor->position);
+					sf::Vector2f normal = VectorFunctions::normalize(particle->position - neighbor->position);
+					float proximityCoefficient = 1 - distance / interactionRange;
+					float pressureM = k * neighbor->density * (proximityCoefficient);
+					float nearPressureM = k_near * neighbor->density_near * pow(proximityCoefficient, 2);
 
-					particle->position_prev = particle->position;
-					particle->position += particle->pressure;
-					particle->velosity += particle->position_prev - particle->position;
+					sf::Vector2f pressure = (pressureM + nearPressureM) * normal;
+
+					particle->pressure += pressure;
+					neighbor->position -= pressure;
 				}
 			}
+
+			particle->position += particle->pressure;
 		}
 	}
 

@@ -19,8 +19,8 @@ public:
 
 	static float vectorPointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
 		sf::Vector2f line_vector_normal = normalize(line_a - line_b);
-		sf::Vector2f proejction_point = dotProduct(line_vector_normal, point - line_b) * line_vector_normal + line_b;
-		return length(point - proejction_point);
+		sf::Vector2f projection_point = dotProduct(line_vector_normal, point - line_b) * line_vector_normal + line_b;
+		return length(point - projection_point);
 	}
 
 	static float linePointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {

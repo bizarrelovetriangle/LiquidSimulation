@@ -23,24 +23,24 @@ int main()
     sf::View view(sf::FloatRect(center, size));
     window.setView(view);
 
-
     std::vector<Line*> walls;
     createWalls(window, walls);
 
     std::vector<Particle*> particles;
 
-    for (int x = 0; x < 10; x++) {
-        for (int y = 0; y < 20; y++) {
-            sf::Vector2f position(x * 50 - 225, y * 10 - 100);
-            Particle* particle = new Particle(window, position, 10);
+    for (int x = 0; x < 20; x++) {
+        for (int y = 0; y < 12; y++) {
+            sf::Vector2f position(x * 10 - 300, y * 10 - 100);
+            Particle* particle = new Particle(window, position, 4);
             //particle->velosity = sf::Vector2f(rand() % 10 - 5, rand() % 10 - 5);
-            particle->acceleration = sf::Vector2f(0, 0.3);
+            particle->acceleration = sf::Vector2f(0, 0.01);
             particles.emplace_back(particle);
         }
     }
 
     FluidProcessor fluidProcessor(window);
 
+    sf::Clock clock;
     while (window.isOpen())
     {
         sf::Event event;
@@ -53,10 +53,22 @@ int main()
         window.clear();
 
         fluidProcessor.wallCollicionHandling(particles, walls);
+
+        for (auto particle : particles) {
+            particle->position_prev = particle->position;
+        }
+
         fluidProcessor.particlesGravity(particles);
 
         for (auto& particle : particles) {
             particle->update();
+        }
+
+        for (auto particle : particles) {
+            particle->velosity = particle->position - particle->position_prev;
+        }
+
+        for (auto& particle : particles) {
             particle->draw();
         }
 
@@ -65,8 +77,12 @@ int main()
         }
 
         window.display();
+        
+        float currentTime = clock.restart().asSeconds();
+        float fps = 1.f / currentTime;
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::cout << fps << std::endl;
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     return 0;
