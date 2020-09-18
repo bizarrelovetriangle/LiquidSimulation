@@ -46,8 +46,8 @@ public:
 			particle->density = 0.f;
 			particle->density_near = 0.f;
 
-			auto neighbors = *_particleGrid.getNeighbours(particle);
-			//auto neighbors = _particles;
+			//auto neighbors = *_particleGrid.getNeighbours(particle);
+			auto neighbors = _particles;
 			for (auto neighbor : neighbors) {
 				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
 				float proximityCoefficient = 1 - distance / interactionRange;
@@ -65,8 +65,8 @@ public:
 		for (auto particle : _particles) {
 			particle->pressure = sf::Vector2f();
 
-			auto neighbors = *_particleGrid.getNeighbours(particle);
-			//auto neighbors = _particles;
+			auto _neighbors = _particleGrid.getNeighbours(particle);
+			auto neighbors = _particles;
 			for (auto neighbor : neighbors) {
 				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
 

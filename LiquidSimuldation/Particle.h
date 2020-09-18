@@ -20,7 +20,8 @@ public:
 	}
 
 	std::vector<Particle*> neightbours;
-	int gridCellIndex;
+	int gridColumn;
+	int gridRow;
 	int neightboursIndex;
 
 	sf::Vector2f position;
