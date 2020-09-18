@@ -19,6 +19,10 @@ public:
 		_window.draw(_shape);
 	}
 
+	std::vector<Particle*> neightbours;
+	int gridCellIndex;
+	int neightboursIndex;
+
 	sf::Vector2f position;
 	sf::Vector2f velosity;
 	sf::Vector2f acceleration;

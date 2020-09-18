@@ -29,7 +29,7 @@ int main()
     std::vector<Particle*> particles;
 
     for (int x = 0; x < 20; x++) {
-        for (int y = 0; y < 12; y++) {
+        for (int y = 0; y < 20; y++) {
             sf::Vector2f position(x * 10 - 300, y * 10 - 100);
             Particle* particle = new Particle(window, position, 4);
             //particle->velosity = sf::Vector2f(rand() % 10 - 5, rand() % 10 - 5);
@@ -38,7 +38,7 @@ int main()
         }
     }
 
-    FluidProcessor fluidProcessor(window);
+    FluidProcessor fluidProcessor(window, particles);
 
     sf::Clock clock;
     while (window.isOpen())
@@ -52,13 +52,13 @@ int main()
 
         window.clear();
 
-        fluidProcessor.wallCollicionHandling(particles, walls);
+        fluidProcessor.wallCollicionHandling(walls);
 
         for (auto particle : particles) {
             particle->position_prev = particle->position;
         }
 
-        fluidProcessor.particlesGravity(particles);
+        fluidProcessor.particlesGravity();
 
         for (auto& particle : particles) {
             particle->update();
