@@ -9,49 +9,52 @@ using namespace boost::numeric::ublas;
 
 class ParticleGrid {
 public:
-	ParticleGrid(std::vector<Particle*> particles, int cellWidth)
-		: _particles(particles), _cellWidth(cellWidth)
+	ParticleGrid(std::vector<Particle*>& particles, sf::Vector2i windowSize, float cellWidth)
+		: _particles(particles), _cellWidth(cellWidth), _windowSize(windowSize)
 	{
-		_gridColumns = window_width / _cellWidth;
-		_gridRows = window_height / _cellWidth;
+		_gridColumns = (_windowSize.x / _cellWidth) + 1;
+		_gridRows = (_windowSize.y / _cellWidth) + 1;
 		_gridCells = matrix<std::vector<Particle*>>(_gridColumns, _gridRows);
 	}
 
 	void updateParticleNeighbours() {
-		for (auto particle : _particles) {
-			int column = (particle->position.x + window_width / 2) / _cellWidth;
-			int row = (particle->position.y + window_height / 2) / _cellWidth;
+		for (int i = _particles.size() - 1; i >= 0; i--) {
+			auto particle = _particles[i];
 
-			if (column >= _gridColumns || row >= _gridRows || column < 0 || row < 0) {
-				auto& originalCell = _gridCells(particle->gridColumn, particle->gridRow);
+			if (isOutsideWindow(particle)) {
+				if (particle->neightboursIndex != -1) {
+					auto& originalCell = _gridCells(particle->gridPosition.x, particle->gridPosition.y);
 
-				removeAt(originalCell, particle->neightboursIndex);
+					removeAt(originalCell, particle->neightboursIndex);
 
-				for (int i = particle->neightboursIndex - 1; i < originalCell.size(); i++) {
-					originalCell[i]->neightboursIndex--;
+					for (int i = particle->neightboursIndex; i < originalCell.size(); i++) {
+						originalCell[i]->neightboursIndex--;
+					}
 				}
 
-				particle->gridColumn = 0;
-				particle->gridRow = 0;
-				particle->neightboursIndex = 0;
-
-				continue;
+				removeAt(_particles, i);
+				delete particle;
 			}
+		}
 
-			if (particle->gridColumn != column || particle->gridRow != row) {
-				auto& originalCell = _gridCells(particle->gridColumn, particle->gridRow);
-				auto& newCell = _gridCells(column, row);
-				
-				removeAt(originalCell, particle->neightboursIndex);
-				
-				for (int i = particle->neightboursIndex - 1; i < originalCell.size(); i++) {
-					originalCell[i]->neightboursIndex--;
+		for (auto particle : _particles) {
+			sf::Vector2i gridPosition = getGridPosition(particle);
+
+			if (particle->gridPosition != gridPosition) {
+				auto& originalCell = _gridCells(particle->gridPosition.x, particle->gridPosition.y);
+				auto& newCell = _gridCells(gridPosition.x, gridPosition.y);
+
+				if (particle->neightboursIndex != -1) {
+					removeAt(originalCell, particle->neightboursIndex);
+
+					for (int i = particle->neightboursIndex; i < originalCell.size(); i++) {
+						originalCell[i]->neightboursIndex--;
+					}
 				}
 
 				newCell.emplace_back(particle);
-				particle->gridColumn = column;
-				particle->gridRow = row;
-				particle->neightboursIndex = newCell.size();
+				particle->gridPosition = gridPosition;
+				particle->neightboursIndex = newCell.size() - 1;
 			}
 		}
 
@@ -65,95 +68,56 @@ public:
 	}
 
 	matrix_range<matrix<std::vector<Particle*>>> getNeighbours(Particle* particle) {
+		sf::Vector2i gridPosition = getGridPosition(particle);
 
-		//{
-		//	matrix<int> m(5, 5);
-		//	for (int col = 0; col < 5; col++) {
-		//		for (int row = 0; row < 5; row++) {
-		//			m(col, row) = col + 10 * row;
-		//		}
-		//	}
-		//
-		//	matrix_range<matrix<int>> mr(m, range(2, 5), range(2, 3));
-		//
-		//	for (unsigned i = 0; i < mr.size1(); ++i)
-		//		for (unsigned j = 0; j < mr.size2(); ++j)
-		//			mr(i, j) = 3 * i + j;
-		//
-		//	int i = 5;
-		//}
+		sf::Vector2i range_a = gridPosition - sf::Vector2i(1, 1);
+		sf::Vector2i range_b = gridPosition + sf::Vector2i(1, 1);
 
-		int column = (particle->position.x + window_width / 2) / _cellWidth;
-		int row = (particle->position.y + window_height / 2) / _cellWidth;
-	
-		int range_a_x = column - 1;
-		int range_a_y = row - 1;
-		int range_b_x = column + 1;
-		int range_b_y = row + 1;
-
-		if (range_a_x < 0) {
-			range_a_x++;
+		if (range_a.x < 0) {
+			range_a.x++;
 		}
-		if (range_a_y < 0) {
-			range_a_y++;
+		if (range_a.y < 0) {
+			range_a.y++;
 		}
-		if (range_b_x == _gridColumns) {
-			range_b_x--;
+		if (range_b.x == _gridColumns) {
+			range_b.x--;
 		}
-		if (range_b_y == _gridRows) {
-			range_b_y--;
+		if (range_b.y == _gridRows) {
+			range_b.y--;
 		}
 
-		if (range_a_x > range_b_x || range_a_y > range_b_y) {
-			int t = 9;
+		if (range_a.x > range_b.x || range_a.y > range_b.y) {
+			matrix<std::vector<Particle*>> m;
+			return matrix_range<matrix<std::vector<Particle*>>>(m, range(0, 0), range(0, 0));
 		}
 
-		if (range_b_x >= _gridColumns || range_b_y >= _gridRows ||
-			range_a_x < 0 || range_a_y < 0) {
-			int t = 9;
-		}
-
-		try {
-			matrix_range<matrix<std::vector<Particle*>>> mr(_gridCells,
-				range(range_a_x, range_b_x), range(range_a_y, range_b_y));
-
-
-			return mr;
-		}
-		catch (std::exception ex) {
-			throw;
-		}
+		return matrix_range<matrix<std::vector<Particle*>>>(_gridCells,
+			range(range_a.x, range_b.x + 1), range(range_a.y, range_b.y + 1));
 	}
 
 private:
-	std::vector<Particle*> _particles;
+	std::vector<Particle*>& _particles;
 	matrix<std::vector<Particle*>> _gridCells;
 	int _cellWidth;
 	int _gridColumns;
 	int _gridRows;
 
-	int window_width = 1000;
-	int window_height = 800;
-
-	int getGridIndex(Particle* particle) {
-		int position_x = particle->position.x + window_width / 2;
-		int position_y = particle->position.y + window_height / 2;
-
-		int column = position_x / _gridColumns;
-		int row = position_y / _gridColumns;
-
-		return column + row * _gridColumns;
-	}
-
-	inline int getGridIndex(int column, int row) {
-		return column + row * _gridColumns;
-	}
+	sf::Vector2i _windowSize;
 
 	void removeAt(std::vector<Particle*>& vector, int index) {
-		if (index-- == 0) {
-			return;
-		}
-
 		vector.erase(vector.begin() + index);
+	}
+
+	sf::Vector2i getGridPosition(Particle* particle) {
+		return (sf::Vector2i(particle->position) + _windowSize / 2) / _cellWidth;
+	}
+
+	bool isOutsideWindow(Particle* particle) {
+		sf::Vector2i window_start = - _windowSize / 2;
+		sf::Vector2i window_end = _windowSize / 2;
+
+		return 
+			particle->position.x < window_start.x || particle->position.x > window_end.x || 
+			particle->position.y < window_start.y || particle->position.y > window_end.y;
 	}
 };

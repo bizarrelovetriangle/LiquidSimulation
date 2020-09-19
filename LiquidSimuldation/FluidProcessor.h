@@ -8,8 +8,9 @@
 
 class FluidProcessor {
 public:
-	FluidProcessor(sf::RenderWindow& window, std::vector<Particle*> particles)
-		: _window(window), _particles(particles), _particleGrid(particles, interactionRange)
+	FluidProcessor(sf::RenderWindow& window, 
+		std::vector<Particle*>& particles, ParticleGrid particleGrid, float interactionRange)
+		: _window(window), _particles(particles), _particleGrid(particleGrid), _interactionRange(interactionRange)
 	{
 
 	}
@@ -34,10 +35,9 @@ public:
 		}
 	}
 
-	float interactionRange = 30;
-	float restDensity = 130;
+	float restDensity = 110;
 	float k = 0.0001;
-	float k_near = 0.0001 * 70;
+	float k_near = 0.0001 * 40;
 
 	void particlesGravity() {
 		_particleGrid.updateParticleNeighbours();
@@ -46,15 +46,21 @@ public:
 			particle->density = 0.f;
 			particle->density_near = 0.f;
 
-			//auto neighbors = *_particleGrid.getNeighbours(particle);
-			auto neighbors = _particles;
-			for (auto neighbor : neighbors) {
-				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
-				float proximityCoefficient = 1 - distance / interactionRange;
+			auto neighborCells = _particleGrid.getNeighbours(particle);
+			
+			for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
+				for (int row = 0; row < neighborCells.size2(); row++) {
+					auto& neighbors = neighborCells(colunm, row);
 
-				if (distance < interactionRange) {
-					particle->density += pow(proximityCoefficient, 2);
-					particle->density_near += pow(proximityCoefficient, 3);
+					for (auto neighbor : neighbors) {
+						float distance = VectorFunctions::distanse(particle->position, neighbor->position);
+
+						if (distance < _interactionRange) {
+							float proximityCoefficient = 1 - distance / _interactionRange;
+							particle->density += pow(proximityCoefficient, 2);
+							particle->density_near += pow(proximityCoefficient, 3);
+						}
+					}
 				}
 			}
 
@@ -65,21 +71,27 @@ public:
 		for (auto particle : _particles) {
 			particle->pressure = sf::Vector2f();
 
-			auto _neighbors = _particleGrid.getNeighbours(particle);
-			auto neighbors = _particles;
-			for (auto neighbor : neighbors) {
-				float distance = VectorFunctions::distanse(particle->position, neighbor->position);
+			auto neighborCells = _particleGrid.getNeighbours(particle);
 
-				if (distance < interactionRange) {
-					sf::Vector2f normal = VectorFunctions::normalize(particle->position - neighbor->position);
-					float proximityCoefficient = 1 - distance / interactionRange;
-					float pressureM = k * neighbor->density * (proximityCoefficient);
-					float nearPressureM = k_near * neighbor->density_near * pow(proximityCoefficient, 2);
+			for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
+				for (int row = 0; row < neighborCells.size2(); row++) {
+					auto& neighbors = neighborCells(colunm, row);
 
-					sf::Vector2f pressure = (pressureM + nearPressureM) * normal;
-
-					particle->pressure += pressure;
-					neighbor->position -= pressure;
+					for (auto neighbor : neighbors) {
+						float distance = VectorFunctions::distanse(particle->position, neighbor->position);
+						
+						if (distance < _interactionRange) {
+							sf::Vector2f normal = VectorFunctions::normalize(particle->position - neighbor->position);
+							float proximityCoefficient = 1 - distance / _interactionRange;
+							float pressureM = k * neighbor->density * (proximityCoefficient);
+							float nearPressureM = k_near * neighbor->density_near * pow(proximityCoefficient, 2);
+						
+							sf::Vector2f pressure = (pressureM + nearPressureM) * normal;
+						
+							particle->pressure += pressure;
+							neighbor->position -= pressure;
+						}
+					}
 				}
 			}
 
@@ -101,6 +113,7 @@ private:
 	}
 
 	sf::RenderWindow& _window;
-	std::vector<Particle*> _particles;
+	std::vector<Particle*>& _particles;
 	ParticleGrid _particleGrid;
+	float _interactionRange = 30;
 };

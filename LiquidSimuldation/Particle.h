@@ -20,17 +20,16 @@ public:
 	}
 
 	std::vector<Particle*> neightbours;
-	int gridColumn;
-	int gridRow;
-	int neightboursIndex;
+	sf::Vector2i gridPosition;
+	int neightboursIndex = -1;
 
 	sf::Vector2f position;
 	sf::Vector2f velosity;
 	sf::Vector2f acceleration;
 	float radius;
 
-	float density;
-	float density_near;
+	float density = 0;
+	float density_near = 0;
 	sf::Vector2f pressure;
 	
 	sf::Vector2f position_prev;
