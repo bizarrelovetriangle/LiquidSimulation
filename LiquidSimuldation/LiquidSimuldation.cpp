@@ -71,6 +71,8 @@ int main()
             particle->position_prev = particle->position;
         }
 
+        particleGrid.updateParticleNeighbours();
+
         fluidProcessor.particlesGravity();
 
         for (auto& particle : particles) {
