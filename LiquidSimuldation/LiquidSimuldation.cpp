@@ -8,6 +8,8 @@
 
 sf::Vector2i window_size(1000, 800);
 
+void createParticles(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position);
+void createParticle(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position);
 void createWalls(sf::RenderWindow& window, std::vector<Line*>& walls);
 
 int main()
@@ -27,15 +29,7 @@ int main()
 
     std::vector<Particle*> particles;
 
-    for (int x = 0; x < 20; x++) {
-        for (int y = 0; y < 20; y++) {
-            sf::Vector2f position(x * 10 - 300, y * 10 - 100);
-            Particle* particle = new Particle(window, position, 4);
-            //particle->velosity = sf::Vector2f(rand() % 10 - 5, rand() % 10 - 5);
-            //particle->acceleration = sf::Vector2f(0, 0.03);
-            particles.emplace_back(particle);
-        }
-    }
+
     
     float interactionRange = 30;
 
@@ -43,8 +37,10 @@ int main()
     FluidProcessor fluidProcessor(window, particles, particleGrid, interactionRange);
     
     sf::Vector2f mousePosition;
-
+    
+    int counter = 0;
     sf::Clock clock;
+    sf::Clock clockWise;
     while (window.isOpen())
     {
         sf::Event event;
@@ -58,14 +54,21 @@ int main()
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Q) {
-                    particles[0]->position = mousePosition;
+                    createParticle(window, particles, mousePosition);
+                }
+                if (event.key.code == sf::Keyboard::Space) {
+                    createParticles(window, particles, mousePosition);
                 }
             }
         }
 
         window.clear();
 
+        float initialAndClear = clock.restart().asSeconds();
+
         fluidProcessor.wallCollicionHandling(walls);
+
+        float wallCollicionHandling = clock.restart().asSeconds();
 
         for (auto particle : particles) {
             particle->position_prev = particle->position;
@@ -73,7 +76,13 @@ int main()
 
         particleGrid.updateParticleNeighbours();
 
+        float updateParticleNeighbours = clock.restart().asSeconds();
+
+
         fluidProcessor.particlesGravity();
+
+        float particlesGravity = clock.restart().asSeconds();
+
 
         for (auto& particle : particles) {
             particle->update();
@@ -92,15 +101,45 @@ int main()
         }
 
         window.display();
-        
+
+        float drawAndDisplay = clock.restart().asSeconds();
+
         float currentTime = clock.restart().asSeconds();
         float fps = 1.f / currentTime;
 
-        std::cout << fps << std::endl;
+        if (counter++ % 100 == 0 && false) {
+            std::cout << 
+                "fps: '"+std::to_string(fps)+"'," << std::endl <<
+                "initialAndClear: '"+std::to_string(initialAndClear)+"'," << std::endl <<
+                "wallCollicionHandling: '"+std::to_string(wallCollicionHandling)+"'," << std::endl <<
+                "updateParticleNeighbours: '"+std::to_string(updateParticleNeighbours)+"'," << std::endl <<
+                "particlesGravity: '"+std::to_string(particlesGravity)+"'," << std::endl <<
+                "drawAndDisplaystd: '"+std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
+        }
+            
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     return 0;
+}
+
+void createParticles(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position) {
+    int distance = 10;
+    int width = 10;
+    int height = 10;
+
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            sf::Vector2f particlePosition(x - width / 2, y - height / 2);
+            createParticle(window, particles, particlePosition * (float)distance + position);
+        }
+    }
+}
+
+void createParticle(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position) {
+    Particle* particle = new Particle(window, position, 4);
+    particle->acceleration = sf::Vector2f(0, 0.03);
+    particles.emplace_back(particle);
 }
 
 void createWalls(sf::RenderWindow& window, std::vector<Line*>& walls) {

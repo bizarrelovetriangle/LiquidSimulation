@@ -64,7 +64,7 @@ public:
 				common += _gridCells(column, row).size();
 			}
 		}
-		std::cout << common << std::endl;
+		//std::cout << common << std::endl;
 	}
 
 	matrix_range<matrix<std::vector<Particle*>>> getNeighbours(Particle* particle) {

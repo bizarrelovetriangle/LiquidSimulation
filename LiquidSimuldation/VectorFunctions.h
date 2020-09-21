@@ -4,6 +4,8 @@
 
 class VectorFunctions {
 public:
+	//const static sf::Vector2f zero(0, 0);
+
 	static sf::Vector2f normalize(sf::Vector2f vector) {
 		float len = length(vector);
 		return len == 0 ? sf::Vector2f() : vector / length(vector);
@@ -38,12 +40,12 @@ public:
 		return length(point - proejction_point);
 	}
 
-	static float length(sf::Vector2f vector) {
+	static inline float length(sf::Vector2f vector) {
 		float res = sqrt(pow(vector.x, 2) + pow(vector.y, 2));
 		return isnan(res) ? 0 : res;
 	}
 
-	static float distanse(sf::Vector2f point_a, sf::Vector2f point_b) {
+	static inline float distanse(sf::Vector2f point_a, sf::Vector2f point_b) {
 		return length(point_a - point_b);
 	}
 
