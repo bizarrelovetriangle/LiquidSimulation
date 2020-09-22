@@ -29,15 +29,16 @@ int main()
 
     std::vector<Particle*> particles;
 
+    createParticles(window, particles, mousePosition);
 
-    
+
     float interactionRange = 30;
 
     ParticleGrid particleGrid(particles, window_size, interactionRange);
     FluidProcessor fluidProcessor(window, particles, particleGrid, interactionRange);
-    
+
     sf::Vector2f mousePosition;
-    
+
     int counter = 0;
     sf::Clock clock;
     sf::Clock clockWise;
@@ -108,15 +109,15 @@ int main()
         float fps = 1.f / currentTime;
 
         if (counter++ % 100 == 0 && false) {
-            std::cout << 
-                "fps: '"+std::to_string(fps)+"'," << std::endl <<
-                "initialAndClear: '"+std::to_string(initialAndClear)+"'," << std::endl <<
-                "wallCollicionHandling: '"+std::to_string(wallCollicionHandling)+"'," << std::endl <<
-                "updateParticleNeighbours: '"+std::to_string(updateParticleNeighbours)+"'," << std::endl <<
-                "particlesGravity: '"+std::to_string(particlesGravity)+"'," << std::endl <<
-                "drawAndDisplaystd: '"+std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
+            std::cout <<
+                "fps: '" + std::to_string(fps) + "'," << std::endl <<
+                "initialAndClear: '" + std::to_string(initialAndClear) + "'," << std::endl <<
+                "wallCollicionHandling: '" + std::to_string(wallCollicionHandling) + "'," << std::endl <<
+                "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours) + "'," << std::endl <<
+                "particlesGravity: '" + std::to_string(particlesGravity) + "'," << std::endl <<
+                "drawAndDisplaystd: '" + std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
         }
-            
+
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
@@ -138,7 +139,7 @@ void createParticles(sf::RenderWindow& window, std::vector<Particle*>& particles
 
 void createParticle(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position) {
     Particle* particle = new Particle(window, position, 4);
-    particle->acceleration = sf::Vector2f(0, 0.03);
+    //particle->acceleration = sf::Vector2f(0, 0.03);
     particles.emplace_back(particle);
 }
 
