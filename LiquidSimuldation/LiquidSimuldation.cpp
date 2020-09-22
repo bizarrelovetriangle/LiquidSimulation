@@ -29,7 +29,7 @@ int main()
 
     std::vector<Particle*> particles;
 
-    createParticles(window, particles, mousePosition);
+    createParticles(window, particles, sf::Vector2f());
 
 
     float interactionRange = 30;
@@ -108,7 +108,7 @@ int main()
         float currentTime = clock.restart().asSeconds();
         float fps = 1.f / currentTime;
 
-        if (counter++ % 100 == 0 && false) {
+        if (counter++ % 100 == 0) {
             std::cout <<
                 "fps: '" + std::to_string(fps) + "'," << std::endl <<
                 "initialAndClear: '" + std::to_string(initialAndClear) + "'," << std::endl <<
@@ -126,8 +126,8 @@ int main()
 
 void createParticles(sf::RenderWindow& window, std::vector<Particle*>& particles, sf::Vector2f position) {
     int distance = 10;
-    int width = 10;
-    int height = 10;
+    int width = 20;
+    int height = 20;
 
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {

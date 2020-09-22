@@ -139,7 +139,7 @@ public:
 
 			particle->position += particle->pressure;
 
-			if (counter++ % (400 * 100) == 0) {
+			if (counter++ % (400 * 100) == 0 && false) {
 				float common = (getNeighbors + enumerateNeighbors +
 					computeDensity + computePredPresure + computePresure);
 
