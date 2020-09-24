@@ -4,8 +4,9 @@
 class Particle {
 public:
 	Particle(sf::RenderWindow& window, sf::Vector2f position, float radius = 100)
-		: _window(window), _shape(radius), position(position), radius(radius)
+		: _window(&window), _shape(radius), position(position), radius(radius)
 	{
+		_shape = sf::CircleShape(radius);
 		_shape.setFillColor(sf::Color::White);
 	}
 
@@ -16,7 +17,7 @@ public:
 
 	void draw() {
 		_shape.setPosition(position - sf::Vector2f(radius, radius));
-		_window.draw(_shape);
+		_window->draw(_shape);
 	}
 
 	std::vector<Particle*> neightbours;
@@ -35,6 +36,6 @@ public:
 	sf::Vector2f position_prev;
 
 private:
-	sf::RenderWindow& _window;
+	sf::RenderWindow* _window;
 	sf::CircleShape _shape;
 };

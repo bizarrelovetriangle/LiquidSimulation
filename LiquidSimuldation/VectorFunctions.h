@@ -6,26 +6,26 @@ class VectorFunctions {
 public:
 	//const static sf::Vector2f zero(0, 0);
 
-	static sf::Vector2f normalize(sf::Vector2f vector) {
+	static inline sf::Vector2f normalize(sf::Vector2f vector) {
 		float len = length(vector);
 		return len == 0 ? sf::Vector2f() : vector / length(vector);
 	}
 
-	static sf::Vector2f perpendicular(sf::Vector2f vector, bool isClockwise) {
+	static inline sf::Vector2f perpendicular(sf::Vector2f vector, bool isClockwise) {
 		return isClockwise ? sf::Vector2f(vector.y, -vector.x) : sf::Vector2f(-vector.y, vector.x);
 	}
 
-	static bool isClockwise(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+	static inline bool isClockwise(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
 		return crossProduct(line_a - line_b, point - line_b) < 0;
 	}
 
-	static float vectorPointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+	static inline float vectorPointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
 		sf::Vector2f line_vector_normal = normalize(line_a - line_b);
 		sf::Vector2f projection_point = dotProduct(line_vector_normal, point - line_b) * line_vector_normal + line_b;
 		return length(point - projection_point);
 	}
 
-	static float linePointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
+	static inline float linePointDistance(sf::Vector2f line_a, sf::Vector2f line_b, sf::Vector2f point) {
 		sf::Vector2f line_vector_normal = normalize(line_a - line_b);
 		float dot_product = dotProduct(line_vector_normal, point - line_b);
 		
@@ -49,13 +49,13 @@ public:
 		return length(point_a - point_b);
 	}
 
-	static float crossProduct(
+	static inline float crossProduct(
 		sf::Vector2f vector_a, sf::Vector2f vector_b)
 	{
 		return vector_a.x * vector_b.y - vector_a.y * vector_b.x;
 	}
 
-	static float dotProduct(
+	static inline float dotProduct(
 		sf::Vector2f vector_a, sf::Vector2f vector_b)
 	{
 		return vector_a.x * vector_b.x + vector_a.y * vector_b.y;
