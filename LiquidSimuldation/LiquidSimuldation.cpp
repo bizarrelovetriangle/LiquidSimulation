@@ -83,7 +83,7 @@ int main()
 
         float initialAndClear = clock.restart().asSeconds();
 
-        fluidProcessor.wallCollicionHandling(*walls, frameInterval);
+        fluidProcessor.wallCollicionHandling(*walls, frameExpectedInterval);
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
@@ -93,7 +93,7 @@ int main()
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
-                particle.update(frameInterval);
+                particle.update(frameExpectedInterval);
             }
         }
 
@@ -103,13 +103,13 @@ int main()
 
         float updateParticleNeighbours = clock.restart().asSeconds();
 
-        fluidProcessor.particlesGravity(frameInterval);
+        fluidProcessor.particlesGravity(frameExpectedInterval);
 
         float particlesGravity = clock.restart().asSeconds();
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
-                particle.velosity = (particle.position - particle.position_prev) / frameInterval;
+                particle.velosity = (particle.position - particle.position_prev) / frameExpectedInterval;
             }
         }
 
@@ -137,7 +137,6 @@ int main()
                 "particlesGravity: '" + std::to_string(particlesGravity) + "'," << std::endl <<
                 "drawAndDisplaystd: '" + std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
         }
-
     }
 
     return 0;
@@ -158,7 +157,7 @@ void createParticles(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::V
 
 void createParticle(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position) {
     Particle particle(window, position, 4);
-    particle.acceleration = sf::Vector2f(0, 200);
+    //particle.acceleration = sf::Vector2f(0, 200);
     particleGrid.addParticle(particle); 
 }
 
