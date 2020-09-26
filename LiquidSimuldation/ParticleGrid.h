@@ -11,7 +11,7 @@ using namespace boost::numeric::ublas;
 class ParticleGrid {
 public:
 	ParticleGrid(sf::Vector2i windowSize, float cellWidth)
-		: _cellWidth(cellWidth), _windowSize(windowSize)
+		: _cellWidth(cellWidth), _windowSize(windowSize), _windowStart(- windowSize / 2)
 	{
 		_gridColumns = (_windowSize.x / _cellWidth) + 1;
 		_gridRows = (_windowSize.y / _cellWidth) + 1;
@@ -56,14 +56,6 @@ public:
 				}
 			}
 		}
-
-		//int common = 0;
-		//for (int column = 0; column < _gridColumns; column++) {
-		//	for (int row = 0; row < _gridRows; row++) {
-		//		common += GridCells(column, row).size();
-		//	}
-		//}
-		//std::cout << common << std::endl;
 	}
 
 	matrix_range<matrix<std::vector<Particle>>> getNeighbours(Particle& particle) {
@@ -101,21 +93,15 @@ private:
 	int _gridRows;
 
 	sf::Vector2i _windowSize;
-
-	void removeAt(std::vector<Particle>& vector, int index) {
-		vector.erase(vector.begin() + index);
-	}
+	sf::Vector2i _windowStart;
 
 	sf::Vector2i getGridPosition(Particle& particle) {
 		return (sf::Vector2i(particle.position) + _windowSize / 2) / _cellWidth;
 	}
 
 	bool isOutsideWindow(Particle& particle) {
-		sf::Vector2i window_start = - _windowSize / 2;
-		sf::Vector2i window_end = _windowSize / 2;
-
 		return 
-			particle.position.x < window_start.x || particle.position.x > window_end.x || 
-			particle.position.y < window_start.y || particle.position.y > window_end.y;
+			particle.position.x < _windowStart.x || particle.position.x > - _windowStart.x ||
+			particle.position.y < _windowStart.y || particle.position.y > - _windowStart.y;
 	}
 };

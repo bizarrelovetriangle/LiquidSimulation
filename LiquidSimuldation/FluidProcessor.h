@@ -40,34 +40,16 @@ public:
 	float k = 15;
 	float k_near = 600;
 
-	int counter = 0;
 	void particlesGravity(float interval) {
-		//return;
+		float intervalTimeSquare = 0.5f * pow(interval, 2);
+
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
-				sf::Clock clockWise;
-
 				particle.density = 0.f;
 				particle.density_near = 0.f;
 				particle.pressure = sf::Vector2f();
 
 				auto neighborCells = _particleGrid.getNeighbours(particle);
-
-				float getNeighbors = clockWise.restart().asSeconds();
-
-				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
-					for (int row = 0; row < neighborCells.size2(); row++) {
-						auto& neighbors = neighborCells(colunm, row);
-
-						for (auto& neighbor : neighbors) {
-							if (&neighbor == &particle) {
-								continue;
-							}
-						}
-					}
-				}
-
-				float enumerateNeighbors = clockWise.restart().asSeconds();
 
 				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
 					for (int row = 0; row < neighborCells.size2(); row++) {
@@ -89,12 +71,8 @@ public:
 					}
 				}
 
-				float computeDensity = clockWise.restart().asSeconds();
-
 				float pressureM = k * (particle.density - restDensity);
 				float nearPressureM = k_near * particle.density_near;
-
-				float computePredPresure = clockWise.restart().asSeconds();
 
 				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
 					for (int row = 0; row < neighborCells.size2(); row++) {
@@ -118,13 +96,9 @@ public:
 								float proximityCoefficient = 1 - vectorLength / _interactionRange;
 
 								sf::Vector2f pressure =
-									0.5f * interval * interval *
-									(pressureM * proximityCoefficient +
+									intervalTimeSquare *
+									(pressureM * proximityCoefficient + 
 										nearPressureM * pow(proximityCoefficient, 2)) * vectorNormal;
-
-								if (isnan(pressure.x) || isnan(pressure.y)) {
-									int t = 3;
-								}
 
 								particle.pressure -= pressure;
 								neighbor.position += pressure;
@@ -134,22 +108,6 @@ public:
 				}
 
 				particle.position += particle.pressure;
-
-				float computePresure = clockWise.restart().asSeconds();
-
-				if (counter++ % (400 * 100) == 0 && false) {
-					float common = (getNeighbors + enumerateNeighbors +
-						computeDensity + computePredPresure + computePresure);
-
-					std::cout <<
-						"interval: '" + std::to_string(interval) + "'," << std::endl <<
-						"getNeighbors: '" + std::to_string(getNeighbors) + "'," << std::endl <<
-						"enumerateNeighbors: '" + std::to_string(enumerateNeighbors) + "'," << std::endl <<
-						"computeDensity: '" + std::to_string(computeDensity) + "'," << std::endl <<
-						"computePredPresure: '" + std::to_string(computePredPresure) + "'," << std::endl <<
-						"computePresure: '" + std::to_string(computePresure) + "'," << std::endl <<
-						"Common: '" + std::to_string(common) << std::endl << std::endl << std::endl;
-				}
 			}
 		}
 	}

@@ -65,13 +65,6 @@ int main()
 
         if (frameExpectedInterval > frameInterval) {
             int millisecondDelay = (frameExpectedInterval - frameInterval) * 1000;
-
-            if (counter++ % 60 == 0) {
-                std::cout << "frameInterval: " + std::to_string(frameInterval) << std::endl
-                    << "frameExpectedInterval: " + std::to_string(frameExpectedInterval) << std::endl
-                    << "millisecondDelay: " + std::to_string(frameExpectedInterval - frameInterval) << std::endl << std::endl;
-            }
-
             frameInterval = frameExpectedInterval;
             std::this_thread::sleep_for(std::chrono::milliseconds(millisecondDelay));
             clockWise.restart();
@@ -127,7 +120,7 @@ int main()
 
         float drawAndDisplay = clock.restart().asSeconds();
 
-        if (false && counter++ % 100 == 0) {
+        if (counter++ % 100 == 0) {
             std::cout <<
                 "fps: '" + std::to_string(fps) + "'," << std::endl <<
                 "frameInterval: '" + std::to_string(frameInterval) + "'," << std::endl <<
