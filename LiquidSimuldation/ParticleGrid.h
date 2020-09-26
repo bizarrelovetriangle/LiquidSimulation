@@ -57,13 +57,13 @@ public:
 			}
 		}
 
-		int common = 0;
-		for (int column = 0; column < _gridColumns; column++) {
-			for (int row = 0; row < _gridRows; row++) {
-				common += GridCells(column, row).size();
-			}
-		}
-		std::cout << common << std::endl;
+		//int common = 0;
+		//for (int column = 0; column < _gridColumns; column++) {
+		//	for (int row = 0; row < _gridRows; row++) {
+		//		common += GridCells(column, row).size();
+		//	}
+		//}
+		//std::cout << common << std::endl;
 	}
 
 	matrix_range<matrix<std::vector<Particle>>> getNeighbours(Particle& particle) {

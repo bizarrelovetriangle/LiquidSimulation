@@ -46,10 +46,6 @@ public:
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				sf::Clock clockWise;
-				sf::Clock clock;
-
-				float distanseTime;
-				float lengthTime;
 
 				particle.density = 0.f;
 				particle.density_near = 0.f;
@@ -63,7 +59,7 @@ public:
 					for (int row = 0; row < neighborCells.size2(); row++) {
 						auto& neighbors = neighborCells(colunm, row);
 
-						for (auto neighbor : neighbors) {
+						for (auto& neighbor : neighbors) {
 							if (&neighbor == &particle) {
 								continue;
 							}
@@ -77,14 +73,12 @@ public:
 					for (int row = 0; row < neighborCells.size2(); row++) {
 						auto& neighbors = neighborCells(colunm, row);
 
-						for (auto neighbor : neighbors) {
+						for (auto& neighbor : neighbors) {
 							if (&neighbor == &particle) {
 								continue;
 							}
 
-							clock.restart();
 							float distance = VectorFunctions::distanse(neighbor.position, particle.position);
-							distanseTime = clock.restart().asMilliseconds();
 
 							if (distance < _interactionRange) {
 								float proximityCoefficient = 1 - distance / _interactionRange;
@@ -106,7 +100,7 @@ public:
 					for (int row = 0; row < neighborCells.size2(); row++) {
 						auto& neighbors = neighborCells(colunm, row);
 
-						for (auto neighbor : neighbors) {
+						for (auto& neighbor : neighbors) {
 							if (&neighbor == &particle) {
 								continue;
 							}
@@ -117,9 +111,7 @@ public:
 								continue;
 							}
 
-							clock.restart();
 							float vectorLength = VectorFunctions::length(vector);
-							lengthTime = clock.restart().asMilliseconds();
 
 							if (vectorLength < _interactionRange) {
 								sf::Vector2f vectorNormal = vector / vectorLength;
@@ -154,8 +146,6 @@ public:
 						"computeDensity: '" + std::to_string(computeDensity) + "'," << std::endl <<
 						"computePredPresure: '" + std::to_string(computePredPresure) + "'," << std::endl <<
 						"computePresure: '" + std::to_string(computePresure) + "'," << std::endl <<
-						//"distanseTime: '" + std::to_string(distanseTime) + "'," << std::endl <<
-						//"lengthTime: '" + std::to_string(lengthTime) + "'," << std::endl <<
 						"Common: '" + std::to_string(common) << std::endl << std::endl << std::endl;
 				}
 			}
