@@ -7,6 +7,7 @@
 #include "FluidProcessor.h"
 
 sf::Vector2i window_size(1000, 800);
+//sf::Vector2i window_size(1920, 1080);
 
 void createParticles(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position);
 void createParticle(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position);
@@ -14,7 +15,7 @@ void createWalls(sf::RenderWindow& window, std::vector<Line>& walls);
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML");
+    sf::RenderWindow window(sf::VideoMode(window_size.x, window_size.y), "SFML"/*, sf::Style::Fullscreen*/);
 
     auto desktop = sf::VideoMode::getDesktopMode();
     window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
@@ -27,12 +28,12 @@ int main()
     std::vector<Line>* walls = new std::vector<Line>;
     createWalls(window, *walls);
 
+    int expectedFps = 60;
+    float frameExpectedInterval = 1.f / expectedFps;
     float interactionRange = 30;
 
     ParticleGrid particleGrid(window_size, interactionRange);
     FluidProcessor fluidProcessor(window, particleGrid, interactionRange);
-
-    //createParticles(window, *particles, sf::Vector2f());
 
     sf::Vector2f mousePosition;
 
@@ -60,13 +61,29 @@ int main()
             }
         }
 
+        float frameInterval = clockWise.restart().asSeconds();
+
+        if (frameExpectedInterval > frameInterval) {
+            int millisecondDelay = (frameExpectedInterval - frameInterval) * 1000;
+
+            if (counter++ % 60 == 0) {
+                std::cout << "frameInterval: " + std::to_string(frameInterval) << std::endl
+                    << "frameExpectedInterval: " + std::to_string(frameExpectedInterval) << std::endl
+                    << "millisecondDelay: " + std::to_string(frameExpectedInterval - frameInterval) << std::endl << std::endl;
+            }
+
+            frameInterval = frameExpectedInterval;
+            std::this_thread::sleep_for(std::chrono::milliseconds(millisecondDelay));
+            clockWise.restart();
+        }
+
+        float fps = 1 / frameInterval;
+
         window.clear();
 
         float initialAndClear = clock.restart().asSeconds();
 
-        fluidProcessor.wallCollicionHandling(*walls);
-
-        float wallCollicionHandling = clock.restart().asSeconds();
+        fluidProcessor.wallCollicionHandling(*walls, frameInterval);
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
@@ -74,23 +91,25 @@ int main()
             }
         }
 
+        for (auto& particles : particleGrid.GridCells.data()) {
+            for (auto& particle : particles) {
+                particle.update(frameInterval);
+            }
+        }
+
+        float wallCollicionHandling = clock.restart().asSeconds();
+
         particleGrid.updateParticleNeighbours();
 
         float updateParticleNeighbours = clock.restart().asSeconds();
 
-        fluidProcessor.particlesGravity();
+        fluidProcessor.particlesGravity(frameInterval);
 
         float particlesGravity = clock.restart().asSeconds();
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
-                particle.update();
-            }
-        }
-
-        for (auto& particles : particleGrid.GridCells.data()) {
-            for (auto& particle : particles) {
-                particle.velosity = particle.position - particle.position_prev;
+                particle.velosity = (particle.position - particle.position_prev) / frameInterval;
             }
         }
 
@@ -108,12 +127,10 @@ int main()
 
         float drawAndDisplay = clock.restart().asSeconds();
 
-        float currentTime = clock.restart().asSeconds();
-        float fps = 1.f / currentTime;
-
-        if (counter++ % 100 == 0 && false) {
+        if (false && counter++ % 100 == 0) {
             std::cout <<
                 "fps: '" + std::to_string(fps) + "'," << std::endl <<
+                "frameInterval: '" + std::to_string(frameInterval) + "'," << std::endl <<
                 "initialAndClear: '" + std::to_string(initialAndClear) + "'," << std::endl <<
                 "wallCollicionHandling: '" + std::to_string(wallCollicionHandling) + "'," << std::endl <<
                 "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours) + "'," << std::endl <<
@@ -121,7 +138,6 @@ int main()
                 "drawAndDisplaystd: '" + std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
         }
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     return 0;
@@ -142,7 +158,7 @@ void createParticles(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::V
 
 void createParticle(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position) {
     Particle particle(window, position, 4);
-    //particle.acceleration = sf::Vector2f(0, 0.03);
+    particle.acceleration = sf::Vector2f(0, 200);
     particleGrid.addParticle(particle); 
 }
 

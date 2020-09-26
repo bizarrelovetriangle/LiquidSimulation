@@ -14,7 +14,7 @@ public:
 
 	}
 
-	void wallCollicionHandling(std::vector<Line>& walls) {
+	void wallCollicionHandling(std::vector<Line>& walls, float interval) {
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				for (auto wall : walls) {
@@ -27,7 +27,7 @@ public:
 					if (distanse < particle.radius) {
 						particle.position += wallPerp * (particle.radius - distanse);
 						particle.velosity -= wallPerp * VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5f;
-						particle.position += particle.velosity;
+						particle.position += particle.velosity * interval;
 					}
 
 					//drawWallNormal(wall, particle.position);
@@ -37,11 +37,11 @@ public:
 	}
 
 	float restDensity = 100;
-	float k = 0.0001;
-	float k_near = 0.0001 * 40;
+	float k = 15;
+	float k_near = 600;
 
 	int counter = 0;
-	void particlesGravity() {
+	void particlesGravity(float interval) {
 		//return;
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
@@ -118,6 +118,7 @@ public:
 								float proximityCoefficient = 1 - vectorLength / _interactionRange;
 
 								sf::Vector2f pressure =
+									0.5f * interval * interval *
 									(pressureM * proximityCoefficient +
 										nearPressureM * pow(proximityCoefficient, 2)) * vectorNormal;
 
@@ -132,15 +133,16 @@ public:
 					}
 				}
 
-				float computePresure = clockWise.restart().asSeconds();
-
 				particle.position += particle.pressure;
+
+				float computePresure = clockWise.restart().asSeconds();
 
 				if (counter++ % (400 * 100) == 0 && false) {
 					float common = (getNeighbors + enumerateNeighbors +
 						computeDensity + computePredPresure + computePresure);
 
 					std::cout <<
+						"interval: '" + std::to_string(interval) + "'," << std::endl <<
 						"getNeighbors: '" + std::to_string(getNeighbors) + "'," << std::endl <<
 						"enumerateNeighbors: '" + std::to_string(enumerateNeighbors) + "'," << std::endl <<
 						"computeDensity: '" + std::to_string(computeDensity) + "'," << std::endl <<

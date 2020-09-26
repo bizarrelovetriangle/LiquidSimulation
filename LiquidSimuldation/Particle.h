@@ -10,9 +10,9 @@ public:
 		_shape.setFillColor(sf::Color::White);
 	}
 
-	void update() {
-		velosity += acceleration;
-		position += velosity;
+	void update(float& interval) {
+		velosity += acceleration * interval;
+		position += velosity * interval;
 	}
 
 	void draw() {
