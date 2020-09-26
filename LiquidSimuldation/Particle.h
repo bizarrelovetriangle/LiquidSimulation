@@ -11,8 +11,13 @@ public:
 	}
 
 	void update(float& interval) {
+		position_prev = position;
 		velosity += acceleration * interval;
 		position += velosity * interval;
+	}
+
+	void relaxVelosity(float& interval) {
+		velosity = (position - position_prev) / interval;
 	}
 
 	void draw() {

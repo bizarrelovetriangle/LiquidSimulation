@@ -25,8 +25,8 @@ int main()
     sf::View view(sf::FloatRect(center, size));
     window.setView(view);
 
-    std::vector<Line>* walls = new std::vector<Line>;
-    createWalls(window, *walls);
+    std::vector<Line> walls;
+    createWalls(window, walls);
 
     int expectedFps = 60;
     float frameExpectedInterval = 1.f / expectedFps;
@@ -76,13 +76,7 @@ int main()
 
         float initialAndClear = clock.restart().asSeconds();
 
-        fluidProcessor.wallCollicionHandling(*walls, frameExpectedInterval);
-
-        for (auto& particles : particleGrid.GridCells.data()) {
-            for (auto& particle : particles) {
-                particle.position_prev = particle.position;
-            }
-        }
+        fluidProcessor.wallCollicionHandling(walls, frameExpectedInterval);
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
@@ -102,7 +96,7 @@ int main()
 
         for (auto& particles : particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
-                particle.velosity = (particle.position - particle.position_prev) / frameExpectedInterval;
+                particle.relaxVelosity(frameExpectedInterval);
             }
         }
 
@@ -112,7 +106,7 @@ int main()
             }
         }
 
-        for (auto& wall : *walls) {
+        for (auto& wall : walls) {
             wall.draw();
         }
 
@@ -150,7 +144,7 @@ void createParticles(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::V
 
 void createParticle(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position) {
     Particle particle(window, position, 4);
-    //particle.acceleration = sf::Vector2f(0, 200);
+    particle.acceleration = sf::Vector2f(0, 200);
     particleGrid.addParticle(particle); 
 }
 
