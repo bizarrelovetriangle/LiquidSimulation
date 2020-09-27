@@ -10,9 +10,10 @@ using namespace boost::numeric::ublas;
 
 class ParticleGrid {
 public:
-	ParticleGrid(sf::Vector2i windowSize, float cellWidth)
-		: _cellWidth(cellWidth), _windowSize(windowSize), _windowStart(- windowSize / 2)
-	{
+	void Init(sf::Vector2i windowSize, float cellWidth) {
+		_cellWidth = cellWidth;
+		_windowSize = windowSize;
+		_windowStart = -windowSize / 2;
 		_gridColumns = (_windowSize.x / _cellWidth) + 1;
 		_gridRows = (_windowSize.y / _cellWidth) + 1;
 		GridCells = matrix<std::vector<Particle>>(_gridColumns, _gridRows);

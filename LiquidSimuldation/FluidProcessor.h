@@ -8,8 +8,8 @@
 
 class FluidProcessor {
 public:
-	FluidProcessor(sf::RenderWindow& window, ParticleGrid& particleGrid, float interactionRange)
-		: _window(window), _particleGrid(particleGrid), _interactionRange(interactionRange)
+	FluidProcessor(ParticleGrid& particleGrid, float interactionRange)
+		: _particleGrid(particleGrid), _interactionRange(interactionRange)
 	{
 
 	}
@@ -29,8 +29,6 @@ public:
 						particle.velosity -= wallPerp * VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5f;
 						particle.position += particle.velosity * interval;
 					}
-
-					//drawWallNormal(wall, particle.position);
 				}
 			}
 		}
@@ -113,19 +111,6 @@ public:
 	}
 
 private:
-	void drawWallNormal(Line& wall, sf::Vector2f point) {
-		auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
-		bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, point);
-		auto wallPerp = VectorFunctions::perpendicular(wallVector, isClockwise);
-
-		auto normal_a = (wall.a + wall.b) / 2.f;
-		auto normal_b = normal_a + wallPerp * 10.f;
-
-		Line line(_window, normal_a, normal_b);
-		line.draw();
-	}
-
-	sf::RenderWindow& _window;
 	ParticleGrid& _particleGrid;
 	float _interactionRange = 30;
 };
