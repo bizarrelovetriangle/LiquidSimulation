@@ -12,7 +12,7 @@ public:
     Sceen() = delete;
 
     Sceen(bool isFullScreen)
-        : _windowSize(1000, 800), _interactionRange(30),
+        : _interactionRange(30),
         _fluidProcessor(_particleGrid, _interactionRange)
     {
         _window.close();
@@ -36,35 +36,14 @@ public:
         sf::View view(sf::FloatRect(center, size));
         _window.setView(view);
 
-        createWalls(_window, _walls);
+        //createWalls(_window, _walls);
     }
 
     void Start() {
-        sf::Vector2f mousePosition;
-
-        int counter = 0;
-        sf::Clock clock;
         sf::Clock clockWise;
         while (_window.isOpen())
         {
-            sf::Event event;
-            while (_window.pollEvent(event))
-            {
-                if (event.type == sf::Event::Closed)
-                    _window.close();
-                if (event.type == sf::Event::MouseMoved) {
-                    sf::Vector2i mousePositionInt = sf::Mouse::getPosition(_window) - _windowSize / 2;
-                    mousePosition = sf::Vector2f(mousePositionInt.x, mousePositionInt.y);
-                }
-                if (event.type == sf::Event::KeyPressed) {
-                    if (event.key.code == sf::Keyboard::Q) {
-                        createParticle(_window, _particleGrid, mousePosition);
-                    }
-                    if (event.key.code == sf::Keyboard::Space) {
-                        createParticles(_window, _particleGrid, mousePosition);
-                    }
-                }
-            }
+            HandleEvent();
 
             float frameInterval = clockWise.restart().asSeconds();
 
@@ -77,59 +56,83 @@ public:
 
             float fps = 1 / frameInterval;
 
-            _window.clear();
+            Update();
+            Draw();
+        }
+    }
+    
+    int counter = 0;
 
-            float initialAndClear = clock.restart().asSeconds();
+    void Update() {
+        sf::Clock clock;
 
-            _fluidProcessor.wallCollicionHandling(_walls, _frameExpectedInterval);
+        _fluidProcessor.wallCollicionHandling(_walls, _frameExpectedInterval);
+        float wallCollicionHandling = clock.restart().asSeconds();
 
-            for (auto& particles : _particleGrid.GridCells.data()) {
-                for (auto& particle : particles) {
-                    particle.update(_frameExpectedInterval);
+        _fluidProcessor.applyViscosity(_frameExpectedInterval);
+        float applyViscosity = clock.restart().asSeconds();
+
+        for (auto& particles : _particleGrid.GridCells.data()) {
+            for (auto& particle : particles) {
+                particle.update(_frameExpectedInterval);
+            }
+        }
+
+        _particleGrid.updateParticleNeighbours();
+        float updateParticleNeighbours = clock.restart().asSeconds();
+
+        _fluidProcessor.particlesGravity(_frameExpectedInterval);
+        float particlesGravity = clock.restart().asSeconds();
+
+        for (auto& particles : _particleGrid.GridCells.data()) {
+            for (auto& particle : particles) {
+                particle.relaxVelosity(_frameExpectedInterval);
+            }
+        }
+
+        //if (counter++ % 100 == 0) {
+        //    std::cout <<
+        //        "wallCollicionHandling: '" + std::to_string(wallCollicionHandling) + "'," << std::endl <<
+        //        "applyViscosity: '" + std::to_string(applyViscosity) + "'," << std::endl <<
+        //        "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours) + "'," << std::endl <<
+        //        "particlesGravity: '" + std::to_string(particlesGravity) + "'," << std::endl << std::endl;
+        //}
+    }
+
+    void Draw() {
+        _window.clear();
+
+        for (auto& particles : _particleGrid.GridCells.data()) {
+            for (auto& particle : particles) {
+                particle.draw();
+            }
+        }
+
+        for (auto& wall : _walls) {
+            wall.draw();
+        }
+
+        _window.display();
+    }
+
+    sf::Vector2f mousePosition;
+    void HandleEvent() {
+        sf::Event event;
+        while (_window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                _window.close();
+            if (event.type == sf::Event::MouseMoved) {
+                sf::Vector2i mousePositionInt = sf::Mouse::getPosition(_window) - _windowSize / 2;
+                mousePosition = sf::Vector2f(mousePositionInt.x, mousePositionInt.y);
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Q) {
+                    createParticle(_window, _particleGrid, mousePosition);
                 }
-            }
-
-            _fluidProcessor.applyViscosity(_frameExpectedInterval);
-
-            float wallCollicionHandling = clock.restart().asSeconds();
-
-            _particleGrid.updateParticleNeighbours();
-
-            float updateParticleNeighbours = clock.restart().asSeconds();
-
-            _fluidProcessor.particlesGravity(_frameExpectedInterval);
-
-            float particlesGravity = clock.restart().asSeconds();
-
-            for (auto& particles : _particleGrid.GridCells.data()) {
-                for (auto& particle : particles) {
-                    particle.relaxVelosity(_frameExpectedInterval);
+                if (event.key.code == sf::Keyboard::Space) {
+                    createParticles(_window, _particleGrid, mousePosition);
                 }
-            }
-
-            for (auto& particles : _particleGrid.GridCells.data()) {
-                for (auto& particle : particles) {
-                    particle.draw();
-                }
-            }
-
-            for (auto& wall : _walls) {
-                wall.draw();
-            }
-
-            _window.display();
-
-            float drawAndDisplay = clock.restart().asSeconds();
-
-            if (counter++ % 100 == 0) {
-                std::cout <<
-                    "fps: '" + std::to_string(fps) + "'," << std::endl <<
-                    "frameInterval: '" + std::to_string(frameInterval) + "'," << std::endl <<
-                    "initialAndClear: '" + std::to_string(initialAndClear) + "'," << std::endl <<
-                    "wallCollicionHandling: '" + std::to_string(wallCollicionHandling) + "'," << std::endl <<
-                    "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours) + "'," << std::endl <<
-                    "particlesGravity: '" + std::to_string(particlesGravity) + "'," << std::endl <<
-                    "drawAndDisplaystd: '" + std::to_string(drawAndDisplay) << std::endl << std::endl << std::endl;
             }
         }
     }
