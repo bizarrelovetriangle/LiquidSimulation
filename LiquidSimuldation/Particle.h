@@ -25,9 +25,7 @@ public:
 		_window->draw(_shape);
 	}
 
-	std::vector<Particle*> neightbours;
 	sf::Vector2i gridPosition;
-	int neightboursIndex = -1;
 
 	sf::Vector2f position;
 	sf::Vector2f velosity;
@@ -36,7 +34,6 @@ public:
 
 	float density = 0;
 	float density_near = 0;
-	sf::Vector2f pressure;
 	
 	sf::Vector2f position_prev;
 

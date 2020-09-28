@@ -27,7 +27,6 @@ public:
 		sf::Vector2i gridPosition = getGridPosition(particle);
 		auto& newCell = GridCells(gridPosition.x, gridPosition.y);
 		particle.gridPosition = gridPosition;
-		particle.neightboursIndex = newCell.size();
 		newCell.emplace_back(particle);
 	}
 
@@ -44,12 +43,9 @@ public:
 				sf::Vector2i gridPosition = getGridPosition(particle);
 
 				if (particle.gridPosition != gridPosition) {
-					auto& newCell = GridCells(gridPosition.x, gridPosition.y);
-
 					particle.gridPosition = gridPosition;
-
+					auto& newCell = GridCells(gridPosition.x, gridPosition.y);
 					newCell.emplace_back(particle);
-
 					iterator = cell.erase(iterator);
 				}
 				else {

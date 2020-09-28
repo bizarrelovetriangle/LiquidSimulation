@@ -34,18 +34,13 @@ public:
 		}
 	}
 
-	float restDensity = 100;
-	float k = 15;
-	float k_near = 600;
-
-	void particlesGravity(float interval) {
+	void particlesGravity(float& interval) {
 		float intervalTimeSquare = 0.5f * pow(interval, 2);
 
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				particle.density = 0.f;
 				particle.density_near = 0.f;
-				particle.pressure = sf::Vector2f();
 
 				auto neighborCells = _particleGrid.getNeighbours(particle);
 
@@ -96,21 +91,66 @@ public:
 								sf::Vector2f pressure =
 									intervalTimeSquare *
 									(pressureM * proximityCoefficient + 
-										nearPressureM * pow(proximityCoefficient, 2)) * vectorNormal;
+										nearPressureM * pow(proximityCoefficient, 2)) * 
+									vectorNormal;
 
-								particle.pressure -= pressure;
+								particle.position -= pressure;
 								neighbor.position += pressure;
 							}
 						}
 					}
 				}
+			}
+		}
+	}
 
-				particle.position += particle.pressure;
+	void applyViscosity(float& interval) {
+		for (auto& particles : _particleGrid.GridCells.data()) {
+			for (auto& particle : particles) {
+				auto neighborCells = _particleGrid.getNeighbours(particle);
+
+				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
+					for (int row = 0; row < neighborCells.size2(); row++) {
+						auto& neighbors = neighborCells(colunm, row);
+
+						for (auto& neighbor : neighbors) {
+							if (&neighbor == &particle) {
+								continue;
+							}
+							//if (p.index < n.index) continue;
+
+							sf::Vector2f vector = neighbor.position - particle.position;
+
+							if (vector == sf::Vector2f(0, 0)) {
+								continue;
+							}
+
+							float vectorLength = VectorFunctions::length(vector);
+							sf::Vector2f vectorNormal = vector / vectorLength;
+
+							float proximityCoefficient = 1 - vectorLength / _interactionRange;
+
+							float inertia = VectorFunctions::dotProduct(
+								particle.velosity - neighbor.velosity, vectorNormal);
+
+							sf::Vector2f inertiaViscocity = 0.5f * interval * proximityCoefficient *
+								(kLinearViscocity * inertia +
+									kQuadraticViscocity * pow(inertia, 2)) * 
+								vectorNormal;
+						}
+					}
+				}
 			}
 		}
 	}
 
 private:
 	ParticleGrid& _particleGrid;
-	float _interactionRange = 30;
+	float _interactionRange;
+
+	float restDensity = 100;
+	float k = 15;
+	float k_near = 600;
+	float kLinearViscocity = 0.001;
+	float kQuadraticViscocity = 0.01;
 };

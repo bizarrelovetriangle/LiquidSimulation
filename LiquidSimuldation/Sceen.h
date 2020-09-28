@@ -89,6 +89,8 @@ public:
                 }
             }
 
+            _fluidProcessor.applyViscosity(_frameExpectedInterval);
+
             float wallCollicionHandling = clock.restart().asSeconds();
 
             _particleGrid.updateParticleNeighbours();
