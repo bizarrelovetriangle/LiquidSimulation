@@ -17,12 +17,15 @@ public:
 	void wallCollicionHandling(std::vector<Line>& walls, float interval) {
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
-				for (auto wall : walls) {
+				for (auto& wall : walls) {
 					auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
 					bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
 					auto wallPerp = VectorFunctions::perpendicular(wallVector, isClockwise);
-
+					
+					auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity * interval, wallPerp);
 					float distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
+
+					distanse -= particleWallVelosity;
 
 					if (distanse < particle.radius) {
 						particle.position += wallPerp * (particle.radius - distanse);
@@ -117,26 +120,34 @@ public:
 							if (&neighbor == &particle) {
 								continue;
 							}
-							//if (p.index < n.index) continue;
+							
+							if (particle.index < neighbor.index) continue;
 
-							sf::Vector2f vector = neighbor.position - particle.position;
+							sf::Vector2f vector = particle.position - neighbor.position;
 
 							if (vector == sf::Vector2f(0, 0)) {
 								continue;
 							}
 
 							float vectorLength = VectorFunctions::length(vector);
-							sf::Vector2f vectorNormal = vector / vectorLength;
 
-							float proximityCoefficient = 1 - vectorLength / _interactionRange;
+							if (vectorLength < _interactionRange) {
+								sf::Vector2f vectorNormal = vector / vectorLength;
+								float proximityCoefficient = 1 - vectorLength / _interactionRange;
 
-							float inertia = VectorFunctions::dotProduct(
-								particle.velosity - neighbor.velosity, vectorNormal);
+								float inertia = VectorFunctions::dotProduct(
+									particle.velosity - neighbor.velosity, vectorNormal);
 
-							sf::Vector2f inertiaViscocity = 0.5f * interval * proximityCoefficient *
-								(kLinearViscocity * inertia +
-									kQuadraticViscocity * pow(inertia, 2)) * 
-								vectorNormal;
+								if (inertia > 0) {
+									sf::Vector2f inertiaViscocity = 0.5f * interval * proximityCoefficient *
+										(kLinearViscocity * inertia +
+											kQuadraticViscocity * pow(inertia, 2)) *
+										vectorNormal;
+
+									particle.velosity -= inertiaViscocity;
+									neighbor.velosity += inertiaViscocity;
+								}
+							}
 						}
 					}
 				}
@@ -152,5 +163,5 @@ private:
 	float k = 15;
 	float k_near = 600;
 	float kLinearViscocity = 0.001;
-	float kQuadraticViscocity = 0.01;
+	float kQuadraticViscocity = 0.1;
 };

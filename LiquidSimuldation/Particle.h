@@ -37,6 +37,7 @@ public:
 	
 	sf::Vector2f position_prev;
 
+	int index;
 private:
 	sf::RenderWindow* _window;
 	sf::CircleShape _shape;

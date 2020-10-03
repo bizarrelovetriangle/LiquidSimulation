@@ -36,7 +36,7 @@ public:
         sf::View view(sf::FloatRect(center, size));
         _window.setView(view);
 
-        //createWalls(_window, _walls);
+        createWalls(_window, _walls);
     }
 
     void Start() {
@@ -180,5 +180,6 @@ private:
         walls.emplace_back(Line(window, point_b, point_c));
         walls.emplace_back(Line(window, point_c, point_d));
         walls.emplace_back(Line(window, point_d, point_a));
+        //walls.emplace_back(Line(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
     }
 };

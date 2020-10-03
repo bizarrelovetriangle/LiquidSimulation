@@ -27,6 +27,7 @@ public:
 		sf::Vector2i gridPosition = getGridPosition(particle);
 		auto& newCell = GridCells(gridPosition.x, gridPosition.y);
 		particle.gridPosition = gridPosition;
+		particle.index = lastIndex++;
 		newCell.emplace_back(particle);
 	}
 
@@ -92,12 +93,16 @@ private:
 	sf::Vector2i _windowSize;
 	sf::Vector2i _windowStart;
 
+	int lastIndex = 0;
+
 	sf::Vector2i getGridPosition(Particle& particle) {
 		return (sf::Vector2i(particle.position) + _windowSize / 2) / _cellWidth;
 	}
 
 	bool isOutsideWindow(Particle& particle) {
 		return 
+			isnan(particle.position.x) || isnan(particle.position.y) ||
+			isinf(particle.position.x) || isinf(particle.position.y) ||
 			particle.position.x < _windowStart.x || particle.position.x > - _windowStart.x ||
 			particle.position.y < _windowStart.y || particle.position.y > - _windowStart.y;
 	}
