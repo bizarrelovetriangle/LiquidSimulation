@@ -27,6 +27,9 @@
     <ClInclude Include="ParticleGrid.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sceen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -11,8 +11,13 @@ public:
 	}
 
 	void update(float& interval) {
+		position_prev = position;
 		velosity += acceleration * interval;
 		position += velosity * interval;
+	}
+
+	void relaxVelosity(float& interval) {
+		velosity = (position - position_prev) / interval;
 	}
 
 	void draw() {
@@ -20,9 +25,7 @@ public:
 		_window->draw(_shape);
 	}
 
-	std::vector<Particle*> neightbours;
 	sf::Vector2i gridPosition;
-	int neightboursIndex = -1;
 
 	sf::Vector2f position;
 	sf::Vector2f velosity;
@@ -31,10 +34,10 @@ public:
 
 	float density = 0;
 	float density_near = 0;
-	sf::Vector2f pressure;
 	
 	sf::Vector2f position_prev;
 
+	int index;
 private:
 	sf::RenderWindow* _window;
 	sf::CircleShape _shape;
