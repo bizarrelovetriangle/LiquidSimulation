@@ -37,68 +37,28 @@ public:
 		}
 	}
 
-	void particlesGravity(float& interval) {
-		float intervalTimeSquare = 0.5f * pow(interval, 2);
+	void createPairs() {
+		pairs.clear();
 
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				particle.density = 0.f;
 				particle.density_near = 0.f;
-
 				auto neighborCells = _particleGrid.getNeighbours(particle);
 
-				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
-					for (int row = 0; row < neighborCells.size2(); row++) {
+				for (int colunm = 0; colunm < neighborCells.size1(); ++colunm) {
+					for (int row = 0; row < neighborCells.size2(); ++row) {
 						auto& neighbors = neighborCells(colunm, row);
 
 						for (auto& neighbor : neighbors) {
-							if (&neighbor == &particle) {
-								continue;
-							}
-
-							float distance = VectorFunctions::distanse(neighbor.position, particle.position);
-
-							if (distance < _interactionRange) {
-								float proximityCoefficient = 1 - distance / _interactionRange;
-								particle.density += pow(proximityCoefficient, 2);
-								particle.density_near += pow(proximityCoefficient, 3);
-							}
-						}
-					}
-				}
-
-				float pressureM = k * (particle.density - restDensity);
-				float nearPressureM = k_near * particle.density_near;
-
-				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
-					for (int row = 0; row < neighborCells.size2(); row++) {
-						auto& neighbors = neighborCells(colunm, row);
-
-						for (auto& neighbor : neighbors) {
-							if (&neighbor == &particle) {
-								continue;
-							}
+							if (particle.index <= neighbor.index) continue;
 
 							sf::Vector2f vector = neighbor.position - particle.position;
-
-							if (vector == sf::Vector2f(0, 0)) {
-								continue;
-							}
-
 							float vectorLength = VectorFunctions::length(vector);
 
 							if (vectorLength < _interactionRange) {
-								sf::Vector2f vectorNormal = vector / vectorLength;
 								float proximityCoefficient = 1 - vectorLength / _interactionRange;
-
-								sf::Vector2f pressure =
-									intervalTimeSquare *
-									(pressureM * proximityCoefficient + 
-										nearPressureM * pow(proximityCoefficient, 2)) * 
-									vectorNormal;
-
-								particle.position -= pressure;
-								neighbor.position += pressure;
+								pairs.emplace_back(&particle, &neighbor, vector / vectorLength, proximityCoefficient);
 							}
 						}
 					}
@@ -107,61 +67,72 @@ public:
 		}
 	}
 
+	void particlesGravity(float& interval) {
+		for (auto& pair : pairs) {
+			auto& [first, second, normal, proximityCoefficient] = pair;
+		
+			float proximityCoefficient2 = pow(proximityCoefficient, 2);
+			float proximityCoefficient3 = proximityCoefficient2 * proximityCoefficient;
+			first->density += proximityCoefficient2;
+			first->density_near += proximityCoefficient3;
+			second->density += proximityCoefficient2;
+			second->density_near += proximityCoefficient3;
+		}
+		
+		for (auto& pair : pairs) {
+			auto& [first, second, normal, proximityCoefficient] = pair;
+		
+			float pressureM = k * (first->density - restDensity);
+			float nearPressureM = k_near * first->density_near;
+		
+			sf::Vector2f pressure = float(
+				interval *
+				(pressureM * proximityCoefficient + nearPressureM * pow(proximityCoefficient, 2))) *
+				normal;
+		
+			first->velosity -= pressure;
+			second->velosity += pressure;
+		}
+	}
+
 	void applyViscosity(float& interval) {
-		for (auto& particles : _particleGrid.GridCells.data()) {
-			for (auto& particle : particles) {
-				auto neighborCells = _particleGrid.getNeighbours(particle);
+		for (auto& pair : pairs) {
+			auto& [first, second, normal, proximityCoefficient] = pair;
 
-				for (int colunm = 0; colunm < neighborCells.size1(); colunm++) {
-					for (int row = 0; row < neighborCells.size2(); row++) {
-						auto& neighbors = neighborCells(colunm, row);
+			float inertia = VectorFunctions::dotProduct(first->velosity - second->velosity, normal);
+			if (inertia <= 0) continue;
 
-						for (auto& neighbor : neighbors) {
-							if (&neighbor == &particle) {
-								continue;
-							}
-							
-							if (particle.index < neighbor.index) continue;
+			sf::Vector2f inertiaViscocity = float(
+				0.5f * interval * proximityCoefficient *
+				(kLinearViscocity * inertia + kQuadraticViscocity * pow(inertia, 2))) *
+				normal;
 
-							sf::Vector2f vector = particle.position - neighbor.position;
-
-							if (vector == sf::Vector2f(0, 0)) {
-								continue;
-							}
-
-							float vectorLength = VectorFunctions::length(vector);
-
-							if (vectorLength < _interactionRange) {
-								sf::Vector2f vectorNormal = vector / vectorLength;
-								float proximityCoefficient = 1 - vectorLength / _interactionRange;
-
-								float inertia = VectorFunctions::dotProduct(
-									particle.velosity - neighbor.velosity, vectorNormal);
-
-								if (inertia > 0) {
-									sf::Vector2f inertiaViscocity = 0.5f * interval * proximityCoefficient *
-										(kLinearViscocity * inertia +
-											kQuadraticViscocity * pow(inertia, 2)) *
-										vectorNormal;
-
-									particle.velosity -= inertiaViscocity;
-									neighbor.velosity += inertiaViscocity;
-								}
-							}
-						}
-					}
-				}
-			}
+			first->velosity -= inertiaViscocity;
+			second->velosity += inertiaViscocity;
 		}
 	}
 
 private:
 	ParticleGrid& _particleGrid;
+	
+	struct PairData {
+		PairData(Particle* first, Particle* second, const sf::Vector2f& normal, float proximityCoefficient)
+			: first(first), second(second), normal(normal), proximityCoefficient(proximityCoefficient)
+		{
+		}
+
+		Particle* first;
+		Particle* second;
+		sf::Vector2f normal;
+		float proximityCoefficient;
+	};
+	std::vector<PairData> pairs;
+	
 	float _interactionRange;
 
-	float restDensity = 100;
+	float restDensity = 50;
 	float k = 15;
-	float k_near = 600;
-	float kLinearViscocity = 0.001;
-	float kQuadraticViscocity = 0.1;
+	float k_near = 800;
+	float kLinearViscocity = 0.042;
+	float kQuadraticViscocity = 0.5;
 };

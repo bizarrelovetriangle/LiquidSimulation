@@ -8,16 +8,13 @@ public:
 	{
 		_shape = sf::CircleShape(radius);
 		_shape.setFillColor(sf::Color::White);
+		static int _index = 0;
+		index = _index++;
 	}
 
 	void update(float& interval) {
-		position_prev = position;
 		velosity += acceleration * interval;
 		position += velosity * interval;
-	}
-
-	void relaxVelosity(float& interval) {
-		velosity = (position - position_prev) / interval;
 	}
 
 	void draw() {
@@ -34,8 +31,6 @@ public:
 
 	float density = 0;
 	float density_near = 0;
-	
-	sf::Vector2f position_prev;
 
 	int index;
 private:

@@ -45,16 +45,10 @@ public:
         {
             HandleEvent();
 
-            float frameInterval = clockWise.restart().asSeconds();
-
-            if (_frameExpectedInterval > frameInterval) {
-                int millisecondDelay = (_frameExpectedInterval - frameInterval) * 1000;
-                frameInterval = _frameExpectedInterval;
-                std::this_thread::sleep_for(std::chrono::milliseconds(millisecondDelay));
-                clockWise.restart();
-            }
-
-            float fps = 1 / frameInterval;
+            int fps = 60;
+            double time = clockWise.getElapsedTime().asSeconds();
+            if (1. / fps > time) sf::sleep(sf::seconds(1. / fps - time));
+            //std::cout << 1000. / clockWise.restart().asMilliseconds() << std::endl;
 
             Update();
             Draw();
@@ -65,38 +59,41 @@ public:
 
     void Update() {
         sf::Clock clock;
+        clock.restart();
+
+        _particleGrid.updateParticleNeighbours();
+        float updateParticleNeighbours = clock.restart().asSeconds();
 
         _fluidProcessor.wallCollicionHandling(_walls, _frameExpectedInterval);
         float wallCollicionHandling = clock.restart().asSeconds();
 
+        _fluidProcessor.createPairs();
+        float createPairs = clock.restart().asSeconds();
+
         _fluidProcessor.applyViscosity(_frameExpectedInterval);
         float applyViscosity = clock.restart().asSeconds();
-
-        for (auto& particles : _particleGrid.GridCells.data()) {
-            for (auto& particle : particles) {
-                particle.update(_frameExpectedInterval);
-            }
-        }
-
-        _particleGrid.updateParticleNeighbours();
-        float updateParticleNeighbours = clock.restart().asSeconds();
 
         _fluidProcessor.particlesGravity(_frameExpectedInterval);
         float particlesGravity = clock.restart().asSeconds();
 
         for (auto& particles : _particleGrid.GridCells.data()) {
             for (auto& particle : particles) {
-                particle.relaxVelosity(_frameExpectedInterval);
+                particle.update(_frameExpectedInterval);
             }
         }
+        float particlesUpdate = clock.restart().asSeconds();
 
-        //if (counter++ % 100 == 0) {
-        //    std::cout <<
-        //        "wallCollicionHandling: '" + std::to_string(wallCollicionHandling) + "'," << std::endl <<
-        //        "applyViscosity: '" + std::to_string(applyViscosity) + "'," << std::endl <<
-        //        "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours) + "'," << std::endl <<
-        //        "particlesGravity: '" + std::to_string(particlesGravity) + "'," << std::endl << std::endl;
-        //}
+        float overall = updateParticleNeighbours + wallCollicionHandling + createPairs + applyViscosity + particlesGravity + particlesUpdate;
+
+        if (counter++ % 100 == 0) {
+            std::cout <<
+                "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours / overall) + "'," << std::endl <<
+                "wallCollicionHandling: '" + std::to_string(wallCollicionHandling / overall) + "'," << std::endl <<
+                "createPairs: '" + std::to_string(createPairs / overall) + "'," << std::endl <<
+                "applyViscosity: '" + std::to_string(applyViscosity / overall) + "'," << std::endl <<
+                "particlesGravity: '" + std::to_string(particlesGravity / overall) + "'," << std::endl <<
+                "particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
+        }
     }
 
     void Draw() {
@@ -180,6 +177,6 @@ private:
         walls.emplace_back(Line(window, point_b, point_c));
         walls.emplace_back(Line(window, point_c, point_d));
         walls.emplace_back(Line(window, point_d, point_a));
-        //walls.emplace_back(Line(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
+        walls.emplace_back(Line(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
     }
 };

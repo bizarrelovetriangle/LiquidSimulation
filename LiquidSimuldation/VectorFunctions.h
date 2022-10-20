@@ -45,8 +45,17 @@ public:
 		return isnan(res) ? 0 : res;
 	}
 
+	static inline float length2(sf::Vector2f vector) {
+		float res = pow(vector.x, 2) + pow(vector.y, 2);
+		return isnan(res) ? 0 : res;
+	}
+
 	static inline float distanse(sf::Vector2f point_a, sf::Vector2f point_b) {
 		return length(point_a - point_b);
+	}
+
+	static inline float distanse2(sf::Vector2f point_a, sf::Vector2f point_b) {
+		return length2(point_a - point_b);
 	}
 
 	static inline float crossProduct(

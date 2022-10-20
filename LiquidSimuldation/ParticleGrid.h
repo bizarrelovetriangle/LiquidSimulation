@@ -68,11 +68,11 @@ public:
 		if (range_a.y < 0) {
 			range_a.y++;
 		}
-		if (range_b.x == _gridColumns) {
-			range_b.x--;
+		if (range_b.x <= _gridColumns) {
+			range_b.x = _gridColumns - 1;
 		}
-		if (range_b.y == _gridRows) {
-			range_b.y--;
+		if (range_b.y <= _gridRows) {
+			range_b.y = _gridRows - 1;
 		}
 
 		if (range_a.x > range_b.x || range_a.y > range_b.y) {
