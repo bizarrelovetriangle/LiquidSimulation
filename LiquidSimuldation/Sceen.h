@@ -12,11 +12,7 @@ public:
     Sceen() = delete;
 
     Sceen(bool isFullScreen)
-        : _interactionRange(30),
-        _fluidProcessor(_particleGrid, _interactionRange)
     {
-        _window.close();
-
         if (isFullScreen) {
             _windowSize = sf::Vector2i(1920, 1080);
             _window.create(sf::VideoMode(_windowSize.x, _windowSize.y), "SFML", sf::Style::Fullscreen);
@@ -26,7 +22,7 @@ public:
             _window.create(sf::VideoMode(_windowSize.x, _windowSize.y), "SFML");
         }
 
-        _particleGrid.Init(_windowSize, _interactionRange);
+        _fluidProcessor = std::make_unique<FluidProcessor>(_windowSize);
 
         auto desktop = sf::VideoMode::getDesktopMode();
         _window.setPosition(sf::Vector2i(desktop.width / 2 - _window.getSize().x / 2, desktop.height / 2 - _window.getSize().y / 2));
@@ -40,70 +36,30 @@ public:
     }
 
     void Start() {
-        sf::Clock clockWise;
+        sf::Clock clock;
         while (_window.isOpen())
         {
             HandleEvent();
 
-            int fps = 60;
-            double time = clockWise.getElapsedTime().asSeconds();
-            if (1. / fps > time) sf::sleep(sf::seconds(1. / fps - time));
-            //std::cout << 1000. / clockWise.restart().asMilliseconds() << std::endl;
+            float interval = 1. / 100;
+            double time = clock.getElapsedTime().asSeconds();
+            if (time < interval) sf::sleep(sf::seconds(interval - time));
+            _deltaTime = clock.getElapsedTime().asSeconds();
+            clock.restart();
 
             Update();
             Draw();
         }
     }
     
-    int counter = 0;
-
     void Update() {
-        sf::Clock clock;
-        clock.restart();
-
-        _particleGrid.updateParticleNeighbours();
-        float updateParticleNeighbours = clock.restart().asSeconds();
-
-        _fluidProcessor.wallCollicionHandling(_walls, _frameExpectedInterval);
-        float wallCollicionHandling = clock.restart().asSeconds();
-
-        _fluidProcessor.createPairs();
-        float createPairs = clock.restart().asSeconds();
-
-        _fluidProcessor.applyViscosity(_frameExpectedInterval);
-        float applyViscosity = clock.restart().asSeconds();
-
-        _fluidProcessor.particlesGravity(_frameExpectedInterval);
-        float particlesGravity = clock.restart().asSeconds();
-
-        for (auto& particles : _particleGrid.GridCells.data()) {
-            for (auto& particle : particles) {
-                particle.update(_frameExpectedInterval);
-            }
-        }
-        float particlesUpdate = clock.restart().asSeconds();
-
-        float overall = updateParticleNeighbours + wallCollicionHandling + createPairs + applyViscosity + particlesGravity + particlesUpdate;
-
-        if (counter++ % 100 == 0) {
-            std::cout <<
-                "updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours / overall) + "'," << std::endl <<
-                "wallCollicionHandling: '" + std::to_string(wallCollicionHandling / overall) + "'," << std::endl <<
-                "createPairs: '" + std::to_string(createPairs / overall) + "'," << std::endl <<
-                "applyViscosity: '" + std::to_string(applyViscosity / overall) + "'," << std::endl <<
-                "particlesGravity: '" + std::to_string(particlesGravity / overall) + "'," << std::endl <<
-                "particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
-        }
+        _fluidProcessor->Update(_walls, _expectedDeltaTime);
     }
 
     void Draw() {
         _window.clear();
 
-        for (auto& particles : _particleGrid.GridCells.data()) {
-            for (auto& particle : particles) {
-                particle.draw();
-            }
-        }
+        _fluidProcessor->Draw();
 
         for (auto& wall : _walls) {
             wall.draw();
@@ -125,10 +81,10 @@ public:
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Q) {
-                    createParticle(_window, _particleGrid, mousePosition);
+                    _fluidProcessor->createParticle(_window, mousePosition);
                 }
                 if (event.key.code == sf::Keyboard::Space) {
-                    createParticles(_window, _particleGrid, mousePosition);
+                    createParticles(_window, mousePosition);
                 }
             }
         }
@@ -138,14 +94,13 @@ private:
     float _interactionRange;
     sf::Vector2i _windowSize;
     sf::RenderWindow _window;
-    ParticleGrid _particleGrid;
-    FluidProcessor _fluidProcessor;
+    std::unique_ptr<FluidProcessor> _fluidProcessor;
     std::vector<Line> _walls;
 
-    int _expectedFps = 60;
-    float _frameExpectedInterval = 1.f / _expectedFps;
+    float _expectedDeltaTime = 1. / 60;
+    float _deltaTime = 0;
 
-    void createParticles(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position) {
+    void createParticles(sf::RenderWindow& window, sf::Vector2f position) {
         int distance = 10;
         int width = 20;
         int height = 20;
@@ -153,15 +108,9 @@ private:
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 sf::Vector2f particlePosition(x - width / 2, y - height / 2);
-                createParticle(window, particleGrid, particlePosition * (float)distance + position);
+                _fluidProcessor->createParticle(window, particlePosition * (float)distance + position);
             }
         }
-    }
-
-    void createParticle(sf::RenderWindow& window, ParticleGrid& particleGrid, sf::Vector2f position) {
-        Particle particle(window, position, 4);
-        particle.acceleration = sf::Vector2f(0, 200);
-        particleGrid.addParticle(particle);
     }
 
     void createWalls(sf::RenderWindow& window, std::vector<Line>& walls) {
@@ -177,6 +126,6 @@ private:
         walls.emplace_back(Line(window, point_b, point_c));
         walls.emplace_back(Line(window, point_c, point_d));
         walls.emplace_back(Line(window, point_d, point_a));
-        walls.emplace_back(Line(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
+        //walls.emplace_back(Line(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
     }
 };

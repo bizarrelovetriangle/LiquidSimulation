@@ -8,10 +8,16 @@
     <Filter Include="Source Files\OpenGL">
       <UniqueIdentifier>{45a9270c-4905-4809-b2ca-c2e97301d396}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\OpenGL\Shaders">
+      <UniqueIdentifier>{379c51e2-1584-4e61-8ae7-afcd0cbef99f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LiquidSimuldation.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,8 +39,29 @@
     <ClInclude Include="Sceen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ComputeProgram.h">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderProgram.h">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUCompute.h">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUProgramBase.h">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\particle_frag.glsl">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particle_vert.glsl">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\compute.glsl">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

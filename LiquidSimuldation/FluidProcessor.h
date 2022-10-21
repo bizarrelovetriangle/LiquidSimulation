@@ -5,16 +5,16 @@
 #include "Line.h"
 #include "VectorFunctions.h"
 #include "ParticleGrid.h"
+#include "GPUCompute.h"
 
 class FluidProcessor {
 public:
-	FluidProcessor(ParticleGrid& particleGrid, float interactionRange)
-		: _particleGrid(particleGrid), _interactionRange(interactionRange)
+	FluidProcessor(sf::Vector2i windowSize)
 	{
-
+		_particleGrid.Init(windowSize, _interactionRange);
 	}
 
-	void wallCollicionHandling(std::vector<Line>& walls, float interval) {
+	void wallCollicionHandling(const std::vector<Line>& walls, float interval) {
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				for (auto& wall : walls) {
@@ -112,8 +112,64 @@ public:
 		}
 	}
 
+	void createParticle(sf::RenderWindow& window, sf::Vector2f position) {
+		Particle particle(window, position, 4);
+		particle.acceleration = sf::Vector2f(0, 200);
+		_particleGrid.addParticle(particle);
+	}
+
+	void Update(const std::vector<Line>& walls, float dt) {
+		sf::Clock clock;
+
+		_particleGrid.updateParticleNeighbours();
+		float updateParticleNeighbours = clock.restart().asSeconds();
+
+		wallCollicionHandling(walls, dt);
+		float wallCollicionHandling = clock.restart().asSeconds();
+
+		createPairs();
+		float createPairs = clock.restart().asSeconds();
+
+		applyViscosity(dt);
+		float applyViscosity = clock.restart().asSeconds();
+
+		particlesGravity(dt);
+		float particlesGravity = clock.restart().asSeconds();
+
+		for (auto& particles : _particleGrid.GridCells.data()) {
+			for (auto& particle : particles) {
+				particle.update(dt);
+			}
+		}
+		float particlesUpdate = clock.restart().asSeconds();
+
+		float overall = updateParticleNeighbours + wallCollicionHandling + createPairs + applyViscosity + particlesGravity + particlesUpdate;
+
+		static size_t counter = 0;
+		if (counter++ % 100 == 0) {
+			std::cout <<
+				"updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours / overall) + "'," << std::endl <<
+				"wallCollicionHandling: '" + std::to_string(wallCollicionHandling / overall) + "'," << std::endl <<
+				"createPairs: '" + std::to_string(createPairs / overall) + "'," << std::endl <<
+				"applyViscosity: '" + std::to_string(applyViscosity / overall) + "'," << std::endl <<
+				"particlesGravity: '" + std::to_string(particlesGravity / overall) + "'," << std::endl <<
+				"particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
+		}
+
+		gpu_compute.Run();
+	}
+
+	void Draw() {
+		for (auto& particles : _particleGrid.GridCells.data()) {
+			for (auto& particle : particles) {
+				particle.draw();
+			}
+		}
+	}
+
 private:
-	ParticleGrid& _particleGrid;
+	GPUCompute gpu_compute;
+	ParticleGrid _particleGrid;
 	
 	struct PairData {
 		PairData(Particle* first, Particle* second, const sf::Vector2f& normal, float proximityCoefficient)
@@ -128,7 +184,7 @@ private:
 	};
 	std::vector<PairData> pairs;
 	
-	float _interactionRange;
+	float _interactionRange = 30;
 
 	float restDensity = 50;
 	float k = 15;

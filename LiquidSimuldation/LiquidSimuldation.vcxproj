@@ -88,13 +88,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>R:\Programs\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\include;R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glad\include;R:\Programs\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\lib-vc2022;R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>R:\Programs\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\include;R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glad\include;R:\Programs\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -113,7 +114,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\lib-vc2022;R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,14 +124,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>R:\Programs\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\include;R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glad\include;R:\Programs\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>R:\Programs\SFML\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\lib-vc2022;R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>R:\Programs\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\include;R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glad\include;R:\Programs\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -148,23 +150,36 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>R:\Programs\SFML\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>R:\Projects\LiquidSimulation\LiquidSimuldation\Dependencies\glfw\lib-vc2022;R:\Programs\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="glad.c" />
     <ClCompile Include="LiquidSimuldation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="OpenGL\Shaders\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ComputeProgram.h" />
     <ClInclude Include="FluidProcessor.h" />
+    <ClInclude Include="GPUCompute.h" />
+    <ClInclude Include="GPUProgramBase.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleGrid.h" />
+    <ClInclude Include="RenderProgram.h" />
     <ClInclude Include="Sceen.h" />
     <ClInclude Include="VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\compute.glsl" />
+    <None Include="Shaders\particle_frag.glsl" />
+    <None Include="Shaders\particle_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

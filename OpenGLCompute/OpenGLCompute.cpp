@@ -70,36 +70,29 @@ int main()
     size_t height = 10;
     glUseProgram(program);
 
-    uint32_t texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glBindImageTexture(0, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    struct Vector2
+    {
+        float x = 10;
+        float y = 20;
+    };
 
-    std::vector<float> vectorData(width * height, 0.42);
-    uint32_t VBO;
-    glGenBuffers(1, &VBO);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, VBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, vectorData.size() * sizeof(float), &vectorData[0], GL_STATIC_DRAW);
+    struct Particle
+    {
+        Vector2 position;
+        Vector2 velocity;
+    };
 
-    glDispatchCompute(width, height, 1);
+    std::vector<Particle> particles(10);
+    uint32_t particlesBuffer;
+    glGenBuffers(1, &particlesBuffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particlesBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STATIC_DRAW);
+
+    glDispatchCompute(10, 1, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-
-    std::vector<float> frame_data(width * height * 4);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &frame_data[0]);
-
-    for (auto val : frame_data) {
-        std::cout << val << " ";
-    }
-
-    auto data = (float*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-    std::vector<float> readDAta(data, data + width * height);
+    auto data = (Particle*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+    std::vector<Particle> readData(data, data + 10);
 
     return 0;
 }
