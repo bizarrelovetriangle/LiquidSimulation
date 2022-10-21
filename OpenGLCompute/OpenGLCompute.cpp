@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "Executer.h"
 
 std::string readFile(const std::string& path) {
     std::stringstream ss;
@@ -17,10 +16,6 @@ std::string readFile(const std::string& path) {
 
 int main()
 {
-    //Execute();
-    //
-    //return 0;
-
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);

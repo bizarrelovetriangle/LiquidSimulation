@@ -16,9 +16,6 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{5c6389a2-7eca-47cc-bf31-73c4aa99d0fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Example">
-      <UniqueIdentifier>{8ed2fd12-8655-45c7-a19b-ecafd239811b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGLCompute.cpp">
@@ -27,35 +24,9 @@
     <ClCompile Include="glad.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="ComputeShader.cpp">
-      <Filter>Source Files\Example</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="shader_m.h">
-      <Filter>Source Files\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="shader_c.h">
-      <Filter>Source Files\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="Executer.h">
-      <Filter>Source Files\Example</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ComputeShader.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\computeShader.cs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\screenQuad.fs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\screenQuad.vs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\example.comp">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

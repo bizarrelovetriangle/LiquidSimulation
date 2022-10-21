@@ -148,14 +148,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="OpenGLCompute.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="shader_c.h" />
-    <ClInclude Include="Executer.h" />
-    <ClInclude Include="shader_m.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Shaders\**">
@@ -163,11 +157,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\computeShader.cs" />
     <None Include="Shaders\ComputeShader.glsl" />
-    <None Include="Shaders\example.comp" />
-    <None Include="Shaders\screenQuad.fs" />
-    <None Include="Shaders\screenQuad.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
