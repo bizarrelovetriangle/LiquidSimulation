@@ -15,7 +15,9 @@ public:
 			auto shared_data = std::make_shared<ElementSharedData<Particle>>();
 			shared_data->initial_points = { {-1., -1.}, {1., -1.}, {-1., 1.}, {1., 1.} };
 			shared_data->indexes = { 0, 1, 3, 0, 3, 2 };
-			shared_data->render_program.Init("Shaders/particle_vert.glsl", "Shaders/particle_frag.glsl");
+			shared_data->render_program.InitProgram({
+				{ GL_VERTEX_SHADER, "Shaders/particle_vert.glsl" },
+				{ GL_FRAGMENT_SHADER, "Shaders/particle_frag.glsl" } });
 			shared_data->render_program.GenerateVAO(shared_data->indexes);
 			shared_data->render_program.Use();
 			auto view_matrix = DataFactory<matrix3x3>::GetData();

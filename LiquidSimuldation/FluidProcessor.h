@@ -113,7 +113,7 @@ public:
 
 	void createParticle(vector2 position) {
 		Particle particle(position);
-		//particle.acceleration = vector2(0, 200);
+		//particle.acceleration = vector2(0, -200);
 		_particleGrid.addParticle(particle);
 	}
 

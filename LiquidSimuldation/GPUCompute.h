@@ -9,7 +9,7 @@ class GPUCompute {
 public:
     GPUCompute()
     {
-        compute_shader.Init("Shaders/compute.glsl");
+        compute_shader.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/compute.glsl" }});
     }
 
     void Run()

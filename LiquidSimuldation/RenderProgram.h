@@ -2,25 +2,8 @@
 #include "GPUProgramBase.h"
 
 template <typename T>
-class RenderProgram : private GPUProgramBase {
+class RenderProgram : public GPUProgramBase {
 public:
-	void Init(const std::string& vertex_path, const std::string& fragment_path)
-	{
-		auto vertex_shader = CreateShader(vertex_path, GL_VERTEX_SHADER);
-		auto fragment_shader = CreateShader(fragment_path, GL_FRAGMENT_SHADER);
-
-		int success;
-		program_id = glCreateProgram();
-		glAttachShader(program_id, vertex_shader);
-		glAttachShader(program_id, fragment_shader);
-		glLinkProgram(program_id);
-		glGetProgramiv(program_id, GL_LINK_STATUS, &success);
-		LogErrors(success);
-
-		glDeleteShader(vertex_shader);
-		glDeleteShader(fragment_shader);
-	}
-
 	void Use() {
 		glUseProgram(program_id);
 		glBindVertexArray(vao_buffer_id);
@@ -47,11 +30,11 @@ public:
 	}
 
 	void SetViewMatrix(const matrix3x3& matrix) {
-		glUniformMatrix3fv(view_matrix_index, 1, GL_FALSE, &matrix.i.x);
+		glUniformMatrix3fv(view_matrix_index, 1, GL_FALSE, (float*)&matrix);
 	}
 
 	void SetColor(const vector3& color) {
-		glUniform4fv(color_index, 1, &color.x);
+		glUniform4fv(color_index, 1, (float*)&color);
 	}
 
 	void Dispose() {

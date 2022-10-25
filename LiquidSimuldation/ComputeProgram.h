@@ -1,22 +1,8 @@
 #pragma once
 #include "GPUProgramBase.h"
 
-class ComputeProgram : private GPUProgramBase {
+class ComputeProgram : public GPUProgramBase {
 public:
-	void Init(const std::string& path)
-	{
-        auto computeShader = CreateShader(path, GL_COMPUTE_SHADER);
-
-        int success;
-        program_id = glCreateProgram();
-        glAttachShader(program_id, computeShader);
-        glLinkProgram(program_id);
-        glGetProgramiv(program_id, GL_LINK_STATUS, &success);
-        LogErrors(success);
-
-        glDeleteShader(computeShader);
-	}
-
     void Compute() {
         size_t width = 10;
         size_t height = 10;
