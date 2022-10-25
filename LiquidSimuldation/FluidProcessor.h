@@ -1,8 +1,7 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <math.h>
 #include "Particle.h"
-#include "Line.h"
+#include "Wall.h"
 #include "VectorFunctions.h"
 #include "ParticleGrid.h"
 #include "GPUCompute.h"
@@ -14,22 +13,22 @@ public:
 		_particleGrid.Init(windowSize, _interactionRange);
 	}
 
-	void wallCollicionHandling(const std::vector<Line>& walls, float interval) {
+	void wallCollicionHandling(const std::vector<Wall>& walls, double interval) {
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
 				for (auto& wall : walls) {
 					auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
 					bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
-					auto wallPerp = VectorFunctions::perpendicular(wallVector, isClockwise);
+					auto wallPerp = (vector2)VectorFunctions::perpendicular(wallVector, isClockwise);
 					
 					auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity * interval, wallPerp);
-					float distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
+					double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
 
 					distanse -= particleWallVelosity;
 
 					if (distanse < particle.radius) {
 						particle.position += wallPerp * (particle.radius - distanse);
-						particle.velosity -= wallPerp * VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5f;
+						particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
 						particle.position += particle.velosity * interval;
 					}
 				}
@@ -85,7 +84,7 @@ public:
 			float pressureM = k * (first->density - restDensity);
 			float nearPressureM = k_near * first->density_near;
 		
-			sf::Vector2f pressure = float(
+			vector2 pressure = float(
 				interval *
 				(pressureM * proximityCoefficient + nearPressureM * pow(proximityCoefficient, 2))) *
 				normal;
@@ -102,7 +101,7 @@ public:
 			float inertia = VectorFunctions::dotProduct(first->velosity - second->velosity, normal);
 			if (inertia <= 0) continue;
 
-			sf::Vector2f inertiaViscocity = float(
+			vector2 inertiaViscocity = float(
 				0.5f * interval * proximityCoefficient *
 				(kLinearViscocity * inertia + kQuadraticViscocity * pow(inertia, 2))) *
 				normal;
@@ -112,13 +111,13 @@ public:
 		}
 	}
 
-	void createParticle(sf::RenderWindow& window, sf::Vector2f position) {
-		Particle particle(window, position, 4);
-		particle.acceleration = sf::Vector2f(0, 200);
+	void createParticle(vector2 position) {
+		Particle particle(position);
+		//particle.acceleration = vector2(0, 200);
 		_particleGrid.addParticle(particle);
 	}
 
-	void Update(const std::vector<Line>& walls, float dt) {
+	void Update(const std::vector<Wall>& walls, float dt) {
 		sf::Clock clock;
 
 		_particleGrid.updateParticleNeighbours();
@@ -156,7 +155,7 @@ public:
 				"particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
 		}
 
-		gpu_compute.Run();
+		//gpu_compute.Run();
 	}
 
 	void Draw() {

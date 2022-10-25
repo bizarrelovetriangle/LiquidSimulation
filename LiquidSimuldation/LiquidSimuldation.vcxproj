@@ -157,6 +157,10 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="LiquidSimuldation.cpp" />
+    <ClCompile Include="matrix3x3.cpp" />
+    <ClCompile Include="DataFactory.h" />
+    <ClCompile Include="vector2.cpp" />
+    <ClCompile Include="vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenGL\Shaders\**">
@@ -165,14 +169,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComputeProgram.h" />
+    <ClInclude Include="ElementSharedData.h" />
     <ClInclude Include="FluidProcessor.h" />
     <ClInclude Include="GPUCompute.h" />
     <ClInclude Include="GPUProgramBase.h" />
-    <ClInclude Include="Line.h" />
+    <ClInclude Include="Wall.h" />
+    <ClInclude Include="matrix3x3.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleGrid.h" />
     <ClInclude Include="RenderProgram.h" />
     <ClInclude Include="Sceen.h" />
+    <ClInclude Include="vector2.h" />
+    <ClInclude Include="vector3.h" />
     <ClInclude Include="VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>

@@ -5,16 +5,9 @@ class ComputeProgram : private GPUProgramBase {
 public:
 	void Init(const std::string& path)
 	{
+        auto computeShader = CreateShader(path, GL_COMPUTE_SHADER);
+
         int success;
-        std::string computeShaderCode = readFile(path);
-        auto cstr = computeShaderCode.c_str();
-
-        auto computeShader = glCreateShader(GL_COMPUTE_SHADER);
-        glShaderSource(computeShader, 1, &cstr, NULL);
-        glCompileShader(computeShader);
-        glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
-        LogErrors(success);
-
         program_id = glCreateProgram();
         glAttachShader(program_id, computeShader);
         glLinkProgram(program_id);
