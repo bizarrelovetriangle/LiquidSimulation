@@ -13,20 +13,6 @@ public:
         size_t height = 1;
         glUseProgram(program_id);
 
-        //struct Vector2
-        //{
-        //    float x = 10;
-        //    float y = 20;
-        //};
-        //
-        //struct Particle
-        //{
-        //    Vector2 position;
-        //    Vector2 velocity;
-        //};
-
-        //std::vector<Particle> particles(10);
-
         uint32_t particlesBuffer;
         glGenBuffers(1, &particlesBuffer);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particlesBuffer);

@@ -34,7 +34,7 @@ public:
 	void updateParticleNeighbours() {
 		for (auto& cell : GridCells.data()) {
 			for (std::vector<Particle>::iterator iterator = cell.begin(); iterator != cell.end();) {
-				auto& particle = *iterator._Ptr;
+				auto& particle = *iterator;
 
 				if (isOutsideWindow(particle)) {
 					iterator = cell.erase(iterator);
@@ -62,23 +62,10 @@ public:
 		sf::Vector2i range_a = gridPosition - sf::Vector2i(1, 1);
 		sf::Vector2i range_b = gridPosition + sf::Vector2i(1, 1);
 
-		if (range_a.x < 0) {
-			range_a.x++;
-		}
-		if (range_a.y < 0) {
-			range_a.y++;
-		}
-		if (range_b.x <= _gridColumns) {
-			range_b.x = _gridColumns - 1;
-		}
-		if (range_b.y <= _gridRows) {
-			range_b.y = _gridRows - 1;
-		}
-
-		if (range_a.x > range_b.x || range_a.y > range_b.y) {
-			matrix<std::vector<Particle>> m;
-			return matrix_range<matrix<std::vector<Particle>>>(m, range(0, 0), range(0, 0));
-		}
+		range_a.x = std::clamp(range_a.x, 0, _gridColumns - 1);
+		range_a.y = std::clamp(range_a.y, 0, _gridRows - 1);
+		range_b.x = std::clamp(range_b.x, 0, _gridColumns - 1);
+		range_b.y = std::clamp(range_b.y, 0, _gridRows - 1);
 
 		return matrix_range<matrix<std::vector<Particle>>>(GridCells,
 			range(range_a.x, range_b.x + 1), range(range_a.y, range_b.y + 1));

@@ -21,15 +21,14 @@ public:
 					bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
 					auto wallPerp = (vector2)VectorFunctions::perpendicular(wallVector, isClockwise);
 					
-					auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity * interval, wallPerp);
+					auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity, wallPerp);
 					double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
 
-					distanse -= particleWallVelosity;
+					distanse -= particleWallVelosity * interval;
 
 					if (distanse < particle.radius) {
-						particle.position += wallPerp * (particle.radius - distanse);
+						particle.position -= wallPerp * (distanse - particle.radius);
 						particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
-						particle.position += particle.velosity * interval;
 					}
 				}
 			}
@@ -135,9 +134,11 @@ public:
 		particlesGravity(dt);
 		float particlesGravity = clock.restart().asSeconds();
 
+		//gpu_compute.Run(_particleGrid, dt);
+
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
-				//particle.update(dt);
+				particle.update(dt);
 			}
 		}
 		float particlesUpdate = clock.restart().asSeconds();
@@ -154,8 +155,6 @@ public:
 				"particlesGravity: '" + std::to_string(particlesGravity / overall) + "'," << std::endl <<
 				"particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
 		}
-
-		gpu_compute.Run(_particleGrid, dt);
 	}
 
 	void Draw() {
@@ -189,5 +188,5 @@ private:
 	float k = 15;
 	float k_near = 800;
 	float kLinearViscocity = 0.042;
-	float kQuadraticViscocity = 0.5;
+	float kQuadraticViscocity = 0.05;
 };
