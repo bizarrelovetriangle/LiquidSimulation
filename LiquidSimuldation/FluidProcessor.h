@@ -113,7 +113,7 @@ public:
 
 	void createParticle(vector2 position) {
 		Particle particle(position);
-		//particle.acceleration = vector2(0, -200);
+		particle.acceleration = vector2(0, -200);
 		_particleGrid.addParticle(particle);
 	}
 
@@ -137,7 +137,7 @@ public:
 
 		for (auto& particles : _particleGrid.GridCells.data()) {
 			for (auto& particle : particles) {
-				particle.update(dt);
+				//particle.update(dt);
 			}
 		}
 		float particlesUpdate = clock.restart().asSeconds();
@@ -155,7 +155,7 @@ public:
 				"particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
 		}
 
-		//gpu_compute.Run();
+		gpu_compute.Run(_particleGrid, dt);
 	}
 
 	void Draw() {

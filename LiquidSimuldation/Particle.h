@@ -36,7 +36,7 @@ public:
 	}
 
 	void draw() {
-		_model_matrix = matrix3x3();
+		auto _model_matrix = matrix3x3();
 		_model_matrix.scale(radius);
 		_model_matrix.transfer(position);
 
@@ -63,6 +63,5 @@ public:
 	int index = 0;
 
 private:
-	matrix3x3 _model_matrix;
 	std::shared_ptr<ElementSharedData<Particle>> _shared_data;
 };

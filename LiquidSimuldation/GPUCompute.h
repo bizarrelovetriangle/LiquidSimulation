@@ -12,9 +12,11 @@ public:
         compute_shader.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/compute.glsl" }});
     }
 
-    void Run()
+    void Run(ParticleGrid& grid, float dt)
     {
-        compute_shader.Compute();
+        for (auto& particles : grid.GridCells.data()) {
+            compute_shader.Compute(particles, dt);
+        }
     }
 
 private:
