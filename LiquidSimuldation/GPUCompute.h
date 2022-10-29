@@ -14,9 +14,9 @@ public:
 
     void Run(ParticleGrid& grid, float dt)
     {
-        for (auto& particles : grid.GridCells.data()) {
-            compute_shader.Compute(particles, dt);
-        }
+        //for (auto& particles : grid.GridCells.data()) {
+        //    compute_shader.Compute(particles, dt);
+        //}
     }
 
 private:

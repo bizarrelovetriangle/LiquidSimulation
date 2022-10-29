@@ -26,7 +26,7 @@ public:
 			return shared_data;
 		});
 
-		static int _index = 0;
+		static size_t _index = 0;
 		index = _index++;
 	}
 

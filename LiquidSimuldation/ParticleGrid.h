@@ -5,6 +5,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <math.h>
+#include <span>
 
 using namespace boost::numeric::ublas;
 
@@ -16,47 +17,48 @@ public:
 		_windowStart = -windowSize / 2;
 		_gridColumns = (_windowSize.x / _cellWidth) + 1;
 		_gridRows = (_windowSize.y / _cellWidth) + 1;
-		GridCells = matrix<std::vector<Particle>>(_gridColumns, _gridRows);
+		particle_grid = std::vector<std::vector<GridCell>>(
+			_gridRows, std::vector<GridCell>(_gridColumns));
 	}
 
-	void addParticle(Particle& particle) {
-		if (isOutsideWindow(particle)) {
-			return;
+	void addParticle(const Particle& particle) {
+		if (!isOutsideWindow(particle)) {
+			particles.push_back(particle);
 		}
-
-		sf::Vector2i gridPosition = getGridPosition(particle);
-		auto& newCell = GridCells(gridPosition.x, gridPosition.y);
-		particle.gridPosition = gridPosition;
-		particle.index = lastIndex++;
-		newCell.emplace_back(particle);
 	}
 
 	void updateParticleNeighbours() {
-		for (auto& cell : GridCells.data()) {
-			for (std::vector<Particle>::iterator iterator = cell.begin(); iterator != cell.end();) {
-				auto& particle = *iterator;
+		auto it = std::remove_if(std::begin(particles), std::end(particles),
+			[this](auto& particle) { return isOutsideWindow(particle); });
+		particles.erase(it, std::end(particles));
 
-				if (isOutsideWindow(particle)) {
-					iterator = cell.erase(iterator);
-					continue;
-				}
-			
-				sf::Vector2i gridPosition = getGridPosition(particle);
+		auto indexGrid = std::vector<std::vector<std::vector<size_t>>>(
+			_gridRows, std::vector<std::vector<size_t>>(_gridColumns));
 
-				if (particle.gridPosition != gridPosition) {
-					particle.gridPosition = gridPosition;
-					auto& newCell = GridCells(gridPosition.x, gridPosition.y);
-					newCell.emplace_back(particle);
-					iterator = cell.erase(iterator);
-				}
-				else {
-					iterator++;
+		for (size_t i = 0; i < particles.size(); ++i) {
+			sf::Vector2i gridPosition = getGridPosition(particles[i]);
+			indexGrid[gridPosition.y][gridPosition.x].push_back(i);
+		}
+
+		std::vector<Particle> particle_temp;
+		particle_temp.reserve(particles.size());
+
+		for (size_t y = 0; y < _gridRows; ++y) {
+			for (size_t x = 0; x < _gridColumns; ++x) {
+				auto& indexes = indexGrid[y][x];
+				auto& cell = particle_grid[y][x];
+				cell.start = particle_temp.size();
+				cell.end = particle_temp.size() + indexes.size();
+				for (auto index : indexes) {
+					particle_temp.push_back(particles[index]);
 				}
 			}
 		}
+
+		std::swap(particle_temp, particles);
 	}
 
-	matrix_range<matrix<std::vector<Particle>>> getNeighbours(Particle& particle) {
+	std::vector<std::span<Particle>> getNeighbours(const Particle& particle) {
 		sf::Vector2i gridPosition = getGridPosition(particle);
 
 		sf::Vector2i range_a = gridPosition - sf::Vector2i(1, 1);
@@ -67,11 +69,35 @@ public:
 		range_b.x = std::clamp(range_b.x, 0, _gridColumns - 1);
 		range_b.y = std::clamp(range_b.y, 0, _gridRows - 1);
 
-		return matrix_range<matrix<std::vector<Particle>>>(GridCells,
-			range(range_a.x, range_b.x + 1), range(range_a.y, range_b.y + 1));
+		std::vector<std::span<Particle>> result;
+
+		for (size_t y = range_a.y; y <= range_b.y; ++y) {
+			for (size_t x = range_a.x; x <= range_b.x; ++x) {
+				auto& cell = particle_grid[y][x];
+				if (!cell.empty()) {
+					auto start_it = std::next(std::begin(particles), cell.start);
+					auto end_it = std::next(std::begin(particles), cell.end);
+					result.emplace_back(start_it, end_it);
+				}
+			}
+		}
+
+		return result;
 	}
 
-	matrix<std::vector<Particle>> GridCells;
+	std::vector<Particle> particles;
+
+	struct GridCell {
+		bool empty() {
+			return start == end;
+		}
+
+		int start;
+		int end;
+	};
+
+	std::vector<std::vector<GridCell>> particle_grid;
+
 private:
 	int _cellWidth;
 	int _gridColumns;
@@ -80,13 +106,11 @@ private:
 	sf::Vector2i _windowSize;
 	sf::Vector2i _windowStart;
 
-	int lastIndex = 0;
-
-	sf::Vector2i getGridPosition(Particle& particle) {
+	sf::Vector2i getGridPosition(const Particle& particle) {
 		return (sf::Vector2i(particle.position) + _windowSize / 2) / _cellWidth;
 	}
 
-	bool isOutsideWindow(Particle& particle) {
+	bool isOutsideWindow(const Particle& particle) {
 		return 
 			isnan(particle.position.x) || isnan(particle.position.y) ||
 			isinf(particle.position.x) || isinf(particle.position.y) ||

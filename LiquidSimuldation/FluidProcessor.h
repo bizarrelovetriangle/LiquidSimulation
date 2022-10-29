@@ -10,26 +10,24 @@ class FluidProcessor {
 public:
 	FluidProcessor(sf::Vector2i windowSize)
 	{
-		_particleGrid.Init(windowSize, _interactionRange);
+		_particle_grid.Init(windowSize, _interactionRange);
 	}
 
 	void wallCollicionHandling(const std::vector<Wall>& walls, double interval) {
-		for (auto& particles : _particleGrid.GridCells.data()) {
-			for (auto& particle : particles) {
-				for (auto& wall : walls) {
-					auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
-					bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
-					auto wallPerp = (vector2)VectorFunctions::perpendicular(wallVector, isClockwise);
+		for (auto& particle : _particle_grid.particles) {
+			for (auto& wall : walls) {
+				auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
+				bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
+				auto wallPerp = (vector2)VectorFunctions::perpendicular(wallVector, isClockwise);
 					
-					auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity, wallPerp);
-					double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
+				auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity, wallPerp);
+				double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
 
-					distanse -= particleWallVelosity * interval;
+				distanse -= particleWallVelosity * interval;
 
-					if (distanse < particle.radius) {
-						particle.position -= wallPerp * (distanse - particle.radius);
-						particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
-					}
+				if (distanse < particle.radius) {
+					particle.position -= wallPerp * (distanse - particle.radius);
+					particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
 				}
 			}
 		}
@@ -38,27 +36,21 @@ public:
 	void createPairs() {
 		pairs.clear();
 
-		for (auto& particles : _particleGrid.GridCells.data()) {
-			for (auto& particle : particles) {
-				particle.density = 0.f;
-				particle.density_near = 0.f;
-				auto neighborCells = _particleGrid.getNeighbours(particle);
+		for (auto& particle : _particle_grid.particles) {
+			particle.density = 0.f;
+			particle.density_near = 0.f;
+			auto neighbour_cells = _particle_grid.getNeighbours(particle);
 
-				for (int colunm = 0; colunm < neighborCells.size1(); ++colunm) {
-					for (int row = 0; row < neighborCells.size2(); ++row) {
-						auto& neighbors = neighborCells(colunm, row);
+			for (auto& neighbours : neighbour_cells) {
+				for (auto& neighbour : neighbours) {
+					if (particle.index <= neighbour.index) continue;
 
-						for (auto& neighbor : neighbors) {
-							if (particle.index <= neighbor.index) continue;
+					sf::Vector2f vector = neighbour.position - particle.position;
+					float vectorLength = VectorFunctions::length(vector);
 
-							sf::Vector2f vector = neighbor.position - particle.position;
-							float vectorLength = VectorFunctions::length(vector);
-
-							if (vectorLength < _interactionRange) {
-								float proximityCoefficient = 1 - vectorLength / _interactionRange;
-								pairs.emplace_back(&particle, &neighbor, vector / vectorLength, proximityCoefficient);
-							}
-						}
+					if (vectorLength < _interactionRange) {
+						float proximityCoefficient = 1 - vectorLength / _interactionRange;
+						pairs.emplace_back(&particle, &neighbour, vector / vectorLength, proximityCoefficient);
 					}
 				}
 			}
@@ -113,13 +105,13 @@ public:
 	void createParticle(vector2 position) {
 		Particle particle(position);
 		particle.acceleration = vector2(0, -200);
-		_particleGrid.addParticle(particle);
+		_particle_grid.addParticle(particle);
 	}
 
 	void Update(const std::vector<Wall>& walls, float dt) {
 		sf::Clock clock;
 
-		_particleGrid.updateParticleNeighbours();
+		_particle_grid.updateParticleNeighbours();
 		float updateParticleNeighbours = clock.restart().asSeconds();
 
 		wallCollicionHandling(walls, dt);
@@ -134,12 +126,10 @@ public:
 		particlesGravity(dt);
 		float particlesGravity = clock.restart().asSeconds();
 
-		//gpu_compute.Run(_particleGrid, dt);
+		//gpu_compute.Run(_particle_grid, dt);
 
-		for (auto& particles : _particleGrid.GridCells.data()) {
-			for (auto& particle : particles) {
-				particle.update(dt);
-			}
+		for (auto& particle : _particle_grid.particles) {
+			particle.update(dt);
 		}
 		float particlesUpdate = clock.restart().asSeconds();
 
@@ -158,16 +148,14 @@ public:
 	}
 
 	void Draw() {
-		for (auto& particles : _particleGrid.GridCells.data()) {
-			for (auto& particle : particles) {
-				particle.draw();
-			}
+		for (auto& particle : _particle_grid.particles) {
+			particle.draw();
 		}
 	}
 
 private:
 	GPUCompute gpu_compute;
-	ParticleGrid _particleGrid;
+	ParticleGrid _particle_grid;
 	
 	struct PairData {
 		PairData(Particle* first, Particle* second, const sf::Vector2f& normal, float proximityCoefficient)
