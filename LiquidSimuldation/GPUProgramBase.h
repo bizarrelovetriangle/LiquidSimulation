@@ -26,6 +26,8 @@ public:
             glDeleteShader(shader);
     }
 
+    uint32_t program_id;
+
 protected:
     uint32_t CreateShader(GLenum type, const std::string& path) {
         std::string shader_code = readFile(path);
@@ -35,7 +37,7 @@ protected:
         glCompileShader(shader);
         int success;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        LogErrors(type, success);
+        LogErrors(success, type);
         return shader;
     }
 
@@ -49,21 +51,17 @@ protected:
     }
 
     void LogErrors(bool success, GLenum type = 0) {
-        if (!success)
-        {
-            char infoLog[512];
-            glGetProgramInfoLog(program_id, 512, NULL, infoLog);
+        if (success) return;
+        char infoLog[512];
+        glGetProgramInfoLog(program_id, 512, NULL, infoLog);
 
-            std::string type_str;
-            switch (type) {
-            case GL_VERTEX_SHADER: type_str = "GL_VERTEX_SHADER"; break;
-            case GL_FRAGMENT_SHADER: type_str = "GL_FRAGMENT_SHADER"; break;
-            case GL_COMPUTE_SHADER: type_str = "GL_COMPUTE_SHADER"; break;
-            }
-
-            std::cout << "ERROR::SHADER::PROGRAM::" << type_str << "\n" << infoLog << std::endl;
+        std::string type_str;
+        switch (type) {
+        case GL_VERTEX_SHADER: type_str = "GL_VERTEX_SHADER"; break;
+        case GL_FRAGMENT_SHADER: type_str = "GL_FRAGMENT_SHADER"; break;
+        case GL_COMPUTE_SHADER: type_str = "GL_COMPUTE_SHADER"; break;
         }
-    }
 
-    uint32_t program_id;
+        std::cout << "ERROR::SHADER::PROGRAM::" << type_str << "\n" << infoLog << std::endl;
+    }
 };

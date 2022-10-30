@@ -186,6 +186,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Shaders\compute.glsl" />
+    <None Include="Shaders\create_pairs.glsl" />
     <None Include="Shaders\particle_frag.glsl" />
     <None Include="Shaders\particle_vert.glsl" />
   </ItemGroup>

@@ -25,7 +25,7 @@ struct Particle2
     vec4 _shared_data;
 };
 
-layout(std430, binding = 1) buffer ParticlesInput
+layout(std430, binding = 0) buffer ParticlesInput
 {
     Particle2 particles[];
 };
