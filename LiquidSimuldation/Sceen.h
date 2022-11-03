@@ -33,6 +33,8 @@ public:
 		glfwSetKeyCallback(_window, KeyCallback);
 		glfwSetCursorPosCallback(_window, CursorPositionCallback);
 
+		createParticles(vector2());
+
 		while (!glfwWindowShouldClose(_window))
 		{
 			glfwPollEvents();
