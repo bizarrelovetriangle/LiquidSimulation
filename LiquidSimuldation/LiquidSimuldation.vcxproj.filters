@@ -84,19 +84,22 @@
     <ClInclude Include="RenderProgram.h">
       <Filter>Source Files\OpenGL\Programs</Filter>
     </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Shaders\particle_frag.glsl">
+    <None Include="Shaders\particle.frag">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
-    <None Include="Shaders\particle_vert.glsl">
+    <None Include="Shaders\particle.vert">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
-    <None Include="Shaders\compute.glsl">
+    <None Include="Shaders\compute.comp">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
-    <None Include="Shaders\create_pairs.glsl">
+    <None Include="Shaders\create_pairs.comp">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
   </ItemGroup>

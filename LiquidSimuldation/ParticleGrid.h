@@ -6,6 +6,7 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <math.h>
 #include <span>
+#include "Config.h"
 
 using namespace boost::numeric::ublas;
 
@@ -22,13 +23,13 @@ public:
 
 	using GridType = std::vector<GridCell>;
 
-	void Init(sf::Vector2i windowSize, float cellWidth) {
-		_cellWidth = cellWidth;
+	void Init(sf::Vector2i windowSize) {
+		cellWidth = Config::interactionRange;
 		_windowSize = windowSize;
 		_windowStart = -windowSize / 2;
-		_gridColumns = (_windowSize.x / _cellWidth) + 1;
-		_gridRows = (_windowSize.y / _cellWidth) + 1;
-		grid = GridType(_gridRows * _gridColumns);
+		size.x = (_windowSize.x / cellWidth) + 1;
+		size.y = (_windowSize.y / cellWidth) + 1;
+		grid = GridType(size.y * size.x);
 	}
 
 	void addParticle(const Particle& particle) {
@@ -43,7 +44,7 @@ public:
 		particles.erase(it, std::end(particles));
 
 		auto indexGrid = std::vector<std::vector<std::vector<size_t>>>(
-			_gridRows, std::vector<std::vector<size_t>>(_gridColumns));
+			size.y, std::vector<std::vector<size_t>>(size.x));
 
 		for (size_t i = 0; i < particles.size(); ++i) {
 			sf::Vector2i gridPosition = getGridPosition(particles[i]);
@@ -54,8 +55,8 @@ public:
 		std::vector<Particle> particle_temp;
 		particle_temp.reserve(particles.size());
 
-		for (size_t y = 0; y < _gridRows; ++y) {
-			for (size_t x = 0; x < _gridColumns; ++x) {
+		for (size_t y = 0; y < size.y; ++y) {
+			for (size_t x = 0; x < size.x; ++x) {
 				auto& indexes = indexGrid[y][x];
 				auto& cell = GetGridCell(y, x);
 				cell.start = particle_temp.size();
@@ -75,10 +76,10 @@ public:
 		sf::Vector2i range_a = gridPosition - sf::Vector2i(1, 1);
 		sf::Vector2i range_b = gridPosition + sf::Vector2i(1, 1);
 
-		range_a.x = std::clamp(range_a.x, 0, _gridColumns - 1);
-		range_a.y = std::clamp(range_a.y, 0, _gridRows - 1);
-		range_b.x = std::clamp(range_b.x, 0, _gridColumns - 1);
-		range_b.y = std::clamp(range_b.y, 0, _gridRows - 1);
+		range_a.x = std::clamp(range_a.x, 0, size.x - 1);
+		range_a.y = std::clamp(range_a.y, 0, size.y - 1);
+		range_b.x = std::clamp(range_b.x, 0, size.x - 1);
+		range_b.y = std::clamp(range_b.y, 0, size.y - 1);
 
 		std::vector<std::span<Particle>> result;
 
@@ -100,10 +101,10 @@ public:
 		sf::Vector2i range_a = particle.gridPosition - sf::Vector2i(1, 1);
 		sf::Vector2i range_b = particle.gridPosition + sf::Vector2i(1, 1);
 
-		range_a.x = std::clamp(range_a.x, 0, _gridColumns - 1);
-		range_a.y = std::clamp(range_a.y, 0, _gridRows - 1);
-		range_b.x = std::clamp(range_b.x, 0, _gridColumns - 1);
-		range_b.y = std::clamp(range_b.y, 0, _gridRows - 1);
+		range_a.x = std::clamp(range_a.x, 0, size.x - 1);
+		range_a.y = std::clamp(range_a.y, 0, size.y - 1);
+		range_b.x = std::clamp(range_b.x, 0, size.x - 1);
+		range_b.y = std::clamp(range_b.y, 0, size.y - 1);
 
 		std::vector<GridCell> result;
 
@@ -122,16 +123,15 @@ public:
 	std::vector<Particle> particles;
 	GridType grid;
 
-	int _cellWidth;
-	int _gridColumns;
-	int _gridRows;
+	int cellWidth;
+	sf::Vector2i size;
 
 private:
 	sf::Vector2i _windowSize;
 	sf::Vector2i _windowStart;
 
 	sf::Vector2i getGridPosition(const Particle& particle) {
-		return (sf::Vector2i(particle.position) + _windowSize / 2) / _cellWidth;
+		return (sf::Vector2i(particle.position) + _windowSize / 2) / cellWidth;
 	}
 
 	bool isOutsideWindow(const Particle& particle) {
@@ -143,6 +143,6 @@ private:
 	}
 
 	GridCell& GetGridCell(size_t y, size_t x) {
-		return grid[y * _gridColumns + x];
+		return grid[y * size.x + x];
 	}
 };

@@ -5,12 +5,13 @@
 #include "VectorFunctions.h"
 #include "ParticleGrid.h"
 #include "GPUCompute.h"
+#include "Config.h"
 
 class FluidProcessor {
 public:
 	FluidProcessor(sf::Vector2i windowSize)
 	{
-		_particle_grid.Init(windowSize, _interactionRange);
+		_particle_grid.Init(windowSize);
 	}
 
 	void wallCollicionHandling(const std::vector<Wall>& walls, double interval) {
@@ -49,8 +50,8 @@ public:
 					sf::Vector2f vector = neighbour.position - particle.position;
 					float vectorLength = VectorFunctions::length(vector);
 
-					if (vectorLength < _interactionRange) {
-						float proximityCoefficient = 1 - vectorLength / _interactionRange;
+					if (vectorLength < Config::interactionRange) {
+						float proximityCoefficient = 1 - vectorLength / Config::interactionRange;
 						result.emplace_back(i, j, vector / vectorLength, proximityCoefficient);
 					}
 				}
@@ -79,8 +80,8 @@ public:
 			auto& first_particle = _particle_grid.particles[first];
 			auto& second_particle = _particle_grid.particles[second];
 
-			float pressureM = k * (first_particle.density - restDensity + second_particle.density - restDensity);
-			float nearPressureM = k_near * (first_particle.density_near + second_particle.density_near);
+			float pressureM = Config::k * (first_particle.density - Config::restDensity + second_particle.density - Config::restDensity);
+			float nearPressureM = Config::k_near * (first_particle.density_near + second_particle.density_near);
 
 			vector2 pressure = float(
 				interval *
@@ -103,7 +104,7 @@ public:
 
 			vector2 inertiaViscocity = float(
 				0.5f * interval * proximityCoefficient *
-				(kLinearViscocity * inertia + kQuadraticViscocity * pow(inertia, 2))) *
+				(Config::kLinearViscocity * inertia + Config::kQuadraticViscocity * pow(inertia, 2))) *
 				normal;
 
 			first_particle.velosity -= inertiaViscocity;
@@ -171,12 +172,4 @@ private:
 	GPUCompute gpu_compute;
 	ParticleGrid _particle_grid;
 	std::vector<PairData> pairs;
-	
-	float _interactionRange = 30;
-
-	float restDensity = 50;
-	float k = 15;
-	float k_near = 800;
-	float kLinearViscocity = 0.042;
-	float kQuadraticViscocity = 0.05;
 };

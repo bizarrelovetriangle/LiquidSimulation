@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComputeProgram.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="ElementSharedData.h" />
     <ClInclude Include="FluidProcessor.h" />
     <ClInclude Include="GPUCompute.h" />
@@ -185,10 +186,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Shaders\compute.glsl" />
-    <None Include="Shaders\create_pairs.glsl" />
-    <None Include="Shaders\particle_frag.glsl" />
-    <None Include="Shaders\particle_vert.glsl" />
+    <None Include="Shaders\compute.comp" />
+    <None Include="Shaders\create_pairs.comp" />
+    <None Include="Shaders\particle.frag" />
+    <None Include="Shaders\particle.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

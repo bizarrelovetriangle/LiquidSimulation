@@ -1,0 +1,95 @@
+#version 430 core
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+struct Particle {
+    ivec2 gridPosition;
+
+    vec2 position;
+    vec2 velosity;
+    vec2 acceleration;
+    float radius;
+
+    float density;
+    float density_near;
+
+    int index;
+
+    vec4 _shared_data;
+};
+
+struct GridCell {
+    int start;
+    int end;
+};
+
+struct PairData {
+    int first;
+    int second;
+    vec2 normal;
+    float proximityCoefficient;
+};
+
+struct Range {
+	ivec2 a;
+	ivec2 b;
+};
+
+layout(std430, binding = 0) buffer ParticlesInput
+{
+    Particle particles[];
+};
+layout(std430, binding = 1) buffer GridInput
+{
+    GridCell grid[];
+};
+layout(std430, binding = 2) buffer PairsOutput
+{
+    int pairs_count;
+    PairData pairs[];
+};
+
+layout(location = 0) uniform int interactionRange;
+layout(location = 1) uniform ivec2 gridSize;
+
+Range GetRange(ivec2 gridPos);
+
+void main() {
+	ivec2 gridPos = ivec2(gl_GlobalInvocationID.xy);
+	GridCell orgCell = grid[gridPos.y * gridSize.x + gridPos.x];
+	Range range = GetRange(gridPos);
+
+	for (int y = range.a.y; y <= range.b.y; ++y) {
+		for (int x = range.a.x; x <= range.b.x; ++x) {
+			GridCell nghrCell = grid[y * gridSize.x + x];
+
+			for (int i = orgCell.start; i < orgCell.end; ++i) {
+				for (int j = nghrCell.start; j < nghrCell.end; ++j) {
+					if (particles[i].index <= particles[j].index) continue;
+
+					vec2 vector = particles[j].position - particles[i].position;
+					float vectorLength = length(vector);
+
+					if (vectorLength < interactionRange) {
+						int pair_id = atomicAdd(pairs_count, 1);
+						pairs[pair_id].first = i;
+						pairs[pair_id].second = j;
+						pairs[pair_id].normal = vector / vectorLength;
+						pairs[pair_id].proximityCoefficient = 1 - vectorLength / interactionRange;
+					}
+				}
+			}
+		}
+	}
+}
+
+Range GetRange(ivec2 gridPos) {
+	Range range;
+	range.a = gridPos - ivec2(1, 1);
+	range.b = gridPos + ivec2(1, 1);
+	range.a.x = clamp(range.a.x, 0, gridSize.x - 1);
+	range.a.y = clamp(range.a.y, 0, gridSize.y - 1);
+	range.b.x = clamp(range.b.x, 0, gridSize.x - 1);
+	range.b.y = clamp(range.b.y, 0, gridSize.y - 1);
+	return range;
+}

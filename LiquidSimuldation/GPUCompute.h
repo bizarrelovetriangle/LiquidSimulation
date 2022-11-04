@@ -20,8 +20,8 @@ class GPUCompute {
 public:
 	GPUCompute()
 	{
-		particle_update_program.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/compute.glsl" }});
-		create_pairs_program.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/create_pairs.glsl" }});
+		particle_update_program.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/compute.comp" }});
+		create_pairs_program.InitProgram({{ GL_COMPUTE_SHADER, "Shaders/create_pairs.comp" }});
 
 		glCreateBuffers(1, &particles_buffer);
 		glCreateBuffers(1, &grid_buffer);
@@ -64,11 +64,10 @@ public:
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particles_buffer);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, grid_buffer);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, pairs_buffer);
-		glUniform1i(0, particle_grid._cellWidth);
-		glUniform1i(1, particle_grid._gridColumns);
-		glUniform1i(2, particle_grid._gridRows);
+		glUniform1i(0, particle_grid.cellWidth);
+		glUniform2i(1, particle_grid.size.x, particle_grid.size.y);
 
-		glDispatchCompute(particles.size(), 1, 1);
+		glDispatchCompute(particle_grid.size.x, particle_grid.size.y, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		auto data = (PairsOutput*)glMapNamedBuffer(pairs_buffer, GL_READ_WRITE);
