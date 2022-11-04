@@ -20,6 +20,9 @@
     <Filter Include="Source Files\OpenGL\Programs">
       <UniqueIdentifier>{92f60692-066f-466f-b867-d9e63e50b29b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="New">
+      <UniqueIdentifier>{40f41e15-14c5-4e7d-b1d0-0303a92cc40d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LiquidSimuldation.cpp">
@@ -39,6 +42,9 @@
     </ClCompile>
     <ClCompile Include="DataFactory.h">
       <Filter>Source Files\Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatTimer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +91,9 @@
       <Filter>Source Files\OpenGL\Programs</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatTimer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

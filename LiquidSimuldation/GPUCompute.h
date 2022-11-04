@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "ComputeProgram.h"
+#include "NeatTimer.h"
 
 struct alignas(8) PairData {
 	PairData(int first, int second, const sf::Vector2f& normal, float proximityCoefficient)
@@ -32,6 +33,7 @@ public:
 	}
 
 	void ParticleUpdate(ParticleGrid& particle_grid, float dt) {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		auto& particles = particle_grid.particles;
 		if (particles.empty()) return;
 		
@@ -51,6 +53,7 @@ public:
 	}
 
 	std::vector<PairData> CreatePairs(ParticleGrid& particle_grid) {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		auto& particles = particle_grid.particles;
 		auto& grid = particle_grid.grid;
 		if (particles.empty()) return {};

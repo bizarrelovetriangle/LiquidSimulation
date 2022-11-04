@@ -6,6 +6,7 @@
 #include "ParticleGrid.h"
 #include "GPUCompute.h"
 #include "Config.h"
+#include "NeatTimer.h"
 
 class FluidProcessor {
 public:
@@ -15,6 +16,7 @@ public:
 	}
 
 	void wallCollicionHandling(const std::vector<Wall>& walls, double interval) {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		for (auto& particle : _particle_grid.particles) {
 			for (auto& wall : walls) {
 				// take out of loop
@@ -36,6 +38,7 @@ public:
 	}
 
 	std::vector<PairData> createPairs() {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		std::vector<PairData> result;
 
 		for (size_t i = 0; i < _particle_grid.particles.size(); ++i) {
@@ -62,6 +65,7 @@ public:
 	}
 
 	void particlesGravity(float& interval) {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		for (auto& pair : pairs) {
 			auto& [first, second, normal, proximityCoefficient] = pair;
 			auto& first_particle = _particle_grid.particles[first];
@@ -94,6 +98,7 @@ public:
 	}
 
 	void applyViscosity(float& interval) {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		for (auto& pair : pairs) {
 			auto& [first, second, normal, proximityCoefficient] = pair;
 			auto& first_particle = _particle_grid.particles[first];
@@ -127,39 +132,12 @@ public:
 		}
 
 		_particle_grid.updateParticleNeighbours();
-		float updateParticleNeighbours = clock.restart().asSeconds();
-
 		wallCollicionHandling(walls, dt);
-		float wallCollicionHandling = clock.restart().asSeconds();
-
 		pairs = gpu_compute.CreatePairs(_particle_grid);
 		//pairs = createPairs();
-		float createPairs = clock.restart().asSeconds();
-
 		applyViscosity(dt);
-		float applyViscosity = clock.restart().asSeconds();
-
 		particlesGravity(dt);
-		float particlesGravity = clock.restart().asSeconds();
-
 		gpu_compute.ParticleUpdate(_particle_grid, dt);
-		//for (auto& particle : _particle_grid.particles) {
-		//	particle.update(dt);
-		//}
-		float particlesUpdate = clock.restart().asSeconds();
-
-		float overall = updateParticleNeighbours + wallCollicionHandling + createPairs + applyViscosity + particlesGravity + particlesUpdate;
-
-		static size_t counter = 0;
-		if (counter++ % 100 == 0) {
-			std::cout <<
-				"updateParticleNeighbours: '" + std::to_string(updateParticleNeighbours / overall) + "'," << std::endl <<
-				"wallCollicionHandling: '" + std::to_string(wallCollicionHandling / overall) + "'," << std::endl <<
-				"createPairs: '" + std::to_string(createPairs / overall) + "'," << std::endl <<
-				"applyViscosity: '" + std::to_string(applyViscosity / overall) + "'," << std::endl <<
-				"particlesGravity: '" + std::to_string(particlesGravity / overall) + "'," << std::endl <<
-				"particlesUpdate: '" + std::to_string(particlesUpdate / overall) + "'," << std::endl << std::endl;
-		}
 	}
 
 	void Draw() {

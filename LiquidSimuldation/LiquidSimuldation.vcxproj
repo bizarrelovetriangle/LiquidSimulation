@@ -159,6 +159,7 @@
     <ClCompile Include="LiquidSimuldation.cpp" />
     <ClCompile Include="matrix3x3.cpp" />
     <ClCompile Include="DataFactory.h" />
+    <ClCompile Include="NeatTimer.cpp" />
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="vector3.cpp" />
   </ItemGroup>
@@ -174,6 +175,7 @@
     <ClInclude Include="FluidProcessor.h" />
     <ClInclude Include="GPUCompute.h" />
     <ClInclude Include="GPUProgramBase.h" />
+    <ClInclude Include="NeatTimer.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="matrix3x3.h" />
     <ClInclude Include="Particle.h" />

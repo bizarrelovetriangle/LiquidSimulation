@@ -6,6 +6,7 @@
 #include "Wall.h"
 #include "FluidProcessor.h"
 #include "DataFactory.h"
+#include "NeatTimer.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -37,6 +38,7 @@ public:
 
 		while (!glfwWindowShouldClose(_window))
 		{
+			NeatTimer::GetInstance().StageBegin("Events");
 			glfwPollEvents();
 
 			float interval = 1. / 100;
@@ -45,7 +47,9 @@ public:
 			_deltaTime = clock.restart().asSeconds();
 
 			Update();
+			NeatTimer::GetInstance().StageBegin("Draw");
 			Draw();
+			NeatTimer::GetInstance().Refresh(std::chrono::seconds(2));
 		}
 	}
 

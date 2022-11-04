@@ -7,6 +7,7 @@
 #include <math.h>
 #include <span>
 #include "Config.h"
+#include "NeatTimer.h"
 
 using namespace boost::numeric::ublas;
 
@@ -39,6 +40,7 @@ public:
 	}
 
 	void updateParticleNeighbours() {
+		NeatTimer::GetInstance().StageBegin(__func__);
 		auto it = std::remove_if(std::begin(particles), std::end(particles),
 			[this](auto& particle) { return isOutsideWindow(particle); });
 		particles.erase(it, std::end(particles));
