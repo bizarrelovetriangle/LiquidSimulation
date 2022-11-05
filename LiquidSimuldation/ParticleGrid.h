@@ -8,6 +8,7 @@
 #include <span>
 #include "Config.h"
 #include "NeatTimer.h"
+#include "Algorithms.h"
 
 using namespace boost::numeric::ublas;
 
@@ -15,17 +16,20 @@ class ParticleGrid {
 public:
 	struct GridCell {
 		bool empty() {
-			return start == end;
+			return particles_start == particles_end;
 		}
 
-		int start;
-		int end;
+		int particles_start;
+		int particles_end;
+
+		int pairs_start;
+		int pairs_end;
 	};
 
 	using GridType = std::vector<GridCell>;
 
 	void Init(sf::Vector2i windowSize) {
-		cellWidth = Config::interactionRange;
+		cellWidth = Config::GetInstance().interactionRange;
 		_windowSize = windowSize;
 		_windowStart = -windowSize / 2;
 		size.x = (_windowSize.x / cellWidth) + 1;
@@ -45,31 +49,30 @@ public:
 			[this](auto& particle) { return isOutsideWindow(particle); });
 		particles.erase(it, std::end(particles));
 
-		auto indexGrid = std::vector<std::vector<std::vector<size_t>>>(
-			size.y, std::vector<std::vector<size_t>>(size.x));
+		if (particles.empty()) return;
 
-		for (size_t i = 0; i < particles.size(); ++i) {
-			sf::Vector2i gridPosition = getGridPosition(particles[i]);
-			particles[i].gridPosition = gridPosition;
-			indexGrid[gridPosition.y][gridPosition.x].push_back(i);
+		for (auto& particle : particles) {
+			particle.gridPosition = getGridPosition(particle);
 		}
 
-		std::vector<Particle> particle_temp;
-		particle_temp.reserve(particles.size());
-
-		for (size_t y = 0; y < size.y; ++y) {
-			for (size_t x = 0; x < size.x; ++x) {
-				auto& indexes = indexGrid[y][x];
-				auto& cell = GetGridCell(y, x);
-				cell.start = particle_temp.size();
-				cell.end = particle_temp.size() + indexes.size();
-				for (auto index : indexes) {
-					particle_temp.push_back(particles[index]);
-				}
-			}
+		for (size_t i = 0; i < size.y * size.x; ++i) {
+			grid[i].particles_start = 0;
+			grid[i].particles_end = 0;
 		}
 
-		std::swap(particle_temp, particles);
+		Algorithms::RedixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.x; });
+		Algorithms::RedixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.y; });
+
+		sf::Vector2i last_position = particles[0].gridPosition;
+		for (size_t i = 1; i < particles.size(); ++i) {
+			auto& particle = particles[i];
+			if (last_position == particle.gridPosition) continue;
+
+			GetGridCell(last_position).particles_end = i;
+			GetGridCell(particle.gridPosition).particles_start = i;
+			last_position = particle.gridPosition;
+		}
+		GetGridCell(last_position).particles_end = particles.size();
 	}
 
 	std::vector<std::span<Particle>> getNeighbours(const Particle& particle) {
@@ -87,10 +90,10 @@ public:
 
 		for (size_t y = range_a.y; y <= range_b.y; ++y) {
 			for (size_t x = range_a.x; x <= range_b.x; ++x) {
-				auto& cell = GetGridCell(y, x);
+				auto& cell = grid[y * size.x + x];
 				if (!cell.empty()) {
-					auto start_it = std::next(std::begin(particles), cell.start);
-					auto end_it = std::next(std::begin(particles), cell.end);
+					auto start_it = std::next(std::begin(particles), cell.particles_start);
+					auto end_it = std::next(std::begin(particles), cell.particles_end);
 					result.emplace_back(start_it, end_it);
 				}
 			}
@@ -112,7 +115,7 @@ public:
 
 		for (size_t y = range_a.y; y <= range_b.y; ++y) {
 			for (size_t x = range_a.x; x <= range_b.x; ++x) {
-				auto& cell = GetGridCell(y, x);
+				auto& cell = grid[y * size.x + x];
 				if (!cell.empty()) {
 					result.emplace_back(cell);
 				}
@@ -120,6 +123,10 @@ public:
 		}
 
 		return result;
+	}
+
+	GridCell& GetGridCell(const sf::Vector2i& grid_position) {
+		return grid[grid_position.y * size.x + grid_position.x];
 	}
 
 	std::vector<Particle> particles;
@@ -142,9 +149,5 @@ private:
 			isinf(particle.position.x) || isinf(particle.position.y) ||
 			particle.position.x < _windowStart.x || particle.position.x > - _windowStart.x ||
 			particle.position.y < _windowStart.y || particle.position.y > - _windowStart.y;
-	}
-
-	GridCell& GetGridCell(size_t y, size_t x) {
-		return grid[y * size.x + x];
 	}
 };

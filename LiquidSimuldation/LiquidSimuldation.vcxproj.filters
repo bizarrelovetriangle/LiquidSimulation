@@ -96,6 +96,9 @@
     <ClInclude Include="NeatTimer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Algorithms.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -109,6 +112,18 @@
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
     <None Include="Shaders\create_pairs.comp">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particles_viscosity.comp">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particles_density.comp">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particles_gravity.comp">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\common.glsl">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
   </ItemGroup>

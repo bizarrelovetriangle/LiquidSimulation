@@ -30,6 +30,8 @@ public:
 		index = _index++;
 	}
 
+	Particle() {}
+
 	void update(double interval) {
 		velosity += acceleration * interval;
 		position += velosity * interval;

@@ -169,6 +169,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithms.h" />
     <ClInclude Include="ComputeProgram.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="ElementSharedData.h" />
@@ -188,10 +189,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\common.glsl" />
     <None Include="Shaders\compute.comp" />
     <None Include="Shaders\create_pairs.comp" />
     <None Include="Shaders\particle.frag" />
     <None Include="Shaders\particle.vert" />
+    <None Include="Shaders\particles_gravity.comp" />
+    <None Include="Shaders\particles_density.comp" />
+    <None Include="Shaders\particles_viscosity.comp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

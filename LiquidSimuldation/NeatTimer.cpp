@@ -9,7 +9,6 @@ NeatTimer& NeatTimer::GetInstance() {
 void NeatTimer::StageBegin(const std::string& stage)
 {
 	if (currentStage_ == stage) return;
-
 	auto now = clock_.now();
 
 	if (!currentStage_.empty()) {
@@ -47,14 +46,15 @@ void NeatTimer::Refresh(std::chrono::seconds rate)
 
 	for (auto& pair : stageMap_) {
 		auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(pair.second.time_since_epoch());
-		pair.second = {};
 		auto relativeTime = double(milliseconds.count()) / overallTime.count();
 		auto offset = std::string(maxStageName - pair.first.length(), ' ');
 
 		ss << "|" << pair.first << "| " << offset
 			<< std::format("{:.5f}", relativeTime) << "%, " 
-			<< milliseconds.count() << "ms";
-		ss << std::endl;
+			<< milliseconds.count() << "ms"
+			<< std::endl;
+
+		pair.second = {};
 	}
 
 	std::cout << ss.str() << std::endl;

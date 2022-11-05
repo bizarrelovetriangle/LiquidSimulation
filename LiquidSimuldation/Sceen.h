@@ -59,7 +59,7 @@ private:
 	}
 
 	void Draw() {
-		glClearColor(0.f, 0.f, 0.f, 1.0f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f); 
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		_fluidProcessor->Draw();

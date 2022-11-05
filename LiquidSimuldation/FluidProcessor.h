@@ -46,15 +46,15 @@ public:
 			auto neighbour_cells = _particle_grid.getNeighbourIndexes(particle);
 
 			for (auto& cell : neighbour_cells) {
-				for (size_t j = cell.start; j < cell.end; ++j) {
+				for (size_t j = cell.particles_start; j < cell.particles_end; ++j) {
 					auto& neighbour = _particle_grid.particles[j];
 					if (particle.index <= neighbour.index) continue;
 
 					sf::Vector2f vector = neighbour.position - particle.position;
 					float vectorLength = VectorFunctions::length(vector);
 
-					if (vectorLength < Config::interactionRange) {
-						float proximityCoefficient = 1 - vectorLength / Config::interactionRange;
+					if (vectorLength < Config::GetInstance().interactionRange) {
+						float proximityCoefficient = 1 - vectorLength / Config::GetInstance().interactionRange;
 						result.emplace_back(i, j, vector / vectorLength, proximityCoefficient);
 					}
 				}
@@ -84,8 +84,8 @@ public:
 			auto& first_particle = _particle_grid.particles[first];
 			auto& second_particle = _particle_grid.particles[second];
 
-			float pressureM = Config::k * (first_particle.density - Config::restDensity + second_particle.density - Config::restDensity);
-			float nearPressureM = Config::k_near * (first_particle.density_near + second_particle.density_near);
+			float pressureM = Config::GetInstance().k * (first_particle.density - Config::GetInstance().restDensity + second_particle.density - Config::GetInstance().restDensity);
+			float nearPressureM = Config::GetInstance().k_near * (first_particle.density_near + second_particle.density_near);
 
 			vector2 pressure = float(
 				interval *
@@ -109,7 +109,7 @@ public:
 
 			vector2 inertiaViscocity = float(
 				0.5f * interval * proximityCoefficient *
-				(Config::kLinearViscocity * inertia + Config::kQuadraticViscocity * pow(inertia, 2))) *
+				(Config::GetInstance().kLinearViscocity * inertia + Config::GetInstance().kQuadraticViscocity * pow(inertia, 2))) *
 				normal;
 
 			first_particle.velosity -= inertiaViscocity;
@@ -133,11 +133,15 @@ public:
 
 		_particle_grid.updateParticleNeighbours();
 		wallCollicionHandling(walls, dt);
-		pairs = gpu_compute.CreatePairs(_particle_grid);
+		
+		pairs = gpu_compute.Update(_particle_grid, dt);
+		//pairs = gpu_compute.CreatePairs(_particle_grid);
 		//pairs = createPairs();
-		applyViscosity(dt);
-		particlesGravity(dt);
-		gpu_compute.ParticleUpdate(_particle_grid, dt);
+ 
+		//applyViscosity(dt);
+		//particlesGravity(dt);
+
+		//gpu_compute.ParticleUpdate(_particle_grid, dt);
 	}
 
 	void Draw() {
@@ -146,8 +150,8 @@ public:
 		}
 	}
 
+	std::vector<PairData> pairs;
 private:
 	GPUCompute gpu_compute;
 	ParticleGrid _particle_grid;
-	std::vector<PairData> pairs;
 };
