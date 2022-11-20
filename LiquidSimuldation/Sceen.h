@@ -77,7 +77,7 @@ private:
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_FALSE);
 		if (key == GLFW_KEY_Q && action == GLFW_PRESS)
-			sceen->_fluidProcessor->createParticle(sceen->_mouse_position);
+			sceen->_fluidProcessor->CreateParticle(sceen->_mouse_position);
 		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 			sceen->createParticles(sceen->_mouse_position);
 	}
@@ -97,7 +97,7 @@ private:
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				vector2 particlePosition(x - width / 2, y - height / 2);
-				_fluidProcessor->createParticle(particlePosition * (double)distance + position);
+				_fluidProcessor->CreateParticle(particlePosition * (double)distance + position);
 			}
 		}
 	}

@@ -13,6 +13,6 @@ private:
 	std::chrono::steady_clock clock_;
 	std::string currentStage_;
 	std::chrono::steady_clock::time_point lastTime_;
-	std::unordered_map<std::string, std::chrono::steady_clock::time_point> stageMap_;
+	std::unordered_map<std::string, std::chrono::steady_clock::time_point> _stage_map;
 };
 

@@ -155,16 +155,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FluidProcessor.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="GPUCompute.cpp" />
     <ClCompile Include="LiquidSimuldation.cpp" />
     <ClCompile Include="matrix3x3.cpp" />
     <ClCompile Include="DataFactory.h" />
     <ClCompile Include="NeatTimer.cpp" />
+    <ClCompile Include="ParticleGrid.cpp" />
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OpenGL\Shaders\**">
+    <Content Include="Shaders\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -190,13 +193,14 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Shaders\common.glsl" />
-    <None Include="Shaders\compute.comp" />
-    <None Include="Shaders\create_pairs.comp" />
+    <None Include="Shaders\particles_update.comp" />
+    <None Include="Shaders\create_particle_pairs.comp" />
     <None Include="Shaders\particle.frag" />
     <None Include="Shaders\particle.vert" />
     <None Include="Shaders\particles_gravity.comp" />
     <None Include="Shaders\particles_density.comp" />
     <None Include="Shaders\particles_viscosity.comp" />
+    <None Include="Shaders\wall.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "vector2.h"
 #include "matrix3x3.h"
 #include "RenderProgram.h"
@@ -23,6 +22,7 @@ public:
 			auto view_matrix = DataFactory<matrix3x3>::GetData();
 			shared_data->render_program.SetViewMatrix(*view_matrix);
 			shared_data->render_program.SetColor(vector3(0.5, 1., 1.));
+			shared_data->render_program.UpdateVerteces(shared_data->initial_points);
 			return shared_data;
 		});
 
@@ -32,12 +32,12 @@ public:
 
 	Particle() {}
 
-	void update(double interval) {
+	void Update(double interval) {
 		velosity += acceleration * interval;
 		position += velosity * interval;
 	}
 
-	void draw() {
+	void Draw(int index) {
 		auto _model_matrix = matrix3x3();
 		_model_matrix.scale(radius);
 		_model_matrix.transfer(position);
@@ -47,8 +47,9 @@ public:
 			points[i] = _model_matrix.multiply(_shared_data->initial_points[i], 1.);
 		}
 
-		_shared_data->render_program.UpdateVerteces(points);
+		//_shared_data->render_program.UpdateVerteces(points);
 		_shared_data->render_program.Use();
+		_shared_data->render_program.SetIndex(index);
 		glDrawElements(GL_TRIANGLES, _shared_data->indexes.size(), GL_UNSIGNED_INT, 0);
 	}
 

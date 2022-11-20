@@ -46,6 +46,15 @@
     <ClCompile Include="NeatTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GPUCompute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FluidProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -108,10 +117,10 @@
     <None Include="Shaders\particle.vert">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
-    <None Include="Shaders\compute.comp">
+    <None Include="Shaders\particles_update.comp">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
-    <None Include="Shaders\create_pairs.comp">
+    <None Include="Shaders\create_particle_pairs.comp">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
     <None Include="Shaders\particles_viscosity.comp">
@@ -124,6 +133,9 @@
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
     <None Include="Shaders\common.glsl">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
+    <None Include="Shaders\wall.vert">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
   </ItemGroup>

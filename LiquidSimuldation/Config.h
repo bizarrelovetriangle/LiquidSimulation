@@ -2,7 +2,7 @@
 
 class Config {
 public:
-	static Config GetInstance() {
+	static Config& GetInstance() {
 		static Config config;
 		return config;
 	}
