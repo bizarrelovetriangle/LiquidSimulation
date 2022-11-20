@@ -76,7 +76,6 @@ void GPUCompute::SortPairs(ParticleGrid& particle_grid) {
 	glGetNamedBufferSubData(pairs_buffer, 0, sizeof(int), &pairs_count);
 	std::vector<PairData> pairs(pairs_count);
 	glGetNamedBufferSubData(pairs_buffer, sizeof(int) * 2, sizeof(PairData) * pairs.size(), &pairs[0]);
-	glGetNamedBufferSubData(pairs_buffer, sizeof(int) * 2, sizeof(PairData) * pairs.size(), &pairs[0]);
 
 	//NeatTimer::GetInstance().StageBegin(__func__);
 	auto& particles = particle_grid.particles;
