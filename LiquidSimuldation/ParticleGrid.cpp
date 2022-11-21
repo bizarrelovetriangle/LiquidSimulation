@@ -32,8 +32,8 @@ void ParticleGrid::UpdateParticleNeighbours() {
 		grid[i].particles_end = 0;
 	}
 
-	Algorithms::RedixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.x; });
-	Algorithms::RedixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.y; });
+	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.x; });
+	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.y; });
 
 	sf::Vector2i last_position = particles[0].gridPosition;
 	for (size_t i = 1; i < particles.size(); ++i) {

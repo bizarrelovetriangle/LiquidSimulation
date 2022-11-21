@@ -11,9 +11,12 @@ layout(std430, binding = 1) buffer GridInput
 {
     GridCell grid[];
 };
-layout(std430, binding = 2) buffer PairsOutput
+layout(std430, binding = 2) buffer PairsCount
 {
     int pairs_count;
+};
+layout(std430, binding = 3) buffer PairsOutput
+{
     PairData pairs[];
 };
 

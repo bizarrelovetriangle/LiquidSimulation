@@ -200,6 +200,7 @@
     <None Include="Shaders\particles_gravity.comp" />
     <None Include="Shaders\particles_density.comp" />
     <None Include="Shaders\particles_viscosity.comp" />
+    <None Include="Shaders\sort_pairs.comp" />
     <None Include="Shaders\wall.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

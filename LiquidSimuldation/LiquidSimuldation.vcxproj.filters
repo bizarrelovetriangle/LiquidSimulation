@@ -138,5 +138,8 @@
     <None Include="Shaders\wall.vert">
       <Filter>Source Files\OpenGL\Shaders</Filter>
     </None>
+    <None Include="Shaders\sort_pairs.comp">
+      <Filter>Source Files\OpenGL\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

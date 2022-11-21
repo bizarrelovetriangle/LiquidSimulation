@@ -31,11 +31,13 @@ public:
 	void ParticleUpdate(ParticleGrid& particle_grid, float dt);
 	void CreatePairs(ParticleGrid& particle_grid);
 	void SortPairs(ParticleGrid& particle_grid);
+	void GPUOneCoreSortPairs(ParticleGrid& particle_grid);
 	void GranularProcessPairs(const GPUProgramBase& program, ParticleGrid& particle_grid, float dt);
 	std::vector<PairData> Update(ParticleGrid& particle_grid, float dt);
 	uint32_t GetParticlesBuffer();
 private:
 	ComputeProgram create_pairs_program;
+	ComputeProgram sort_pairs_program;
 	ComputeProgram particle_viscosity_program;
 	ComputeProgram particle_update_program;
 	ComputeProgram particle_density_program;
@@ -44,10 +46,9 @@ private:
 	uint32_t config_buffer;
 	uint32_t particles_buffer;
 	uint32_t grid_buffer;
+	uint32_t pairs_count_buffer;
 	uint32_t pairs_buffer;
+	uint32_t pairs_temp_buffer;
 
-	struct PairsOutput {
-		int pairs_count[2];
-		PairData pairs[];
-	};
+	std::vector<PairData> pairs;
 };
