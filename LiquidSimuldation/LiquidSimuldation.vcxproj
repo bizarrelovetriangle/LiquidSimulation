@@ -156,10 +156,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FluidProcessor.cpp" />
+    <ClCompile Include="OpenGL\DeviceProgram\ComputeProgram.cpp" />
+    <ClCompile Include="OpenGL\DeviceProgram\DeviceProgram.cpp" />
+    <ClCompile Include="OpenGL\DeviceProgram\RenderProgram.cpp" />
     <ClCompile Include="OpenGL\glad.c" />
     <ClCompile Include="DeviceComputation\DeviceFluidProcessor.cpp" />
     <ClCompile Include="LiquidSimuldation.cpp" />
     <ClCompile Include="Math\matrix3x3.cpp" />
+    <ClCompile Include="DeviceComputation\PairCreator.cpp" />
     <ClCompile Include="Utils\DataFactory.h" />
     <ClCompile Include="Utils\NeatTimer.cpp" />
     <ClCompile Include="ParticleGrid.cpp" />
@@ -172,6 +176,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeviceComputation\CommonBuffers.h" />
+    <ClInclude Include="DeviceComputation\PairCreator.h" />
     <ClInclude Include="Utils\Algorithms.h" />
     <ClInclude Include="OpenGL\DeviceProgram\ComputeProgram.h" />
     <ClInclude Include="Config.h" />

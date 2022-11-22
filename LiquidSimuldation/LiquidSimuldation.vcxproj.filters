@@ -55,6 +55,18 @@
     <ClCompile Include="Utils\DataFactory.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeviceComputation\PairCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\DeviceProgram\RenderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\DeviceProgram\DeviceProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\DeviceProgram\ComputeProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -106,6 +118,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Elements\Particle.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceComputation\CommonBuffers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceComputation\PairCreator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

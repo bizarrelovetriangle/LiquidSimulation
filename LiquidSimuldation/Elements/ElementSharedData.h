@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <Math/vector2.h>
 #include <OpenGL/DeviceProgram/RenderProgram.h>
 
 template <typename T>
