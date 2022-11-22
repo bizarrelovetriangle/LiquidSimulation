@@ -1,4 +1,6 @@
 #pragma once;
+#include <vector>
+#include <array>
 
 namespace Algorithms {
 	template <typename F, typename T>

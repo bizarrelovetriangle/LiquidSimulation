@@ -2,11 +2,11 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include "Particle.h"
-#include "Wall.h"
-#include "FluidProcessor.h"
-#include "DataFactory.h"
-#include "NeatTimer.h"
+#include <Elements/Particle.h>
+#include <Elements/Wall.h>
+#include <FluidProcessor.h>
+#include <Utils/DataFactory.h>
+#include <Utils/NeatTimer.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

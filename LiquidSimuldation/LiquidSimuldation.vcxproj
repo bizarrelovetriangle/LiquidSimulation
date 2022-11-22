@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -142,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\Dependencies\glfw\include;$(ProjectDir)\Dependencies\glad\include;$(ProjectDir)\Dependencies\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -156,15 +156,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FluidProcessor.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="GPUCompute.cpp" />
+    <ClCompile Include="OpenGL\glad.c" />
+    <ClCompile Include="DeviceComputation\DeviceFluidProcessor.cpp" />
     <ClCompile Include="LiquidSimuldation.cpp" />
-    <ClCompile Include="matrix3x3.cpp" />
-    <ClCompile Include="DataFactory.h" />
-    <ClCompile Include="NeatTimer.cpp" />
+    <ClCompile Include="Math\matrix3x3.cpp" />
+    <ClCompile Include="Utils\DataFactory.h" />
+    <ClCompile Include="Utils\NeatTimer.cpp" />
     <ClCompile Include="ParticleGrid.cpp" />
-    <ClCompile Include="vector2.cpp" />
-    <ClCompile Include="vector3.cpp" />
+    <ClCompile Include="Math\vector2.cpp" />
+    <ClCompile Include="Math\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Shaders\*">
@@ -172,36 +172,37 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Algorithms.h" />
-    <ClInclude Include="ComputeProgram.h" />
+    <ClInclude Include="Utils\Algorithms.h" />
+    <ClInclude Include="OpenGL\DeviceProgram\ComputeProgram.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="ElementSharedData.h" />
+    <ClInclude Include="Elements\ElementSharedData.h" />
     <ClInclude Include="FluidProcessor.h" />
-    <ClInclude Include="GPUCompute.h" />
-    <ClInclude Include="GPUProgramBase.h" />
-    <ClInclude Include="NeatTimer.h" />
-    <ClInclude Include="Wall.h" />
-    <ClInclude Include="matrix3x3.h" />
-    <ClInclude Include="Particle.h" />
+    <ClInclude Include="DeviceComputation\DeviceFluidProcessor.h" />
+    <ClInclude Include="OpenGL\DeviceProgram\DeviceProgram.h" />
+    <ClInclude Include="Utils\NeatTimer.h" />
+    <ClInclude Include="Elements\Wall.h" />
+    <ClInclude Include="Math\matrix3x3.h" />
+    <ClInclude Include="Elements\Particle.h" />
     <ClInclude Include="ParticleGrid.h" />
-    <ClInclude Include="RenderProgram.h" />
+    <ClInclude Include="OpenGL\DeviceProgram\RenderProgram.h" />
     <ClInclude Include="Sceen.h" />
-    <ClInclude Include="vector2.h" />
-    <ClInclude Include="vector3.h" />
-    <ClInclude Include="VectorFunctions.h" />
+    <ClInclude Include="Math\vector2.h" />
+    <ClInclude Include="Math\vector3.h" />
+    <ClInclude Include="Math\VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Shaders\common.glsl" />
-    <None Include="Shaders\particles_update.comp" />
-    <None Include="Shaders\create_particle_pairs.comp" />
-    <None Include="Shaders\particle.frag" />
-    <None Include="Shaders\particle.vert" />
-    <None Include="Shaders\particles_gravity.comp" />
-    <None Include="Shaders\particles_density.comp" />
-    <None Include="Shaders\particles_viscosity.comp" />
-    <None Include="Shaders\sort_pairs.comp" />
-    <None Include="Shaders\wall.vert" />
+    <None Include="shaders\compute\particles\particles_density.comp" />
+    <None Include="shaders\compute\particles\particles_gravity.comp" />
+    <None Include="shaders\compute\particles\particles_update.comp" />
+    <None Include="shaders\compute\particles\particles_viscosity.comp" />
+    <None Include="shaders\compute\particle_pairs\create_pairs.comp" />
+    <None Include="shaders\compute\particle_pairs\radix_sort.comp" />
+    <None Include="shaders\compute\particle_pairs\buckets_count.comp" />
+    <None Include="shaders\render\particle.frag" />
+    <None Include="shaders\render\particle.vert" />
+    <None Include="shaders\render\wall.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

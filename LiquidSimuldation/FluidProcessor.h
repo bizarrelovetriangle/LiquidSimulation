@@ -1,12 +1,10 @@
 #pragma once
-#include <math.h>
-#include "Particle.h"
-#include "Wall.h"
-#include "VectorFunctions.h"
-#include "ParticleGrid.h"
-#include "GPUCompute.h"
-#include "Config.h"
-#include "NeatTimer.h"
+#include <vector>
+#include <Math/vector2.h>
+#include <Elements/Particle.h>
+#include <Elements/Wall.h>
+#include <DeviceComputation/DeviceFluidProcessor.h>
+#include <ParticleGrid.h>
 
 class FluidProcessor {
 public:

@@ -1,9 +1,9 @@
 #pragma once
-#include "vector2.h"
-#include "matrix3x3.h"
-#include "RenderProgram.h"
-#include "DataFactory.h"
-#include "ElementSharedData.h"
+#include <Math/vector2.h>
+#include <Math/matrix3x3.h>
+#include <OpenGL/DeviceProgram/RenderProgram.h>
+#include <Utils/DataFactory.h>
+#include <Elements/ElementSharedData.h>
 
 class Particle {
 public:
@@ -15,8 +15,8 @@ public:
 			shared_data->initial_points = { {-1., -1.}, {1., -1.}, {-1., 1.}, {1., 1.} };
 			shared_data->indexes = { 0, 1, 3, 0, 3, 2 };
 			shared_data->render_program.InitProgram({
-				{ GL_VERTEX_SHADER, "Shaders/particle.vert" },
-				{ GL_FRAGMENT_SHADER, "Shaders/particle.frag" } });
+				{ GL_VERTEX_SHADER, "shaders/render/particle.vert" },
+				{ GL_FRAGMENT_SHADER, "shaders/render/particle.frag" } });
 			shared_data->render_program.GenerateVAO(shared_data->indexes);
 			shared_data->render_program.Use();
 			auto view_matrix = DataFactory<matrix3x3>::GetData();

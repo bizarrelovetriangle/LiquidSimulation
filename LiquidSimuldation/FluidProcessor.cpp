@@ -1,5 +1,9 @@
 #include "FluidProcessor.h"
 
+#include <math.h>
+#include <Math/VectorFunctions.h>
+#include <Config.h>
+
 FluidProcessor::FluidProcessor(sf::Vector2i windowSize)
 {
 	_particle_grid.Init(windowSize);
@@ -122,7 +126,7 @@ void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
 
-	pairs = GPUCompute::GetInstance().Update(_particle_grid, dt);
+	pairs = DeviceFluidProcessor::GetInstance().Update(_particle_grid, dt);
 	//pairs = gpu_compute.CreatePairs(_particle_grid);
 	//pairs = createPairs();
 

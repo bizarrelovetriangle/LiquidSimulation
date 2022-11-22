@@ -1,10 +1,10 @@
 #pragma once
-#include "Particle.h"
+#include <Elements/Particle.h>
 #include <math.h>
 #include <span>
-#include "Config.h"
-#include "NeatTimer.h"
-#include "Algorithms.h"
+#include <Config.h>
+#include <Utils/NeatTimer.h>
+#include <Utils/Algorithms.h>
 
 class ParticleGrid {
 public:

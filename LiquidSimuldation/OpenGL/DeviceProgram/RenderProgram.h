@@ -1,14 +1,14 @@
 #pragma once
-#include "GPUCompute.h"
-#include "GPUProgramBase.h"
+#include <OpenGL/DeviceProgram/DeviceProgram.h>
+#include <DeviceComputation/DeviceFluidProcessor.h>
 
 template <typename T>
-class RenderProgram : public GPUProgramBase {
+class RenderProgram : public DeviceProgram {
 public:
 	void Use() {
 		glUseProgram(program_id);
 		glBindVertexArray(vao_buffer_id);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, GPUCompute::GetInstance().GetParticlesBuffer());
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, DeviceFluidProcessor::GetInstance().GetParticlesBuffer());
 	}
 
 	void GenerateVAO(const std::vector<uint32_t>& indexes) {

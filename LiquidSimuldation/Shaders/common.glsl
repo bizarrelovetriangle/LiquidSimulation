@@ -1,17 +1,17 @@
 struct Particle {
-    ivec2 gridPosition;
+	ivec2 gridPosition;
 
-    vec2 position;
-    vec2 velosity;
-    vec2 acceleration;
-    float radius;
+	vec2 position;
+	vec2 velosity;
+	vec2 acceleration;
+	float radius;
 
-    float density;
-    float density_near;
+	float density;
+	float density_near;
 
-    int index;
+	int index;
 
-    vec4 _shared_data;
+	vec4 _shared_data;
 };
 
 struct GridCell {
@@ -23,10 +23,10 @@ struct GridCell {
 };
 
 struct PairData {
-    int first;
-    int second;
-    vec2 normal;
-    float proximityCoefficient;
+	int first;
+	int second;
+	vec2 normal;
+	float proximityCoefficient;
 };
 
 struct Config {

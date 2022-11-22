@@ -5,48 +5,33 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\OpenGL">
-      <UniqueIdentifier>{45a9270c-4905-4809-b2ca-c2e97301d396}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OpenGL\Shaders">
-      <UniqueIdentifier>{379c51e2-1584-4e61-8ae7-afcd0cbef99f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\math">
-      <UniqueIdentifier>{4f90ab15-aaf5-4404-a8b1-d0a70f5ef12d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Elements">
-      <UniqueIdentifier>{5ac23fa0-702d-4f91-be11-0e8f51b22be3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OpenGL\Programs">
-      <UniqueIdentifier>{92f60692-066f-466f-b867-d9e63e50b29b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="New">
       <UniqueIdentifier>{40f41e15-14c5-4e7d-b1d0-0303a92cc40d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{379c51e2-1584-4e61-8ae7-afcd0cbef99f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\render">
+      <UniqueIdentifier>{24e117ec-fa25-487e-8738-5f690cc275fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\compute">
+      <UniqueIdentifier>{89b2dcb9-e3d5-4a16-8f36-110be4c979e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\compute\particle_pairs">
+      <UniqueIdentifier>{b0481485-0f3b-4585-80f9-f1bc9b91e0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\compute\particles">
+      <UniqueIdentifier>{0cf0bda1-0198-4109-914f-2ecbeaa268d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LiquidSimuldation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix3x3.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="vector2.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="vector3.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="DataFactory.h">
-      <Filter>Source Files\Elements</Filter>
-    </ClCompile>
-    <ClCompile Include="NeatTimer.cpp">
+    <ClCompile Include="Utils\NeatTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GPUCompute.cpp">
+    <ClCompile Include="DeviceComputation\DeviceFluidProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParticleGrid.cpp">
@@ -55,12 +40,27 @@
     <ClCompile Include="FluidProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenGL\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\matrix3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\vector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\vector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\DataFactory.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="VectorFunctions.h">
+    <ClInclude Include="Math\VectorFunctions.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleGrid.h">
@@ -69,77 +69,80 @@
     <ClInclude Include="Sceen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrix3x3.h">
-      <Filter>Source Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="vector2.h">
-      <Filter>Source Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="vector3.h">
-      <Filter>Source Files\math</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Source Files\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="Wall.h">
-      <Filter>Source Files\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="ElementSharedData.h">
-      <Filter>Source Files\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="GPUCompute.h">
+    <ClInclude Include="DeviceComputation\DeviceFluidProcessor.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ComputeProgram.h">
-      <Filter>Source Files\OpenGL\Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="GPUProgramBase.h">
-      <Filter>Source Files\OpenGL\Programs</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderProgram.h">
-      <Filter>Source Files\OpenGL\Programs</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="NeatTimer.h">
+    <ClInclude Include="Utils\NeatTimer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Algorithms.h">
+    <ClInclude Include="Utils\Algorithms.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\DeviceProgram\DeviceProgram.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\DeviceProgram\ComputeProgram.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\DeviceProgram\RenderProgram.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\vector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\matrix3x3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\vector2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Elements\Wall.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Elements\ElementSharedData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Elements\Particle.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Shaders\particle.frag">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particle.vert">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles_update.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\create_particle_pairs.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles_viscosity.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles_density.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
-    <None Include="Shaders\particles_gravity.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
-    </None>
     <None Include="Shaders\common.glsl">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
+      <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="Shaders\wall.vert">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
+    <None Include="shaders\render\particle.frag">
+      <Filter>Source Files\shaders\render</Filter>
     </None>
-    <None Include="Shaders\sort_pairs.comp">
-      <Filter>Source Files\OpenGL\Shaders</Filter>
+    <None Include="shaders\render\particle.vert">
+      <Filter>Source Files\shaders\render</Filter>
+    </None>
+    <None Include="shaders\render\wall.vert">
+      <Filter>Source Files\shaders\render</Filter>
+    </None>
+    <None Include="shaders\compute\particles\particles_density.comp">
+      <Filter>Source Files\shaders\compute\particles</Filter>
+    </None>
+    <None Include="shaders\compute\particles\particles_gravity.comp">
+      <Filter>Source Files\shaders\compute\particles</Filter>
+    </None>
+    <None Include="shaders\compute\particles\particles_update.comp">
+      <Filter>Source Files\shaders\compute\particles</Filter>
+    </None>
+    <None Include="shaders\compute\particles\particles_viscosity.comp">
+      <Filter>Source Files\shaders\compute\particles</Filter>
+    </None>
+    <None Include="shaders\compute\particle_pairs\radix_sort.comp">
+      <Filter>Source Files\shaders\compute\particle_pairs</Filter>
+    </None>
+    <None Include="shaders\compute\particle_pairs\buckets_count.comp">
+      <Filter>Source Files\shaders\compute\particle_pairs</Filter>
+    </None>
+    <None Include="shaders\compute\particle_pairs\create_pairs.comp">
+      <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
   </ItemGroup>
 </Project>

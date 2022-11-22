@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "DataFactory.h"
-#include "ElementSharedData.h"
+#include <Utils/DataFactory.h>
+#include <Elements/ElementSharedData.h>
 
 class Wall {
 public:
@@ -12,8 +12,8 @@ public:
 			auto shared_data = std::make_shared<ElementSharedData<Wall>>();
 			shared_data->indexes = { 0, 1 };
 			shared_data->render_program.InitProgram({
-				{ GL_VERTEX_SHADER, "Shaders/wall.vert" },
-				{ GL_FRAGMENT_SHADER, "Shaders/particle.frag" } });
+				{ GL_VERTEX_SHADER, "shaders/render/wall.vert" },
+				{ GL_FRAGMENT_SHADER, "shaders/render/particle.frag" } });
 			shared_data->render_program.GenerateVAO(shared_data->indexes);
 			shared_data->render_program.Use();
 			auto view_matrix = DataFactory<matrix3x3>::GetData();

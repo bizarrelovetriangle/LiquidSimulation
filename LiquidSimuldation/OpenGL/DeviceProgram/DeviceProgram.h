@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-class GPUProgramBase {
+class DeviceProgram {
 public:
 	void InitProgram(std::initializer_list<std::pair<GLenum, std::string>> shader_infos) {
 		std::vector<uint32_t> shaders;
@@ -53,7 +53,7 @@ protected:
 			size_t end = shader_code.find(include_end, path_start);
 			if (end == -1) break;
 			std::string include_path = shader_code.substr(path_start, end - path_start);
-			size_t slash_index = path.find("/");
+			size_t slash_index = path.find_last_of("/");
 			if (slash_index >= 0) include_path = std::string(path).erase(slash_index + 1) + include_path;
 			std::string include_code = readFile(include_path);
 			shader_code = shader_code.erase(start) + include_code + shader_code.substr(end + include_end.length());
