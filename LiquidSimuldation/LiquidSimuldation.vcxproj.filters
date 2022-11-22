@@ -162,5 +162,7 @@
     <None Include="shaders\compute\particle_pairs\create_pairs.comp">
       <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
+    <None Include="shaders\compute\particle_pairs\update_grid.comp" />
+    <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
   </ItemGroup>
 </Project>

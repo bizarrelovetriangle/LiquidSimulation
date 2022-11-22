@@ -203,9 +203,11 @@
     <None Include="shaders\compute\particles\particles_gravity.comp" />
     <None Include="shaders\compute\particles\particles_update.comp" />
     <None Include="shaders\compute\particles\particles_viscosity.comp" />
+    <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
     <None Include="shaders\compute\particle_pairs\create_pairs.comp" />
     <None Include="shaders\compute\particle_pairs\radix_sort.comp" />
     <None Include="shaders\compute\particle_pairs\buckets_count.comp" />
+    <None Include="shaders\compute\particle_pairs\update_grid.comp" />
     <None Include="shaders\render\particle.frag" />
     <None Include="shaders\render\particle.vert" />
     <None Include="shaders\render\wall.vert" />

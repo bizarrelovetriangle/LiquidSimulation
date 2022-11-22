@@ -49,7 +49,7 @@ public:
 			Update();
 			NeatTimer::GetInstance().StageBegin("Draw");
 			Draw();
-			NeatTimer::GetInstance().Refresh(std::chrono::seconds(2));
+			NeatTimer::GetInstance().Refresh(std::chrono::seconds(1));
 		}
 	}
 

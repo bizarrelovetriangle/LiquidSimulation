@@ -7,19 +7,15 @@ layout(std430, binding = 0) buffer ParticlesInput
 {
 	Particle particles[];
 };
-layout(std430, binding = 1) buffer GridInput
-{
-	GridCell grid[];
-};
-layout(std430, binding = 2) buffer PairsCount
+layout(std430, binding = 1) buffer PairsCount
 {
 	int pairs_count;
 };
-layout(std430, binding = 3) buffer PairsOutput
+layout(std430, binding = 2) buffer PairsOutput
 {
 	PairData pairs[];
 };
-layout(std430, binding = 4) buffer BucketsCountOutput
+layout(std430, binding = 3) buffer BucketsCountOutput
 {
 	int buckets[];
 };
@@ -28,18 +24,18 @@ layout(location = 0) uniform int chunk_size;
 
 void main() {
 	uint dim = gl_LocalInvocationID.y;
-	uint shift_num = 8 * gl_LocalInvocationID.x;
+	uint shift = 8 * gl_LocalInvocationID.x;
 	const uint buckets_size = 1 << 8;
 	const uint mask = buckets_size - 1;
-	uint buckets_start = gl_GlobalInvocationID.y * gl_GlobalInvocationID.x * buckets_size;
+	uint buckets_start = (gl_LocalInvocationID.y * 4 + gl_LocalInvocationID.x) * buckets_size;
 
-	uint pairs_start = gl_GlobalInvocationID.x * chunk_size;
+	uint pairs_start = gl_WorkGroupID.x * chunk_size;
 	uint pairs_end = min(pairs_start + chunk_size, pairs_count);
 
 	for (uint i = pairs_start; i < pairs_end; ++i) {
 		ivec2 pos = particles[pairs[i].first].gridPosition;
 		uint value = dim == 0 ? pos.x : pos.y;
-		uint hash = value >> shift_num & mask;
+		uint hash = value >> shift & mask;
 		atomicAdd(buckets[buckets_start + hash], 1);
 	}
 }
