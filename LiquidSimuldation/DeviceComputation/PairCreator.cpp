@@ -100,12 +100,6 @@ void PairCreator::BucketsCount(ParticleGrid& particle_grid) {
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	buckets_count_program.Wait();
-
-	glGetNamedBufferSubData(buckets_count_buffer, 0, sizeof(int) * buckets.size(), &buckets[0]);
-
-	std::vector<int> bucketsY(std::begin(buckets) + buckets_size / 2, std::end(buckets));
-
-	int test = 44;
 }
 
 void PairCreator::BucketIndexesCount(ParticleGrid& particle_grid) {
@@ -120,13 +114,6 @@ void PairCreator::BucketIndexesCount(ParticleGrid& particle_grid) {
 	glDispatchCompute(1, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	bucket_indexes_count_program.Wait();
-
-	std::vector<int> buckets(buckets_size, 0);
-
-	glGetNamedBufferSubData(buckets_count_buffer, 0, sizeof(int) * buckets.size(), &buckets[0]);
-	glGetNamedBufferSubData(bucket_indexes_count_buffer, 0, sizeof(int) * buckets.size(), &bucket_indexes[0]);
-
-	int test = 44;
 }
 
 void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
