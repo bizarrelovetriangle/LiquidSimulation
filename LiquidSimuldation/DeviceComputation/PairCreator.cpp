@@ -15,6 +15,7 @@ PairCreator::PairCreator()
 	glCreateBuffers(1, &pairs_temp_buffer);
 	glCreateBuffers(1, &buckets_count_buffer);
 	glCreateBuffers(1, &bucket_indexes_count_buffer);
+	glCreateBuffers(1, &singular_buckets_buffer);
 
 	glNamedBufferData(pairs_temp_buffer, CommonBuffers::GetInstance().max_pairs * sizeof(PairData), nullptr, GL_DYNAMIC_DRAW);
 }
@@ -107,10 +108,13 @@ void PairCreator::BucketIndexesCount(ParticleGrid& particle_grid) {
 	size_t buckets_size = (1 << 8) * 4 * 2;
 	std::vector<int> bucket_indexes(buckets_size, 0);
 	glNamedBufferData(bucket_indexes_count_buffer, sizeof(int) * bucket_indexes.size(), &bucket_indexes[0], GL_DYNAMIC_DRAW);
+	std::vector<int> singular_buckets(4 * 2, 0);
+	glNamedBufferData(singular_buckets_buffer, sizeof(int) * singular_buckets.size(), &singular_buckets[0], GL_DYNAMIC_DRAW);
 
 	glUseProgram(bucket_indexes_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buckets_count_buffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bucket_indexes_count_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, singular_buckets_buffer);
 	glDispatchCompute(1, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	bucket_indexes_count_program.Wait();
@@ -119,8 +123,13 @@ void PairCreator::BucketIndexesCount(ParticleGrid& particle_grid) {
 void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 
+	std::vector<int> singular_buckets(4 * 2);
+	glGetNamedBufferSubData(singular_buckets_buffer, 0, sizeof(int) * singular_buckets.size(), &singular_buckets[0]);
+
 	for (int dim = 0; dim < 2; ++dim) {
 		for (int byte = 0; byte < 4; ++byte) {
+			if (singular_buckets[dim * 4 + byte]) continue;
+
 			glUseProgram(sort_pairs_program.program_id);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count_buffer);

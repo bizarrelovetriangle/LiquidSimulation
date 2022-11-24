@@ -31,6 +31,7 @@ private:
 	uint32_t pairs_temp_buffer;
 	uint32_t buckets_count_buffer;
 	uint32_t bucket_indexes_count_buffer;
+	uint32_t singular_buckets_buffer;
 };
 
 struct alignas(8) PairData {
