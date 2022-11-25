@@ -3,39 +3,30 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
-layout(std430, binding = 1) buffer GridInput
+layout(std430, binding = 0) buffer GridInput
 {
 	GridCell grid[];
 };
-layout(std430, binding = 2) buffer PairsCount
+layout(std430, binding = 1) buffer GridCountsOutput
 {
-	int pairs_count;
+	int grid_counts[];
 };
-layout(std430, binding = 3) buffer PairsOutput
+layout(std430, binding = 2) buffer GridColumnOffsetsOutput
 {
-	PairData pairs[];
+	int grid_column_offsets[];
 };
 
-layout(location = 0) uniform ivec2 gridSize;
+layout(location = 0) uniform ivec2 grid_size;
 
 void main() {
-	for (int i = 0; i < gridSize.y * gridSize.x; ++i) {
-		grid[i].pairs_start = 0;
-		grid[i].pairs_end = 0;
+	uint x = gl_WorkGroupID.x;
+	grid[x].pairs_start = grid_column_offsets[x];
+	grid[x].pairs_end = grid[x].pairs_start + grid_counts[x];
+
+	for (int i = 1; i < grid_size.y; ++i) {
+		uint y = i * grid_size.x;
+		int pairs_start = grid[y - grid_size.x + x].pairs_end;
+		grid[y + x].pairs_start = pairs_start;
+		grid[y + x].pairs_end = pairs_start + grid_counts[y + x];
 	}
-	
-	ivec2 last_position = particles[pairs[0].first].gridPosition;
-	for (int i = 1; i < pairs_count; ++i) {
-		ivec2 grid_position = particles[pairs[i].first].gridPosition;
-		if (last_position == grid_position) continue;
-	
-		grid[last_position.y * gridSize.x + last_position.x].pairs_end = i;
-		grid[grid_position.y * gridSize.x + grid_position.x].pairs_start = i;
-		last_position = grid_position;
-	}
-	grid[last_position.y * gridSize.x + last_position.x].pairs_end = pairs_count;
 }

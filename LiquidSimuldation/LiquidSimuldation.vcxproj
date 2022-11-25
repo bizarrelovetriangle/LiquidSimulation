@@ -207,6 +207,8 @@
     <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
     <None Include="shaders\compute\particle_pairs\bucket_indexes_distributed_count.comp" />
     <None Include="shaders\compute\particle_pairs\create_pairs.comp" />
+    <None Include="shaders\compute\particle_pairs\grid_count.comp" />
+    <None Include="shaders\compute\particle_pairs\grid_offsets_count.comp" />
     <None Include="shaders\compute\particle_pairs\radix_sort.comp" />
     <None Include="shaders\compute\particle_pairs\buckets_count.comp" />
     <None Include="shaders\compute\particle_pairs\update_grid.comp" />

@@ -9,18 +9,25 @@ PairCreator::PairCreator()
 {
 	create_pairs_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/create_pairs.comp" } });
 	buckets_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/buckets_count.comp" } });
-	buckets_distributed_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/buckets_distributed_count.comp" } });
 	bucket_indexes_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/bucket_indexes_count.comp" } });
+	buckets_distributed_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/buckets_distributed_count.comp" } });
 	bucket_indexes_distributed_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/bucket_indexes_distributed_count.comp" } });
 	sort_pairs_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/radix_sort.comp" } });
+
+	grid_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/grid_count.comp" } });
+	grid_offsets_count_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/grid_offsets_count.comp" } });
 	update_grid_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/update_grid.comp" } });
 
 	glCreateBuffers(1, &pairs_temp_buffer);
 	glCreateBuffers(1, &global_buckets_buffer);
-	glCreateBuffers(1, &distributed_buckets_buffer);
 	glCreateBuffers(1, &global_bucket_indexes_buffer);
+	glCreateBuffers(1, &distributed_buckets_buffer);
 	glCreateBuffers(1, &distributed_bucket_indexes_buffer);
 	glCreateBuffers(1, &singular_buckets_buffer);
+
+	glCreateBuffers(1, &grid_counts_buffer);
+	glCreateBuffers(1, &grid_column_counts_buffer);
+	glCreateBuffers(1, &grid_column_offsets_buffer);
 
 	glNamedBufferData(pairs_temp_buffer, CommonBuffers::GetInstance().max_pairs * sizeof(PairData), nullptr, GL_DYNAMIC_DRAW);
 }
@@ -31,6 +38,8 @@ void PairCreator::ComputePairs(ParticleGrid& particle_grid) {
 	BucketsCount(particle_grid);
 	BucketIndexesCount(particle_grid);
 	GPUOneCoreSortPairs(particle_grid);
+
+	GridCount(particle_grid);
 	UpdateGrid(particle_grid);
 }
 
@@ -151,6 +160,7 @@ void PairCreator::DistributedBucketsCount(ParticleGrid& particle_grid, int dimen
 }
 
 void PairCreator::DistributedBucketIndexesCount(ParticleGrid& particle_grid, int dimension, int byte) {
+	NeatTimer::GetInstance().StageBegin(__func__);
 	std::vector<int> distributed_bucket_indexes((1 << 8) * parallel, 0);
 	glNamedBufferData(distributed_bucket_indexes_buffer, sizeof(int) * distributed_bucket_indexes.size(), &distributed_bucket_indexes[0], GL_DYNAMIC_DRAW);
 
@@ -169,7 +179,6 @@ void PairCreator::DistributedBucketIndexesCount(ParticleGrid& particle_grid, int
 
 void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-
 	std::vector<int> singular_buckets(4 * 2);
 	glGetNamedBufferSubData(singular_buckets_buffer, 0, sizeof(int) * singular_buckets.size(), &singular_buckets[0]);
 
@@ -178,6 +187,8 @@ void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
 			if (singular_buckets[dimension * 4 + byte]) continue;
 			DistributedBucketsCount(particle_grid, dimension, byte);
 			DistributedBucketIndexesCount(particle_grid, dimension, byte);
+
+			NeatTimer::GetInstance().StageBegin(__func__);
 			glUseProgram(sort_pairs_program.program_id);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count_buffer);
@@ -198,15 +209,63 @@ void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
 	}
 }
 
-void PairCreator::UpdateGrid(ParticleGrid& particle_grid) {
+void PairCreator::GridCount(ParticleGrid& particle_grid) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	glUseProgram(update_grid_program.program_id);
+	std::vector<int> grid_counts(particle_grid.grid.size());
+	glNamedBufferData(grid_counts_buffer, sizeof(int) * grid_counts.size(), &grid_counts[0], GL_DYNAMIC_DRAW);
+	std::vector<int> grid_column_counts(particle_grid.size.x);
+	glNamedBufferData(grid_column_counts_buffer, sizeof(int) * grid_column_counts.size(), &grid_column_counts[0], GL_DYNAMIC_DRAW);
+
+	glUseProgram(grid_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid_buffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count_buffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, grid_counts_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, grid_column_counts_buffer);
+	glUniform2i(0, particle_grid.size.x, particle_grid.size.y);
+	int chunk_size = std::ceil(float(pairs_count) / parallel);
+	glUniform1i(1, chunk_size);
+	glDispatchCompute(parallel, 1, 1);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	grid_count_program.Wait();
+
+	std::vector<int> grid_column_offsets(particle_grid.size.x);
+	glNamedBufferData(grid_column_offsets_buffer, sizeof(int) * grid_column_offsets.size(), &grid_column_offsets[0], GL_DYNAMIC_DRAW);
+
+	glUseProgram(grid_offsets_count_program.program_id);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, grid_column_counts_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, grid_column_offsets_buffer);
 	glUniform2i(0, particle_grid.size.x, particle_grid.size.y);
 	glDispatchCompute(1, 1, 1);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	grid_offsets_count_program.Wait();
+
+	glGetNamedBufferSubData(grid_counts_buffer, 0, sizeof(int) * grid_counts.size(), &grid_counts[0]);
+	glGetNamedBufferSubData(grid_column_counts_buffer, 0, sizeof(int) * grid_column_counts.size(), &grid_column_counts[0]);
+	glGetNamedBufferSubData(grid_column_offsets_buffer, 0, sizeof(int) * grid_column_offsets.size(), &grid_column_offsets[0]);
+
+	int total = 0;
+	for (size_t i = 0; i < particle_grid.grid.size(); ++i) {
+		total += grid_counts[i];
+	}
+
+	int total2 = 0;
+	for (size_t i = 0; i < particle_grid.size.x; ++i) {
+		total2 += grid_column_counts[i];
+	}
+
+	int test = 2;
+}
+
+void PairCreator::UpdateGrid(ParticleGrid& particle_grid) {
+	NeatTimer::GetInstance().StageBegin(__func__);
+	glUseProgram(update_grid_program.program_id);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().grid_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, grid_counts_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, grid_column_offsets_buffer);
+	glUniform2i(0, particle_grid.size.x, particle_grid.size.y);
+	glDispatchCompute(particle_grid.size.x, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	update_grid_program.Wait();
 }

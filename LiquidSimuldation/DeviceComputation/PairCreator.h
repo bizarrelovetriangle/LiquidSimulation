@@ -20,6 +20,8 @@ private:
 	void DistributedBucketsCount(ParticleGrid& particle_grid, int dimension, int byte);
 	void DistributedBucketIndexesCount(ParticleGrid& particle_grid, int dimension, int byte);
 	void GPUOneCoreSortPairs(ParticleGrid& particle_grid);
+
+	void GridCount(ParticleGrid& particle_grid);
 	void UpdateGrid(ParticleGrid& particle_grid);
 
 	const int parallel = 200;
@@ -27,18 +29,25 @@ private:
 
 	ComputeProgram create_pairs_program;
 	ComputeProgram sort_pairs_program;
-	ComputeProgram update_grid_program;
 	ComputeProgram buckets_count_program;
 	ComputeProgram buckets_distributed_count_program;
 	ComputeProgram bucket_indexes_count_program;
 	ComputeProgram bucket_indexes_distributed_count_program;
 
+	ComputeProgram grid_count_program;
+	ComputeProgram grid_offsets_count_program;
+	ComputeProgram update_grid_program;
+
 	uint32_t pairs_temp_buffer;
 	uint32_t global_buckets_buffer;
-	uint32_t distributed_buckets_buffer;
 	uint32_t global_bucket_indexes_buffer;
+	uint32_t distributed_buckets_buffer;
 	uint32_t distributed_bucket_indexes_buffer;
 	uint32_t singular_buckets_buffer;
+
+	uint32_t grid_counts_buffer;
+	uint32_t grid_column_counts_buffer;
+	uint32_t grid_column_offsets_buffer;
 };
 
 struct alignas(8) PairData {

@@ -166,5 +166,7 @@
     <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
     <None Include="shaders\compute\particle_pairs\bucket_indexes_distributed_count.comp" />
     <None Include="shaders\compute\particle_pairs\buckets_distributed_count.comp" />
+    <None Include="shaders\compute\particle_pairs\grid_count.comp" />
+    <None Include="shaders\compute\particle_pairs\grid_offsets_count.comp" />
   </ItemGroup>
 </Project>
