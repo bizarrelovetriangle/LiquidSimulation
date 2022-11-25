@@ -19,28 +19,36 @@ layout(std430, binding = 3) buffer PairsTempOutput
 {
 	PairData pairs_temp[];
 };
-layout(std430, binding = 4) buffer BucketIndexesCountOutput
+layout(std430, binding = 4) buffer DistributedBucketIndexesCountOutput
 {
-	int bucket_indexes[];
+	int distributed_bucket_indexes[];
+};
+layout(std430, binding = 5) buffer DistributedBucketsCountOutput
+{
+	int distributed_buckets[];
 };
 
 layout(location = 0) uniform ivec2 gridSize;
-layout(location = 1) uniform int dim;
+layout(location = 1) uniform int dimension;
 layout(location = 2) uniform int byte;
+layout(location = 3) uniform int chunk_size;
 
 void main() {
-	const int chunk_size = 8;
-	const int buckets_size = 1 << chunk_size;
+	const int buckets_size = 1 << 8;
 	const int mask = buckets_size - 1;
 	const int shift = byte * 8;
+	const uint buckets_displacement = buckets_size * 4 * 2;
 
-	const int buckets_start = (dim * 4 + byte) * buckets_size;
-
-	for (int i = 0; i < pairs_count; ++i) {
+	const int buckets_start = (dimension * 4 + byte) * buckets_size;
+	uint id = gl_WorkGroupID.x;
+	uint pairs_start = id * chunk_size;
+	uint pairs_end = min(pairs_start + chunk_size, pairs_count);
+		 
+	for (uint i = pairs_start; i < pairs_end; ++i) {
 		ivec2 pos = particles[pairs[i].first].gridPosition;
-		int value = dim == 0 ? pos.x : pos.y;
+		int value = dimension == 0 ? pos.x : pos.y;
 		int hash = value >> shift & mask;
-		int index = bucket_indexes[buckets_start + hash]++;
+		int index = distributed_bucket_indexes[buckets_size * id + hash]++;
 		pairs_temp[index] = pairs[i];
 	}
 }

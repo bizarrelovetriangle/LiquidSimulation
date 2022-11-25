@@ -3,13 +3,13 @@
 
 layout(local_size_x = 4, local_size_y = 2, local_size_z = 1) in;
 
-layout(std430, binding = 0) buffer BucketsCountInput
+layout(std430, binding = 0) buffer GlobalBucketsCountInput
 {
-	int buckets[];
+	int global_buckets[];
 };
-layout(std430, binding = 1) buffer BucketIndexesCountOutput
+layout(std430, binding = 1) buffer GlobalBucketIndexesCountOutput
 {
-	int bucket_indexes[];
+	int global_bucket_indexes[];
 };
 layout(std430, binding = 2) buffer SingularBucketsOutput
 {
@@ -18,17 +18,17 @@ layout(std430, binding = 2) buffer SingularBucketsOutput
 
 void main() {
 	const uint buckets_size = 1 << 8;
-	const uint byte = gl_LocalInvocationID.y * 4 + gl_LocalInvocationID.x;
-	const uint buckets_start = byte * buckets_size;
+	const uint dimension_byte = gl_LocalInvocationID.y * 4 + gl_LocalInvocationID.x;
+	const uint global_buckets_start = dimension_byte * buckets_size;
 	uint non_zero_buckets = 0;
 
-	if (buckets[buckets_start] > 0) non_zero_buckets++;
+	if (global_buckets[global_buckets_start] > 0) non_zero_buckets++;
 
 	for (uint i = 1; i < buckets_size; ++i) {
-		uint index = buckets_start + i;
-		if (buckets[index] > 0) non_zero_buckets++;
-		bucket_indexes[index] = bucket_indexes[index - 1] + buckets[index - 1];
+		uint index = global_buckets_start + i;
+		if (global_buckets[index] > 0) non_zero_buckets++;
+		global_bucket_indexes[index] = global_bucket_indexes[index - 1] + global_buckets[index - 1];
 	}
 
-	if (non_zero_buckets == 1) singular_buckets[byte] = true;
+	if (non_zero_buckets == 1) singular_buckets[dimension_byte] = true;
 }

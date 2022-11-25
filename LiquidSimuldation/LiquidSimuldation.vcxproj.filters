@@ -164,5 +164,7 @@
     </None>
     <None Include="shaders\compute\particle_pairs\update_grid.comp" />
     <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
+    <None Include="shaders\compute\particle_pairs\bucket_indexes_distributed_count.comp" />
+    <None Include="shaders\compute\particle_pairs\buckets_distributed_count.comp" />
   </ItemGroup>
 </Project>

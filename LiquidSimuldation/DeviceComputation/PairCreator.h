@@ -17,20 +17,27 @@ private:
 
 	void BucketsCount(ParticleGrid& particle_grid);
 	void BucketIndexesCount(ParticleGrid& particle_grid);
+	void DistributedBucketsCount(ParticleGrid& particle_grid, int dimension, int byte);
+	void DistributedBucketIndexesCount(ParticleGrid& particle_grid, int dimension, int byte);
 	void GPUOneCoreSortPairs(ParticleGrid& particle_grid);
 	void UpdateGrid(ParticleGrid& particle_grid);
 
+	const int parallel = 200;
 	int pairs_count = 0;
 
 	ComputeProgram create_pairs_program;
 	ComputeProgram sort_pairs_program;
 	ComputeProgram update_grid_program;
 	ComputeProgram buckets_count_program;
+	ComputeProgram buckets_distributed_count_program;
 	ComputeProgram bucket_indexes_count_program;
+	ComputeProgram bucket_indexes_distributed_count_program;
 
 	uint32_t pairs_temp_buffer;
-	uint32_t buckets_count_buffer;
-	uint32_t bucket_indexes_count_buffer;
+	uint32_t global_buckets_buffer;
+	uint32_t distributed_buckets_buffer;
+	uint32_t global_bucket_indexes_buffer;
+	uint32_t distributed_bucket_indexes_buffer;
 	uint32_t singular_buckets_buffer;
 };
 
