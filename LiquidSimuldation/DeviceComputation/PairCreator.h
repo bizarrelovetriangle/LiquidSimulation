@@ -19,7 +19,7 @@ private:
 	void BucketIndexesCount(ParticleGrid& particle_grid);
 	void DistributedBucketsCount(ParticleGrid& particle_grid, int dimension, int byte);
 	void DistributedBucketIndexesCount(ParticleGrid& particle_grid, int dimension, int byte);
-	void GPUOneCoreSortPairs(ParticleGrid& particle_grid);
+	void RadixSortPairs(ParticleGrid& particle_grid);
 
 	void GridCount(ParticleGrid& particle_grid);
 	void UpdateGrid(ParticleGrid& particle_grid);

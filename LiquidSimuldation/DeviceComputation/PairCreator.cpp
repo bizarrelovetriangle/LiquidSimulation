@@ -37,7 +37,7 @@ void PairCreator::ComputePairs(ParticleGrid& particle_grid) {
 	//SortPairs(particle_grid);
 	BucketsCount(particle_grid);
 	BucketIndexesCount(particle_grid);
-	GPUOneCoreSortPairs(particle_grid);
+	RadixSortPairs(particle_grid);
 
 	GridCount(particle_grid);
 	UpdateGrid(particle_grid);
@@ -177,7 +177,7 @@ void PairCreator::DistributedBucketIndexesCount(ParticleGrid& particle_grid, int
 	bucket_indexes_distributed_count_program.Wait();
 }
 
-void PairCreator::GPUOneCoreSortPairs(ParticleGrid& particle_grid) {
+void PairCreator::RadixSortPairs(ParticleGrid& particle_grid) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	std::vector<int> singular_buckets(4 * 2);
 	glGetNamedBufferSubData(singular_buckets_buffer, 0, sizeof(int) * singular_buckets.size(), &singular_buckets[0]);
@@ -240,22 +240,6 @@ void PairCreator::GridCount(ParticleGrid& particle_grid) {
 	glDispatchCompute(1, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	grid_offsets_count_program.Wait();
-
-	glGetNamedBufferSubData(grid_counts_buffer, 0, sizeof(int) * grid_counts.size(), &grid_counts[0]);
-	glGetNamedBufferSubData(grid_column_counts_buffer, 0, sizeof(int) * grid_column_counts.size(), &grid_column_counts[0]);
-	glGetNamedBufferSubData(grid_column_offsets_buffer, 0, sizeof(int) * grid_column_offsets.size(), &grid_column_offsets[0]);
-
-	int total = 0;
-	for (size_t i = 0; i < particle_grid.grid.size(); ++i) {
-		total += grid_counts[i];
-	}
-
-	int total2 = 0;
-	for (size_t i = 0; i < particle_grid.size.x; ++i) {
-		total2 += grid_column_counts[i];
-	}
-
-	int test = 2;
 }
 
 void PairCreator::UpdateGrid(ParticleGrid& particle_grid) {
