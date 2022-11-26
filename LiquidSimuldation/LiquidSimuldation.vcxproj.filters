@@ -67,6 +67,9 @@
     <ClCompile Include="OpenGL\DeviceProgram\ComputeProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenGL\DeviceBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -126,6 +129,7 @@
     <ClInclude Include="DeviceComputation\PairCreator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGL\DeviceBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

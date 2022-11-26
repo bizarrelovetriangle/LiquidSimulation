@@ -126,7 +126,7 @@ void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
 
-	pairs = DeviceFluidProcessor::GetInstance().Update(_particle_grid, dt);
+	pairs = DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
 	//pairs = gpu_compute.CreatePairs(_particle_grid);
 	//pairs = createPairs();
 

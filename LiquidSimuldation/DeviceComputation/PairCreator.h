@@ -2,30 +2,33 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <OpenGL/DeviceProgram/ComputeProgram.h>
+#include <OpenGL/DeviceBuffer.h>
 
 class PairData;
 class ParticleGrid;
 
 class PairCreator {
 public:
-	PairCreator();
-	void ComputePairs(ParticleGrid& particle_grid);
+	PairCreator(ParticleGrid& particle_grid);
+	void ComputePairs();
 
 private:
-	void CreatePairs(ParticleGrid& particle_grid);
-	void SortPairs(ParticleGrid& particle_grid);
+	void CreatePairs();
+	void SortPairs();
 
-	void BucketsCount(ParticleGrid& particle_grid);
-	void BucketIndexesCount(ParticleGrid& particle_grid);
-	void DistributedBucketsCount(ParticleGrid& particle_grid, int dimension, int byte);
-	void DistributedBucketIndexesCount(ParticleGrid& particle_grid, int dimension, int byte);
-	void RadixSortPairs(ParticleGrid& particle_grid);
+	void BucketsCount();
+	void BucketIndexesCount();
+	void DistributedBucketsCount(int dimension, int byte);
+	void DistributedBucketIndexesCount(int dimension, int byte);
+	void RadixSortPairs();
 
-	void GridCount(ParticleGrid& particle_grid);
-	void UpdateGrid(ParticleGrid& particle_grid);
+	void GridCount();
+	void UpdateGrid();
 
 	const int parallel = 200;
 	int pairs_count = 0;
+
+	ParticleGrid& _particle_grid;
 
 	ComputeProgram create_pairs_program;
 	ComputeProgram sort_pairs_program;
@@ -38,16 +41,16 @@ private:
 	ComputeProgram grid_offsets_count_program;
 	ComputeProgram update_grid_program;
 
-	uint32_t pairs_temp_buffer;
-	uint32_t global_buckets_buffer;
-	uint32_t global_bucket_indexes_buffer;
-	uint32_t distributed_buckets_buffer;
-	uint32_t distributed_bucket_indexes_buffer;
-	uint32_t singular_buckets_buffer;
+	std::unique_ptr<DeviceBuffer<PairData>> pairs_temp;
+	std::unique_ptr<DeviceBuffer<int>> global_buckets;
+	std::unique_ptr<DeviceBuffer<int>> global_bucket_indexes;
+	std::unique_ptr<DeviceBuffer<int>> distributed_buckets;
+	std::unique_ptr<DeviceBuffer<int>> distributed_bucket_indexes;
+	std::unique_ptr<DeviceBuffer<int>> singular_buckets;
 
-	uint32_t grid_counts_buffer;
-	uint32_t grid_column_counts_buffer;
-	uint32_t grid_column_offsets_buffer;
+	std::unique_ptr<DeviceBuffer<int>> grid_counts;
+	std::unique_ptr<DeviceBuffer<int>> grid_column_counts;
+	std::unique_ptr<DeviceBuffer<int>> grid_column_offsets;
 };
 
 struct alignas(8) PairData {
