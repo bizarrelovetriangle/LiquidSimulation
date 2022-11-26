@@ -41,10 +41,10 @@ void DeviceFluidProcessor::GranularProcessPairs(const ComputeProgram& program, P
 	glUniform1f(1, dt);
 	glUniform2i(2, particle_grid.size.x, particle_grid.size.y);
 
-	for (size_t y = 0; y < 3; ++y) {
-		for (size_t x = 0; x < 3; ++x) {
+	for (size_t y = 0; y < 2; ++y) {
+		for (size_t x = 0; x < 2; ++x) {
 			sf::Vector2i offset(x, y);
-			sf::Vector2i compute_plane = (particle_grid.size - offset) / 3;
+			sf::Vector2i compute_plane = (particle_grid.size - offset) / 2;
 			glUniform2i(3, offset.x, offset.y);
 			glDispatchCompute(compute_plane.x, compute_plane.y, 1);
 		}

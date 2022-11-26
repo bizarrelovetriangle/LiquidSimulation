@@ -45,13 +45,18 @@ void main() {
 
 					vec2 vector = particles[j].position - particles[i].position;
 					float vectorLength = length(vector);
-
+					
 					if (vectorLength < interactionRange) {
 						int pair_id = atomicAdd(pairs_count, 1);
 						pairs[pair_id].first = i;
 						pairs[pair_id].second = j;
 						pairs[pair_id].normal = vector / vectorLength;
 						pairs[pair_id].proximityCoefficient = 1 - vectorLength / interactionRange;
+						
+						if (particles[i].gridPosition.x > particles[j].gridPosition.x) {
+							swap(pairs[pair_id].first, pairs[pair_id].second);
+							pairs[pair_id].normal = -pairs[pair_id].normal;
+						}
 					}
 				}
 			}

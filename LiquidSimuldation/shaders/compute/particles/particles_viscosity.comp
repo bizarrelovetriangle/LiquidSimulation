@@ -26,7 +26,7 @@ layout(location = 2) uniform ivec2 gridSize;
 layout(location = 3) uniform ivec2 offset;
 
 void main() {
-	ivec2 gridPos = ivec2(gl_GlobalInvocationID.xy) * 3 + offset;
+	ivec2 gridPos = ivec2(gl_GlobalInvocationID.xy) * 2 + offset;
 	GridCell orgCell = grid[gridPos.y * gridSize.x + gridPos.x];
 
 	for (int i = orgCell.pairs_start; i < orgCell.pairs_end; ++i) {

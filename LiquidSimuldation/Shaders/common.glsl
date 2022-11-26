@@ -37,3 +37,9 @@ struct Config {
 	float kLinearViscocity;
 	float kQuadraticViscocity;
 };
+
+void swap(inout int v1, inout int v2) {
+	int temp = v1;
+	v1 = v2;
+	v2 = temp;
+}
