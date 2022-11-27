@@ -113,7 +113,7 @@ void FluidProcessor::ApplyViscosity(float& interval) {
 
 void FluidProcessor::CreateParticle(vector2 position) {
 	Particle particle(position);
-	//particle.acceleration = vector2(0, -200);
+	particle.acceleration = vector2(0, -200);
 	_particle_grid.AddParticle(particle);
 }
 
