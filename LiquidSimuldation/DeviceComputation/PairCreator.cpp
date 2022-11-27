@@ -32,8 +32,8 @@ PairCreator::PairCreator(ParticleGrid& particle_grid)
 
 	auto grid_size = _particle_grid.size;
 	grid_counts = std::make_unique<DeviceBuffer<int>>(grid_size.x * grid_size.y);
-	grid_column_counts = std::make_unique<DeviceBuffer<int>>(grid_size.x);
-	grid_column_offsets = std::make_unique<DeviceBuffer<int>>(grid_size.x);
+	grid_column_counts = std::make_unique<DeviceBuffer<int>>(grid_size.y);
+	grid_column_offsets = std::make_unique<DeviceBuffer<int>>(grid_size.y);
 }
 
 void PairCreator::ComputePairs() {
@@ -42,7 +42,7 @@ void PairCreator::ComputePairs() {
 	BucketsCount();
 	BucketIndexesCount();
 	RadixSortPairs();
-
+	
 	GridCount();
 	UpdateGrid();
 }
@@ -238,7 +238,7 @@ void PairCreator::UpdateGrid() {
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, grid_counts->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, grid_column_offsets->GetBufferId());
 	glUniform2i(0, _particle_grid.size.x, _particle_grid.size.y);
-	glDispatchCompute(_particle_grid.size.x, 1, 1);
+	glDispatchCompute(_particle_grid.size.y, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	update_grid_program.Wait();
 }

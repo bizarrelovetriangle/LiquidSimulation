@@ -19,13 +19,13 @@ layout(std430, binding = 2) buffer GridColumnOffsetsOutput
 layout(location = 0) uniform ivec2 grid_size;
 
 void main() {
-	uint x = gl_WorkGroupID.x;
-	grid[x].pairs_start = grid_column_offsets[x];
-	grid[x].pairs_end = grid[x].pairs_start + grid_counts[x];
+	uint row = gl_WorkGroupID.x;
+	uint y = row * grid_size.x;
+	grid[y].pairs_start = grid_column_offsets[row];
+	grid[y].pairs_end = grid[y].pairs_start + grid_counts[y];
 
-	for (int i = 1; i < grid_size.y; ++i) {
-		uint y = i * grid_size.x;
-		int pairs_start = grid[y - grid_size.x + x].pairs_end;
+	for (int x = 1; x < grid_size.x; ++x) {
+		int pairs_start = grid[y + x - 1].pairs_end;
 		grid[y + x].pairs_start = pairs_start;
 		grid[y + x].pairs_end = pairs_start + grid_counts[y + x];
 	}

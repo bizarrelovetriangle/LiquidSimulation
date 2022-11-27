@@ -9,6 +9,7 @@ template <typename T>
 DeviceBuffer<T>::DeviceBuffer(size_t size)
 {
 	glCreateBuffers(1, &_buffer_id);
+	if (!size) return;
 	_data.resize(size);
 	glNamedBufferData(_buffer_id, _data.size() * sizeof(T), &_data[0], GL_DYNAMIC_DRAW);
 }

@@ -38,6 +38,6 @@ void main() {
 	for (uint i = pairs_start; i < pairs_end; ++i) {
 		ivec2 pos = particles[pairs[i].first].gridPosition;
 		atomicAdd(grid_counts[pos.y * gridSize.x + pos.x], 1);
-		atomicAdd(grid_column_counts[pos.x], 1);
+		atomicAdd(grid_column_counts[pos.y], 1);
 	}
 }
