@@ -48,9 +48,11 @@ void DeviceFluidProcessor::GranularProcessPairs(const ComputeProgram& program, f
 			sf::Vector2i compute_plane = (_particle_grid.size - offset) / 2;
 			glUniform2i(3, offset.x, offset.y);
 			glDispatchCompute(compute_plane.x, compute_plane.y, 1);
-			program.Wait();
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		}
 	}
+
+	program.Wait();
 }
 
 std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
