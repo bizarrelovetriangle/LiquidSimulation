@@ -48,10 +48,9 @@ void DeviceFluidProcessor::GranularProcessPairs(const ComputeProgram& program, f
 			sf::Vector2i compute_plane = (_particle_grid.size - offset) / 2;
 			glUniform2i(3, offset.x, offset.y);
 			glDispatchCompute(compute_plane.x, compute_plane.y, 1);
+			program.Wait();
 		}
 	}
-
-	program.Wait();
 }
 
 std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
@@ -63,10 +62,6 @@ std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
 	CommonBuffers::GetInstance().particles->FlushData(particles);
 	CommonBuffers::GetInstance().grid->FlushData(grid);
 	CommonBuffers::GetInstance().pairs_count->FlushData({ pairs_count });
-
-	//glNamedBufferData(CommonBuffers::GetInstance().particles->GetBufferId(), particles.size() * sizeof(Particle), &particles[0], GL_DYNAMIC_DRAW);
-	//glNamedBufferData(CommonBuffers::GetInstance().grid->GetBufferId(), grid.size() * sizeof(ParticleGrid::GridType), &grid[0], GL_DYNAMIC_DRAW);
-	//glNamedBufferData(CommonBuffers::GetInstance().pairs_count->GetBufferId(), sizeof(int), &pairs_count, GL_DYNAMIC_DRAW);
 
 	_pair_creator.ComputePairs();
 
