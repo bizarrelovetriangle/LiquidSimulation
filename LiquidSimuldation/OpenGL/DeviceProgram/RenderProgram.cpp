@@ -7,7 +7,7 @@ template <typename T>
 void RenderProgram<T>::Use() {
 	glUseProgram(program_id);
 	glBindVertexArray(vao_buffer_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 }
 
 template <typename T>

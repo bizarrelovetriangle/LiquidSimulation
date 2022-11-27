@@ -23,7 +23,7 @@ void DeviceFluidProcessor::ParticleUpdate(float dt) {
 	if (particles.empty()) return;
 
 	glUseProgram(particle_update_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 	glUniform1f(0, dt);
 
 	glDispatchCompute(particles.size(), 1, 1);
@@ -34,11 +34,11 @@ void DeviceFluidProcessor::ParticleUpdate(float dt) {
 void DeviceFluidProcessor::GranularProcessPairs(const ComputeProgram& program, float dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	glUseProgram(program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles_buffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid_buffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count_buffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs_buffer);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 	glUniform1f(1, dt);
 	glUniform2i(2, _particle_grid.size.x, _particle_grid.size.y);
 
@@ -58,11 +58,15 @@ std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
 	NeatTimer::GetInstance().StageBegin(std::string(__func__) + " - write data");
 	auto& particles = _particle_grid.particles;
 	auto& grid = _particle_grid.grid;
-
-	glNamedBufferData(CommonBuffers::GetInstance().particles_buffer, particles.size() * sizeof(Particle), &particles[0], GL_DYNAMIC_DRAW);
-	glNamedBufferData(CommonBuffers::GetInstance().grid_buffer, grid.size() * sizeof(ParticleGrid::GridType), &grid[0], GL_DYNAMIC_DRAW);
 	int pairs_count = 0;
-	glNamedBufferData(CommonBuffers::GetInstance().pairs_count_buffer, sizeof(int), &pairs_count, GL_DYNAMIC_DRAW);
+
+	CommonBuffers::GetInstance().particles->FlushData(particles);
+	CommonBuffers::GetInstance().grid->FlushData(grid);
+	CommonBuffers::GetInstance().pairs_count->FlushData({ pairs_count });
+
+	//glNamedBufferData(CommonBuffers::GetInstance().particles->GetBufferId(), particles.size() * sizeof(Particle), &particles[0], GL_DYNAMIC_DRAW);
+	//glNamedBufferData(CommonBuffers::GetInstance().grid->GetBufferId(), grid.size() * sizeof(ParticleGrid::GridType), &grid[0], GL_DYNAMIC_DRAW);
+	//glNamedBufferData(CommonBuffers::GetInstance().pairs_count->GetBufferId(), sizeof(int), &pairs_count, GL_DYNAMIC_DRAW);
 
 	_pair_creator.ComputePairs();
 
@@ -73,7 +77,7 @@ std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
 
 	NeatTimer::GetInstance().StageBegin(std::string(__func__) + " - read data");
 
-	glGetNamedBufferSubData(CommonBuffers::GetInstance().particles_buffer, 0, sizeof(Particle) * particles.size(), &particles[0]);
+	glGetNamedBufferSubData(CommonBuffers::GetInstance().particles->GetBufferId(), 0, sizeof(Particle) * particles.size(), &particles[0]);
 
 	return {};
 }

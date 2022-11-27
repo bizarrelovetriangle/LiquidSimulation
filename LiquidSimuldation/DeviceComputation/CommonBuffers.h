@@ -1,6 +1,9 @@
 #pragma once;
 #include <Config.h>
 #include <DeviceComputation/PairCreator.h>
+#include <OpenGl/DeviceBuffer.h>
+#include <Elements/Particle.h>
+#include <ParticleGrid.h>
 
 struct CommonBuffers {
 	static CommonBuffers& GetInstance() {
@@ -9,21 +12,18 @@ struct CommonBuffers {
 	}
 
 	const size_t max_pairs = 1000000;
-	uint32_t config_buffer;
-	uint32_t particles_buffer;
-	uint32_t grid_buffer;
-	uint32_t pairs_count_buffer;
-	uint32_t pairs_buffer;
+	std::unique_ptr<DeviceBuffer<Config>> config;
+	std::unique_ptr<DeviceBuffer<Particle>> particles;
+	std::unique_ptr<DeviceBuffer<ParticleGrid::GridCell>> grid;
+	std::unique_ptr<DeviceBuffer<int>> pairs_count;
+	std::unique_ptr<DeviceBuffer<PairData>> pairs;
 
 private:
 	CommonBuffers() {
-		glCreateBuffers(1, &config_buffer);
-		glCreateBuffers(1, &particles_buffer);
-		glCreateBuffers(1, &grid_buffer);
-		glCreateBuffers(1, &pairs_count_buffer);
-		glCreateBuffers(1, &pairs_buffer);
-
-		glNamedBufferData(pairs_buffer, max_pairs * sizeof(PairData), nullptr, GL_DYNAMIC_DRAW);
-		glNamedBufferData(config_buffer, sizeof(Config), &Config::GetInstance(), GL_DYNAMIC_DRAW);
+		config = std::make_unique<DeviceBuffer<Config>>(1);
+		particles = std::make_unique<DeviceBuffer<Particle>>(0);
+		grid = std::make_unique<DeviceBuffer<ParticleGrid::GridCell>>(0);
+		pairs_count = std::make_unique<DeviceBuffer<int>>(1);
+		pairs = std::make_unique<DeviceBuffer<PairData>>(max_pairs);
 	}
 };
