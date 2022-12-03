@@ -62,7 +62,7 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 void FluidProcessor::ParticlesGravity(float& interval) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient] = pair;
+		auto& [first, second, normal, proximityCoefficient, _] = pair;
 		auto& first_particle = _particle_grid.particles[first];
 		auto& second_particle = _particle_grid.particles[second];
 
@@ -75,7 +75,7 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 	}
 
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient] = pair;
+		auto& [first, second, normal, proximityCoefficient, _] = pair;
 		auto& first_particle = _particle_grid.particles[first];
 		auto& second_particle = _particle_grid.particles[second];
 
@@ -95,7 +95,7 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 void FluidProcessor::ApplyViscosity(float& interval) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient] = pair;
+		auto& [first, second, normal, proximityCoefficient, _] = pair;
 		auto& first_particle = _particle_grid.particles[first];
 		auto& second_particle = _particle_grid.particles[second];
 

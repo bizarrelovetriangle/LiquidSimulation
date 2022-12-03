@@ -64,4 +64,5 @@ struct alignas(8) PairData {
 	int second;
 	sf::Vector2f normal;
 	float proximityCoefficient;
+	sf::Vector2i grid_position;
 };
