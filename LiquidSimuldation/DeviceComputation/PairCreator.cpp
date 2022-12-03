@@ -104,7 +104,7 @@ void PairCreator::SortPairs() {
 
 void PairCreator::BucketsCount() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	global_buckets->FlushData();
+	global_buckets->Clear();
 
 	glUseProgram(buckets_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count->GetBufferId());
@@ -119,8 +119,8 @@ void PairCreator::BucketsCount() {
 
 void PairCreator::BucketIndexesCount() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	global_bucket_indexes->FlushData();
-	singular_buckets->FlushData();
+	global_bucket_indexes->Clear();
+	singular_buckets->Clear();
 
 	glUseProgram(bucket_indexes_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, global_buckets->GetBufferId());
@@ -133,7 +133,7 @@ void PairCreator::BucketIndexesCount() {
 
 void PairCreator::DistributedBucketsCount(int dimension, int byte) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	distributed_buckets->FlushData();
+	distributed_buckets->Clear();
 	glUseProgram(buckets_distributed_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs->GetBufferId());
@@ -150,7 +150,7 @@ void PairCreator::DistributedBucketsCount(int dimension, int byte) {
 void PairCreator::DistributedBucketIndexesCount(int dimension, int byte) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 
-	distributed_bucket_indexes->FlushData();
+	distributed_bucket_indexes->Clear();
 
 	glUseProgram(bucket_indexes_distributed_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, distributed_buckets->GetBufferId());
@@ -167,8 +167,7 @@ void PairCreator::DistributedBucketIndexesCount(int dimension, int byte) {
 
 void PairCreator::RadixSortPairs() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	singular_buckets->RetriveData();
-	auto& singular_buckets_data = singular_buckets->GetData();
+	auto singular_buckets_data = singular_buckets->Retrive();
 
 	for (int dimension = 0; dimension < 2; ++dimension) {
 		for (int byte = 0; byte < 4; ++byte) {
@@ -193,16 +192,13 @@ void PairCreator::RadixSortPairs() {
 			std::swap(pairs_temp->GetBufferId(), CommonBuffers::GetInstance().pairs->GetBufferId());
 		}
 	}
-
-	for (auto& bucket : singular_buckets_data) bucket = 0;
-	singular_buckets->FlushData();
 }
 
 void PairCreator::GridCount() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	grid_counts->FlushData();
-	grid_column_counts->FlushData();
-	grid_column_offsets->FlushData();
+	grid_counts->Clear();
+	grid_column_counts->Clear();
+	grid_column_offsets->Clear();
 
 	glUseProgram(grid_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());

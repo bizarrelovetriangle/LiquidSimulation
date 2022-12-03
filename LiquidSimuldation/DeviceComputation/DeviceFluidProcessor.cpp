@@ -6,6 +6,7 @@
 DeviceFluidProcessor::DeviceFluidProcessor(ParticleGrid& particle_grid)
 	: _particle_grid(particle_grid), _pair_creator(particle_grid)
 {
+	CommonBuffers::GetInstance().config->Flush({ Config::GetInstance() });
 	particle_update_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_update.comp" } });
 	particle_viscosity_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_viscosity.comp" } });
 	particle_density_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_density.comp" } });
@@ -61,9 +62,9 @@ std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
 	auto& grid = _particle_grid.grid;
 	int pairs_count = 0;
 
-	CommonBuffers::GetInstance().particles->FlushData(particles);
-	CommonBuffers::GetInstance().grid->FlushData(grid);
-	CommonBuffers::GetInstance().pairs_count->FlushData({ pairs_count });
+	CommonBuffers::GetInstance().particles->Flush(particles);
+	CommonBuffers::GetInstance().grid->Flush(grid);
+	CommonBuffers::GetInstance().pairs_count->Flush({ pairs_count });
 
 	_pair_creator.ComputePairs();
 
