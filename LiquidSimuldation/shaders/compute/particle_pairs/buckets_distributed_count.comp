@@ -3,10 +3,6 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
 layout(std430, binding = 1) buffer PairsCount
 {
 	int pairs_count;
@@ -34,7 +30,7 @@ void main() {
 	uint pairs_end = min(pairs_start + chunk_size, pairs_count);
 
 	for (uint i = pairs_start; i < pairs_end; ++i) {
-		ivec2 pos = particles[pairs[i].first].gridPosition;
+		ivec2 pos = pairs[i].grid_position;
 		uint value = dimension == 0 ? pos.x : pos.y;
 		uint hash = value >> shift & mask;
 		distributed_buckets[distributed_buckets_start + hash]++;

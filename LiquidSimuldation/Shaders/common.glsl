@@ -1,5 +1,5 @@
 struct Particle {
-	ivec2 gridPosition;
+	ivec2 grid_position;
 
 	vec2 position;
 	vec2 velosity;
@@ -27,6 +27,7 @@ struct PairData {
 	int second;
 	vec2 normal;
 	float proximityCoefficient;
+	ivec2 grid_position;
 };
 
 struct Config {

@@ -12,10 +12,10 @@ layout(std430, binding = 1) buffer GridColumnOffsetsOutput
 	int grid_column_offsets[];
 };
 
-layout(location = 0) uniform ivec2 gridSize;
+layout(location = 0) uniform ivec2 grid_size;
 
 void main() {
-	for (uint i = 1; i < gridSize.y; ++i) {
+	for (uint i = 1; i < grid_size.y; ++i) {
 		grid_column_offsets[i] = grid_column_counts[i-1] + grid_column_offsets[i - 1];
 	}
 }

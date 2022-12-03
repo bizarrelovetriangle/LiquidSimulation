@@ -42,21 +42,20 @@ void main() {
 			for (int i = orgCell.particles_start; i < orgCell.particles_end; ++i) {
 				for (int j = nghrCell.particles_start; j < nghrCell.particles_end; ++j) {
 					if (particles[i].index <= particles[j].index) continue;
+					int first = i;
+					int second = j;
+					if (particles[i].grid_position.x > particles[j].grid_position.x) swap(first, second);
 
-					vec2 vector = particles[j].position - particles[i].position;
+					vec2 vector = particles[second].position - particles[first].position;
 					float vectorLength = length(vector);
 					
 					if (vectorLength < interactionRange) {
 						int pair_id = atomicAdd(pairs_count, 1);
-						pairs[pair_id].first = i;
-						pairs[pair_id].second = j;
+						pairs[pair_id].first = first;
+						pairs[pair_id].second = second;
 						pairs[pair_id].normal = vector / vectorLength;
 						pairs[pair_id].proximityCoefficient = 1 - vectorLength / interactionRange;
-						
-						if (particles[i].gridPosition.x > particles[j].gridPosition.x) {
-							swap(pairs[pair_id].first, pairs[pair_id].second);
-							pairs[pair_id].normal = -pairs[pair_id].normal;
-						}
+						pairs[pair_id].grid_position = particles[first].grid_position;
 					}
 				}
 			}
