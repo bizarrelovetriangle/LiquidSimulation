@@ -13,7 +13,7 @@ public:
 			shared_data->indexes = { 0, 1 };
 			shared_data->render_program.InitProgram({
 				{ GL_VERTEX_SHADER, "shaders/render/wall.vert" },
-				{ GL_FRAGMENT_SHADER, "shaders/render/particle.frag" } });
+				{ GL_FRAGMENT_SHADER, "shaders/render/wall.frag" } });
 			shared_data->render_program.GenerateVAO(shared_data->indexes);
 			shared_data->render_program.Use();
 			auto view_matrix = DataFactory<matrix3x3>::GetData();

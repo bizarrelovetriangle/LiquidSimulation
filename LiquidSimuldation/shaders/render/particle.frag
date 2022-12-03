@@ -1,9 +1,13 @@
 #version 430 core
 
-in vec4 vertexColor;
+in float radius;
+in vec2 vertex_pos;
+in vec4 vertex_color;
 out vec4 FragColor;
 
 void main()
 {
-	FragColor = vertexColor;
+	if (length(vertex_pos) < radius) {
+		FragColor = vertex_color;
+	}
 }

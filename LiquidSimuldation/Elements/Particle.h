@@ -7,7 +7,7 @@
 
 class Particle {
 public:
-	Particle(vector2 position, float radius = 4)
+	Particle(vector2 position, float radius = 2)
 		: position(position), radius(radius)
 	{
 		_shared_data = DataFactory<ElementSharedData<Particle>>::GetData([]() {

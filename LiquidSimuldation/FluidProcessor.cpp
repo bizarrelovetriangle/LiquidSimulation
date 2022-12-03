@@ -21,10 +21,11 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, doubl
 			auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity, wallPerp);
 			double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
 
-			distanse -= particleWallVelosity * interval;
+			float offset = 8;
+			distanse -= particleWallVelosity * interval + particle.radius + offset;
 
-			if (distanse < particle.radius) {
-				particle.position -= wallPerp * (distanse - particle.radius);
+			if (distanse < 0) {
+				particle.position -= wallPerp * distanse;
 				particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
 			}
 		}

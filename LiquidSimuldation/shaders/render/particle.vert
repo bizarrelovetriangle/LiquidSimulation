@@ -2,7 +2,10 @@
 #include "../common.glsl"
 
 layout(location = 0) in vec2 pos;
-out vec4 vertexColor;
+
+out float radius;
+out vec2 vertex_pos;
+out vec4 vertex_color;
 
 layout(std430, binding = 0) buffer ParticlesInput
 {
@@ -15,7 +18,9 @@ layout(location = 3) uniform int index;
 
 void main()
 {
-	vec2 position = pos + particles[index].position;
+	radius = particles[index].radius;
+	vertex_pos = pos * particles[index].radius;
+	vec2 position = pos * particles[index].radius + particles[index].position;
 	gl_Position = vec4(view_matrix * vec3(position, 1.0), 1.0);
-	vertexColor = vec4(color.xyz, 1.0);
+	vertex_color = vec4(color.xyz, 1.0);
 }
