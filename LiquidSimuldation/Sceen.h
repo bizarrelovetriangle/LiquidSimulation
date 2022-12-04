@@ -59,9 +59,8 @@ public:
 private:
 	void Update() {
 		if (_mouse_pressed) {
-			auto test = float(rand() % 10) / 10;
-			vector2 deviation = vector2(float(rand() % 10) / 10);
-			_fluidProcessor->CreateParticle(_mouse_position + deviation);
+			vector2 deviation = vector2(float(rand()), float(rand())) - vector2(RAND_MAX / 2);
+			_fluidProcessor->CreateParticle(_mouse_position + deviation / RAND_MAX * 10);
 		}
 
 		_fluidProcessor->Update(_walls, _expectedDeltaTime);
