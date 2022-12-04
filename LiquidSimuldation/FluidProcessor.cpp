@@ -138,8 +138,7 @@ void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 }
 
 void FluidProcessor::Draw() {
-	for (size_t i = 0; i < _particle_grid.particles.size(); ++i) {
-		auto& particle = _particle_grid.particles[i];
-		particle.Draw(i);
-	}
+	auto particle_shared_data = DataFactory<ElementSharedData<Particle>>::GetData();
+	particle_shared_data->render_program.Use();
+	glDrawElementsInstanced(GL_TRIANGLES, particle_shared_data->indexes.size(), GL_UNSIGNED_INT, 0, _particle_grid.particles.size());
 }

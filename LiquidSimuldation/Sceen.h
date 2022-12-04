@@ -9,6 +9,8 @@
 #include <Utils/NeatTimer.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <DeviceComputation/CommonBuffers.h>
+#include <OpenGL/DeviceProgram/DeviceProgram.h>
 
 class Sceen {
 public:
@@ -62,11 +64,31 @@ private:
 		glClearColor(0.f, 0.f, 0.f, 1.0f); 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		_fluidProcessor->Draw();
-
 		for (auto& wall : _walls) {
 			wall.draw();
 		}
+
+		{
+			size_t pairs_count = CommonBuffers::GetInstance().pairs_count->Retrive().front();
+			DeviceProgram render_program;
+			render_program.InitProgram({
+				{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
+				{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
+
+			glUseProgram(render_program.program_id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs->GetBufferId());
+
+			glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
+			auto& view_matrix = *DataFactory<matrix3x3>::GetData();
+			glUniformMatrix3fv(1, 1, GL_FALSE, (float*)&view_matrix);
+			vector3 color(1., 0.5, 0.5);
+			glUniform4fv(2, 1, (float*)&color);
+
+			glDrawArraysInstanced(GL_LINES, 0, 2, pairs_count);
+		}
+
+		_fluidProcessor->Draw();
 
 		glfwSwapBuffers(_window);
 	}

@@ -172,5 +172,8 @@
     <None Include="shaders\compute\particle_pairs\buckets_distributed_count.comp" />
     <None Include="shaders\compute\particle_pairs\grid_count.comp" />
     <None Include="shaders\compute\particle_pairs\grid_offsets_count.comp" />
+    <None Include="shaders\render\thread.frag" />
+    <None Include="shaders\render\thread.vert" />
+    <None Include="shaders\render\wall.frag" />
   </ItemGroup>
 </Project>

@@ -105,12 +105,12 @@ void PairCreator::SortPairs() {
 void PairCreator::BucketsCount() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	global_buckets->Clear();
+	int chunk_size = std::ceil(float(pairs_count) / parallel);
 
 	glUseProgram(buckets_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, global_buckets->GetBufferId());
-	int chunk_size = std::ceil(float(pairs_count) / parallel);
 	glUniform1i(0, chunk_size);
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -134,11 +134,12 @@ void PairCreator::BucketIndexesCount() {
 void PairCreator::DistributedBucketsCount(int dimension, int byte) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	distributed_buckets->Clear();
+	int chunk_size = std::ceil(float(pairs_count) / parallel);
+
 	glUseProgram(buckets_distributed_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, distributed_buckets->GetBufferId());
-	int chunk_size = std::ceil(float(pairs_count) / parallel);
 	glUniform1i(0, chunk_size);
 	glUniform1i(1, dimension);
 	glUniform1i(2, byte);
@@ -149,8 +150,8 @@ void PairCreator::DistributedBucketsCount(int dimension, int byte) {
 
 void PairCreator::DistributedBucketIndexesCount(int dimension, int byte) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-
 	distributed_bucket_indexes->Clear();
+	size_t _buckets_size_ = 1 << 8;
 
 	glUseProgram(bucket_indexes_distributed_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, distributed_buckets->GetBufferId());
@@ -159,7 +160,6 @@ void PairCreator::DistributedBucketIndexesCount(int dimension, int byte) {
 	glUniform1i(0, parallel);
 	glUniform1i(1, dimension);
 	glUniform1i(2, byte);
-	size_t _buckets_size_ = 1 << 8;
 	glDispatchCompute(_buckets_size_, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	bucket_indexes_distributed_count_program.Wait();
@@ -174,6 +174,7 @@ void PairCreator::RadixSortPairs() {
 			if (singular_buckets_data[dimension * 4 + byte]) continue;
 			DistributedBucketsCount(dimension, byte);
 			DistributedBucketIndexesCount(dimension, byte);
+			int chunk_size = std::ceil(float(pairs_count) / parallel);
 
 			NeatTimer::GetInstance().StageBegin(__func__);
 			glUseProgram(sort_pairs_program.program_id);
@@ -184,7 +185,6 @@ void PairCreator::RadixSortPairs() {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, distributed_buckets->GetBufferId());
 			glUniform1i(1, dimension);
 			glUniform1i(2, byte);
-			int chunk_size = std::ceil(float(pairs_count) / parallel);
 			glUniform1i(3, chunk_size);
 			glDispatchCompute(parallel, 1, 1);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -199,6 +199,7 @@ void PairCreator::GridCount() {
 	grid_counts->Clear();
 	grid_column_counts->Clear();
 	grid_column_offsets->Clear();
+	int chunk_size = std::ceil(float(pairs_count) / parallel);
 
 	glUseProgram(grid_count_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
@@ -207,7 +208,6 @@ void PairCreator::GridCount() {
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, grid_counts->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, grid_column_counts->GetBufferId());
 	glUniform2i(0, _particle_grid.size.x, _particle_grid.size.y);
-	int chunk_size = std::ceil(float(pairs_count) / parallel);
 	glUniform1i(1, chunk_size);
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

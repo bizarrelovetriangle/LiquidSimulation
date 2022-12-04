@@ -216,6 +216,9 @@
     <None Include="shaders\compute\particle_pairs\update_grid.comp" />
     <None Include="shaders\render\particle.frag" />
     <None Include="shaders\render\particle.vert" />
+    <None Include="shaders\render\thread.frag" />
+    <None Include="shaders\render\thread.vert" />
+    <None Include="shaders\render\wall.frag" />
     <None Include="shaders\render\wall.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

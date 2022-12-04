@@ -37,22 +37,6 @@ public:
 		position += velosity * interval;
 	}
 
-	void Draw(int index) {
-		auto _model_matrix = matrix3x3();
-		_model_matrix.scale(radius);
-		_model_matrix.transfer(position);
-
-		std::vector<vector2> points(_shared_data->initial_points.size());
-		for (int i = 0; i < _shared_data->initial_points.size(); ++i) {
-			points[i] = _model_matrix.multiply(_shared_data->initial_points[i], 1.);
-		}
-
-		//_shared_data->render_program.UpdateVerteces(points);
-		_shared_data->render_program.Use();
-		_shared_data->render_program.SetIndex(index);
-		glDrawElements(GL_TRIANGLES, _shared_data->indexes.size(), GL_UNSIGNED_INT, 0);
-	}
-
 	sf::Vector2i gridPosition;
 
 	vector2 position;
