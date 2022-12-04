@@ -35,6 +35,7 @@ public:
 		sf::Clock clock;
 		glfwSetKeyCallback(_window, KeyCallback);
 		glfwSetCursorPosCallback(_window, CursorPositionCallback);
+		glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
 		createParticles(vector2());
 
@@ -57,6 +58,12 @@ public:
 
 private:
 	void Update() {
+		if (_mouse_pressed) {
+			auto test = float(rand() % 10) / 10;
+			vector2 deviation = vector2(float(rand() % 10) / 10);
+			_fluidProcessor->CreateParticle(_mouse_position + deviation);
+		}
+
 		_fluidProcessor->Update(_walls, _expectedDeltaTime);
 	}
 
@@ -109,6 +116,15 @@ private:
 		auto sceen = (Sceen*)glfwGetWindowUserPointer(window);
 		sceen->_mouse_position = sf::Vector2f(sf::Vector2i(xpos, ypos) - sceen->_window_size / 2);
 		sceen->_mouse_position.y = -sceen->_mouse_position.y;
+	}
+
+	static void MouseClickCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		auto sceen = (Sceen*)glfwGetWindowUserPointer(window);
+		if (action == GLFW_PRESS)
+			sceen->_mouse_pressed = true;
+		if (action == GLFW_RELEASE)
+			sceen->_mouse_pressed = false;
 	}
 
 	void createParticles(vector2 position) {
@@ -168,6 +184,7 @@ private:
 		}
 	}
 
+	bool _mouse_pressed = false;
 	vector2 _mouse_position;
 	sf::Vector2i _window_size;
 	GLFWwindow* _window = nullptr;
