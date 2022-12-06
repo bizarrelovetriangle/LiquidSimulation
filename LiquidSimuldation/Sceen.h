@@ -127,7 +127,7 @@ private:
 	}
 
 	void createParticles(vector2 position) {
-		int distance = 10;
+		int distance = 15;
 		int width = 20;
 		int height = 20;
 
