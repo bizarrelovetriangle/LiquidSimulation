@@ -21,6 +21,6 @@ void main()
 	int particle_id = gl_VertexID == 0 ? pairs[gl_InstanceID].first : pairs[gl_InstanceID].second;
 	vec2 pos = particles[particle_id].position;
 	gl_Position = vec4(view_matrix * vec3(pos, 1), 1);
-	float factor = pairs[gl_InstanceID].proximityCoefficient;
+	float factor = pairs[gl_InstanceID].proximity_coefficient;
 	vertex_color = mix(color / 2, color, factor);
 }

@@ -73,6 +73,7 @@ private:
 		for (auto& wall : _walls) {
 			wall.draw();
 		}
+		_fluidProcessor->Draw();
 
 		{
 			size_t pairs_count = CommonBuffers::GetInstance().pairs_count->Retrive().front();
@@ -94,7 +95,6 @@ private:
 			glDrawArraysInstanced(GL_LINES, 0, 2, pairs_count);
 		}
 
-		_fluidProcessor->Draw();
 
 		glfwSwapBuffers(_window);
 	}

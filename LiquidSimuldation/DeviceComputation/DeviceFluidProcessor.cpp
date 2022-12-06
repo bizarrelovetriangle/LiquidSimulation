@@ -33,7 +33,7 @@ void DeviceFluidProcessor::ParticleUpdate(float dt) {
 }
 
 void DeviceFluidProcessor::GranularProcessPairs(const ComputeProgram& program, float dt) {
-	NeatTimer::GetInstance().StageBegin(__func__);
+	//NeatTimer::GetInstance().StageBegin(__func__);
 	glUseProgram(program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
@@ -68,8 +68,11 @@ std::vector<PairData> DeviceFluidProcessor::Update(float dt) {
 
 	_pair_creator.ComputePairs();
 
+	NeatTimer::GetInstance().StageBegin("particle_viscosity_program");
 	GranularProcessPairs(particle_viscosity_program, dt);
+	NeatTimer::GetInstance().StageBegin("particle_density_program");
 	GranularProcessPairs(particle_density_program, dt);
+	NeatTimer::GetInstance().StageBegin("particle_gravity_program");
 	GranularProcessPairs(particle_gravity_program, dt);
 	ParticleUpdate(dt);
 

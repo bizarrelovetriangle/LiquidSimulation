@@ -31,16 +31,8 @@ void main() {
 
 	for (int i = orgCell.pairs_start; i < orgCell.pairs_end; ++i) {
 		PairData pair = pairs[i];
-
-		float inertia = dot(particles[pair.first].velosity - particles[pair.second].velosity, pair.normal);
-		if (inertia <= 0) continue;
-
-		vec2 inertiaViscocity = float(
-			0.5 * dt * pair.proximityCoefficient *
-			(config.kLinearViscocity * inertia + config.kQuadraticViscocity * pow(inertia, 2))) *
-			pair.normal;
-
-		particles[pair.first].velosity -= inertiaViscocity;
-		particles[pair.second].velosity += inertiaViscocity;
+		vec2 viscocity_inertia = pair.viscosity * dt;
+		particles[pair.first].velosity -= viscocity_inertia;
+		particles[pair.second].velosity += viscocity_inertia;
 	}
 }

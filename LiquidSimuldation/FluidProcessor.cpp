@@ -49,8 +49,8 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 				float vectorLength = VectorFunctions::length(vector);
 
 				if (vectorLength < Config::GetInstance().interactionRange) {
-					float proximityCoefficient = 1 - vectorLength / Config::GetInstance().interactionRange;
-					result.emplace_back(i, j, vector / vectorLength, proximityCoefficient);
+					float proximity_coefficient = 1 - vectorLength / Config::GetInstance().interactionRange;
+					result.emplace_back(i, j, vector / vectorLength, proximity_coefficient);
 				}
 			}
 		}
@@ -62,12 +62,11 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 void FluidProcessor::ParticlesGravity(float& interval) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient, _] = pair;
-		auto& first_particle = _particle_grid.particles[first];
-		auto& second_particle = _particle_grid.particles[second];
+		auto& first_particle = _particle_grid.particles[pair.first];
+		auto& second_particle = _particle_grid.particles[pair.second];
 
-		float proximityCoefficient2 = pow(proximityCoefficient, 2);
-		float proximityCoefficient3 = proximityCoefficient2 * proximityCoefficient;
+		float proximityCoefficient2 = pow(pair.proximity_coefficient, 2);
+		float proximityCoefficient3 = proximityCoefficient2 * pair.proximity_coefficient;
 		first_particle.density += proximityCoefficient2;
 		first_particle.density_near += proximityCoefficient3;
 		second_particle.density += proximityCoefficient2;
@@ -75,17 +74,16 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 	}
 
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient, _] = pair;
-		auto& first_particle = _particle_grid.particles[first];
-		auto& second_particle = _particle_grid.particles[second];
+		auto& first_particle = _particle_grid.particles[pair.first];
+		auto& second_particle = _particle_grid.particles[pair.second];
 
 		float pressureM = Config::GetInstance().k * (first_particle.density - Config::GetInstance().restDensity + second_particle.density - Config::GetInstance().restDensity);
 		float nearPressureM = Config::GetInstance().k_near * (first_particle.density_near + second_particle.density_near);
 
 		vector2 pressure = float(
 			interval *
-			(pressureM * proximityCoefficient + nearPressureM * pow(proximityCoefficient, 2))) *
-			normal;
+			(pressureM * pair.proximity_coefficient + nearPressureM * pow(pair.proximity_coefficient, 2))) *
+			pair.normal;
 
 		first_particle.velosity -= pressure;
 		second_particle.velosity += pressure;
@@ -95,17 +93,16 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 void FluidProcessor::ApplyViscosity(float& interval) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
-		auto& [first, second, normal, proximityCoefficient, _] = pair;
-		auto& first_particle = _particle_grid.particles[first];
-		auto& second_particle = _particle_grid.particles[second];
+		auto& first_particle = _particle_grid.particles[pair.first];
+		auto& second_particle = _particle_grid.particles[pair.second];
 
-		float inertia = VectorFunctions::dotProduct(first_particle.velosity - second_particle.velosity, normal);
+		float inertia = VectorFunctions::dotProduct(first_particle.velosity - second_particle.velosity, pair.normal);
 		if (inertia <= 0) continue;
 
 		vector2 inertiaViscocity = float(
-			0.5f * interval * proximityCoefficient *
+			0.5f * interval * pair.proximity_coefficient *
 			(Config::GetInstance().kLinearViscocity * inertia + Config::GetInstance().kQuadraticViscocity * pow(inertia, 2))) *
-			normal;
+			pair.normal;
 
 		first_particle.velosity -= inertiaViscocity;
 		second_particle.velosity += inertiaViscocity;

@@ -58,7 +58,7 @@ void PairCreator::CreatePairs() {
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
-	glUniform1i(0, _particle_grid.cellWidth);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 	glUniform2i(1, _particle_grid.size.x, _particle_grid.size.y);
 
 	glDispatchCompute(_particle_grid.size.x, _particle_grid.size.y, 1);

@@ -54,8 +54,8 @@ private:
 };
 
 struct alignas(8) PairData {
-	PairData(int first, int second, const sf::Vector2f& normal, float proximityCoefficient)
-		: first(first), second(second), normal(normal), proximityCoefficient(proximityCoefficient)
+	PairData(int first, int second, const sf::Vector2f& normal, float proximity_coefficient)
+		: first(first), second(second), normal(normal), proximity_coefficient(proximity_coefficient)
 	{}
 
 	PairData() {}
@@ -63,6 +63,9 @@ struct alignas(8) PairData {
 	int first;
 	int second;
 	sf::Vector2f normal;
-	float proximityCoefficient;
+	float proximity_coefficient;
+	float proximity_coefficient_2;
+	float proximity_coefficient_3;
+	sf::Vector2f viscosity_inertia;
 	sf::Vector2i grid_position;
 };

@@ -25,9 +25,13 @@ struct GridCell {
 struct PairData {
 	int first;
 	int second;
-	vec2 normal;
-	float proximityCoefficient;
 	ivec2 grid_position;
+
+	vec2 normal;
+	float proximity_coefficient;
+	float proximity_coefficient_2;
+	float proximity_coefficient_3;
+	vec2 viscosity;
 };
 
 struct Config {

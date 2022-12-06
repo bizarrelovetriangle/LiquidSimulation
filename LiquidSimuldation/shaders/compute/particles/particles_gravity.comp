@@ -35,8 +35,7 @@ void main() {
 		float pressureM = config.k * (particles[pair.first].density - config.restDensity + particles[pair.second].density - config.restDensity);
 		float nearPressureM = config.k_near * (particles[pair.first].density_near + particles[pair.second].density_near);
 
-		vec2 pressure = float(
-			dt * (pressureM * pair.proximityCoefficient + nearPressureM * pow(pair.proximityCoefficient, 2))) *
+		vec2 pressure = dt * (pressureM * pair.proximity_coefficient + nearPressureM * pair.proximity_coefficient_2) *
 			pair.normal;
 
 		particles[pair.first].velosity -= pressure;

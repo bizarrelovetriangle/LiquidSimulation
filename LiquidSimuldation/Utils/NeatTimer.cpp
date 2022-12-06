@@ -13,14 +13,14 @@ void NeatTimer::StageBegin(const std::string& stage)
 	auto now = clock_.now();
 
 	if (!currentStage_.empty()) {
-		auto duration = now - lastTime_;
+		auto duration = now - _lastTime;
 		if (auto pair = _stage_map.try_emplace(std::move(currentStage_), duration); !pair.second) {
 			pair.first->second += duration;
 		}
 	}
 
 	currentStage_ = stage;
-	lastTime_ = now;
+	_lastTime = now;
 }
 
 void NeatTimer::Refresh(std::chrono::seconds rate)
