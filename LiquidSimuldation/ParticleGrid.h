@@ -15,9 +15,6 @@ public:
 
 		int particles_start;
 		int particles_end;
-
-		int pairs_start;
-		int pairs_end;
 	};
 
 	using GridType = std::vector<GridCell>;

@@ -17,17 +17,13 @@ private:
 
 public:
 	static DeviceFluidProcessor& GetInstance(ParticleGrid& particle_grid);
-	std::vector<PairData> Update(float dt);
+	void Update(float dt);
 
 private:
 	void ParticleUpdate(float dt);
-	void GranularProcessPairs(const ComputeProgram& program, float dt);
 
 	ParticleGrid& _particle_grid;
 	PairCreator _pair_creator;
 
-	ComputeProgram particle_viscosity_program;
 	ComputeProgram particle_update_program;
-	ComputeProgram particle_density_program;
-	ComputeProgram particle_gravity_program;
 };

@@ -5,7 +5,7 @@
 
 class Wall {
 public:
-	Wall(sf::Vector2f a, sf::Vector2f b)
+	Wall(vector2 a, vector2 b)
 		: a(a), b(b)
 	{
 		_shared_data = DataFactory<ElementSharedData<Wall>>::GetData([&]() {
@@ -31,7 +31,7 @@ public:
 		glDrawElements(GL_LINES, _shared_data->indexes.size(), GL_UNSIGNED_INT, 0);
 	}
 
-	sf::Vector2f a, b;
+	vector2 a, b;
 
 private:
 	std::vector<vector2> _initial_points;

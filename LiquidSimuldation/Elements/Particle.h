@@ -5,12 +5,12 @@
 #include <Utils/DataFactory.h>
 #include <Elements/ElementSharedData.h>
 
-class Particle {
+class alignas(8) Particle {
 public:
 	Particle(vector2 position, float radius = 2)
 		: position(position), radius(radius)
 	{
-		_shared_data = DataFactory<ElementSharedData<Particle>>::GetData([]() {
+		DataFactory<ElementSharedData<Particle>>::GetData([]() {
 			auto shared_data = std::make_shared<ElementSharedData<Particle>>();
 			shared_data->initial_points = { {-1., -1.}, {1., -1.}, {-1., 1.}, {1., 1.} };
 			shared_data->indexes = { 0, 1, 3, 0, 3, 2 };
@@ -37,18 +37,14 @@ public:
 		position += velosity * interval;
 	}
 
-	sf::Vector2i gridPosition;
-
 	vector2 position;
 	vector2 velosity;
+	vector2 applied_impulse;
 	vector2 acceleration;
-	float radius;
 
+	sf::Vector2i gridPosition;
+	float radius;
 	float density = 0;
 	float density_near = 0;
-
 	int index = 0;
-
-private:
-	std::shared_ptr<ElementSharedData<Particle>> _shared_data;
 };

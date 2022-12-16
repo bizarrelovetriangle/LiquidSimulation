@@ -3,11 +3,6 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-struct Range {
-	ivec2 a;
-	ivec2 b;
-};
-
 layout(std430, binding = 0) buffer ParticlesInput
 {
 	Particle particles[];
@@ -27,62 +22,51 @@ layout(std430, binding = 3) buffer PairsOutput
 
 layout(std140, binding = 0) uniform ConfigInput { Config config; };
 layout(location = 1) uniform ivec2 grid_size;
-
-Range GetRange(ivec2 gridPos);
+layout(location = 2) uniform float dt;
 
 void main() {
-	ivec2 gridPos = ivec2(gl_GlobalInvocationID.xy);
-	GridCell orgCell = grid[gridPos.y * grid_size.x + gridPos.x];
-	Range range = GetRange(gridPos);
+	uint org = gl_GlobalInvocationID.x;
+	Range range = GetRange(grid_size, particles[org].grid_position);
 
 	for (int y = range.a.y; y <= range.b.y; ++y) {
 		for (int x = range.a.x; x <= range.b.x; ++x) {
 			GridCell nghrCell = grid[y * grid_size.x + x];
 
-			for (int i = orgCell.particles_start; i < orgCell.particles_end; ++i) {
-				for (int j = nghrCell.particles_start; j < nghrCell.particles_end; ++j) {
-					if (particles[i].index <= particles[j].index) continue;
-					int first = i;
-					int second = j;
-					if (particles[i].grid_position.x > particles[j].grid_position.x) swap(first, second);
+			for (int i = nghrCell.particles_start; i < nghrCell.particles_end; ++i) {
+				if (particles[org].index == particles[i].index) continue;
 
-					vec2 vector = particles[second].position - particles[first].position;
-					float vectorLength = length(vector);
-					
-					if (vectorLength < config.interactionRange) {
-						int pair_id = atomicAdd(pairs_count, 1);
-						pairs[pair_id].first = first;
-						pairs[pair_id].second = second;
-						pairs[pair_id].grid_position = particles[first].grid_position;
+				vec2 vector = particles[i].position - particles[org].position;
+				float dist = length(vector);
 
-						pairs[pair_id].normal = vector / vectorLength;
-						pairs[pair_id].proximity_coefficient = 1 - vectorLength / config.interactionRange;
-						pairs[pair_id].proximity_coefficient_2 = pow(pairs[pair_id].proximity_coefficient, 2);
-						pairs[pair_id].proximity_coefficient_3 = pairs[pair_id].proximity_coefficient_2 * pairs[pair_id].proximity_coefficient;
+				if (dist > config.interactionRange) continue;
 
-						float inertia = dot(particles[first].velosity - particles[second].velosity, pairs[pair_id].normal);
-						if (inertia > 0) {
-							pairs[pair_id].viscosity = 0.5 * pairs[pair_id].proximity_coefficient *
-								(config.kLinearViscocity * inertia + config.kQuadraticViscocity * pow(inertia, 2)) *
-								pairs[pair_id].normal;
-						}
-						else {
-							pairs[pair_id].viscosity = vec2(0, 0);
-						}
-					}
+				vec2 normal = vector / dist;
+				float proximity_coefficient = 1 - dist / config.interactionRange;
+
+				// viscosity
+				float inertia = dot(particles[org].velosity - particles[i].velosity, normal);
+				if (inertia > 0) {
+					vec2 viscosity = 0.5 * proximity_coefficient *
+						(config.kLinearViscocity * inertia + config.kQuadraticViscocity * pow(inertia, 2)) *
+						normal * dt;
+					particles[org].applied_impulse -= viscosity;
+				}
+
+				// pressure
+				float pressureM = config.k * (particles[org].density - config.restDensity + particles[i].density - config.restDensity);
+				float nearPressureM = config.k_near * (particles[org].density_near + particles[i].density_near);
+				vec2 pressure = dt * (pressureM * proximity_coefficient + nearPressureM * pow(proximity_coefficient, 2)) * normal;
+				particles[org].applied_impulse -= pressure;
+
+				// pair
+				if (particles[org].index < particles[i].index) {
+					int pair_id = atomicAdd(pairs_count, 1);
+					pairs[pair_id].first = int(org);
+					pairs[pair_id].second = i;
+					pairs[pair_id].normal = normal;
+					pairs[pair_id].proximity_coefficient = proximity_coefficient;
 				}
 			}
 		}
 	}
-}
-
-Range GetRange(ivec2 gridPos) {
-	Range range;
-	range.a = gridPos - ivec2(1, 1);
-	range.b = gridPos + ivec2(1, 1);
-	range.a.x = clamp(range.a.x, 0, grid_size.x - 1);
-	range.a.y = clamp(range.a.y, 0, grid_size.y - 1);
-	range.b.x = clamp(range.b.x, 0, grid_size.x - 1);
-	range.b.y = clamp(range.b.y, 0, grid_size.y - 1);
-	return range;
 }

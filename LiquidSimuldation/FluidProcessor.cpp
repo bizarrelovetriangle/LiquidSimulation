@@ -111,20 +111,15 @@ void FluidProcessor::ApplyViscosity(float& interval) {
 
 void FluidProcessor::CreateParticle(vector2 position) {
 	Particle particle(position);
-	particle.acceleration = vector2(0, -200);
+	//particle.acceleration = vector2(0, -200);
 	_particle_grid.AddParticle(particle);
 }
 
 void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
-	for (auto& particle : _particle_grid.particles) {
-		particle.density = 0.f;
-		particle.density_near = 0.f;
-	}
-
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
 
-	pairs = DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
+	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
 	//pairs = gpu_compute.CreatePairs(_particle_grid);
 	//pairs = createPairs();
 

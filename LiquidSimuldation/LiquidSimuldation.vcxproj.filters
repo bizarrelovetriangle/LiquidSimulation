@@ -145,35 +145,15 @@
     <None Include="shaders\render\wall.vert">
       <Filter>Source Files\shaders\render</Filter>
     </None>
-    <None Include="shaders\compute\particles\particles_density.comp">
-      <Filter>Source Files\shaders\compute\particles</Filter>
-    </None>
-    <None Include="shaders\compute\particles\particles_gravity.comp">
-      <Filter>Source Files\shaders\compute\particles</Filter>
-    </None>
     <None Include="shaders\compute\particles\particles_update.comp">
       <Filter>Source Files\shaders\compute\particles</Filter>
-    </None>
-    <None Include="shaders\compute\particles\particles_viscosity.comp">
-      <Filter>Source Files\shaders\compute\particles</Filter>
-    </None>
-    <None Include="shaders\compute\particle_pairs\radix_sort.comp">
-      <Filter>Source Files\shaders\compute\particle_pairs</Filter>
-    </None>
-    <None Include="shaders\compute\particle_pairs\buckets_count.comp">
-      <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
     <None Include="shaders\compute\particle_pairs\create_pairs.comp">
       <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
-    <None Include="shaders\compute\particle_pairs\update_grid.comp" />
-    <None Include="shaders\compute\particle_pairs\bucket_indexes_count.comp" />
-    <None Include="shaders\compute\particle_pairs\bucket_indexes_distributed_count.comp" />
-    <None Include="shaders\compute\particle_pairs\buckets_distributed_count.comp" />
-    <None Include="shaders\compute\particle_pairs\grid_count.comp" />
-    <None Include="shaders\compute\particle_pairs\grid_offsets_count.comp" />
     <None Include="shaders\render\thread.frag" />
     <None Include="shaders\render\thread.vert" />
     <None Include="shaders\render\wall.frag" />
+    <None Include="shaders\compute\particle_pairs\compute_dencity.comp" />
   </ItemGroup>
 </Project>

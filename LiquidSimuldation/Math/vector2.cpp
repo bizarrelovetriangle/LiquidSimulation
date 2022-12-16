@@ -47,7 +47,7 @@ vector2 vector2::clockwise_perpendicular() const
 
 bool vector2::is_zero() const
 {
-	return x == 0 || y == 0;
+	return x == 0 && y == 0;
 }
 
 bool vector2::is_nan() const

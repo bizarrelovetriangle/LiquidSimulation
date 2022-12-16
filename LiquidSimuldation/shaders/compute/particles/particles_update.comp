@@ -13,5 +13,7 @@ layout(location = 0) uniform float dt;
 void main() {
 	uint id = gl_GlobalInvocationID.x;
 	particles[id].velosity += particles[id].acceleration * dt;
+	particles[id].velosity += particles[id].applied_impulse;
+	particles[id].applied_impulse = vec2(0);
 	particles[id].position += particles[id].velosity * dt;
 }
