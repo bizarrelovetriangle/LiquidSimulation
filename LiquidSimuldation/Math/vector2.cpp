@@ -1,5 +1,6 @@
 #include "vector2.h"
 #include <Math/vector2i.h>
+#include <cmath>
 
 const vector2 vector2::zero_vector(0);
 

@@ -1,5 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <Utils/DataFactory.h>
 #include <Elements/ElementSharedData.h>
 

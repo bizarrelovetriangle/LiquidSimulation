@@ -32,7 +32,8 @@ public:
 	}
 
 	void Start() {
-		sf::Clock clock;
+		std::chrono::steady_clock clock;
+		std::chrono::steady_clock::time_point then;
 		glfwSetKeyCallback(_window, KeyCallback);
 		glfwSetCursorPosCallback(_window, CursorPositionCallback);
 		glfwSetMouseButtonCallback(_window, MouseClickCallback);
@@ -44,10 +45,10 @@ public:
 			NeatTimer::GetInstance().StageBegin("Events");
 			glfwPollEvents();
 
-			float interval = 1. / 100;
-			float time = clock.getElapsedTime().asSeconds();
-			if (time < interval) sf::sleep(sf::seconds(interval - time));
-			_deltaTime = clock.restart().asSeconds();
+			auto interval = std::chrono::milliseconds(1000) / 100;
+			auto dt = clock.now() - then;
+			if (dt < interval) std::this_thread::sleep_for(interval - dt);
+			then = clock.now();
 
 			Update();
 			NeatTimer::GetInstance().StageBegin("Draw");
@@ -152,7 +153,7 @@ private:
 		walls.emplace_back(Wall(point_b, point_c));
 		walls.emplace_back(Wall(point_c, point_d));
 		walls.emplace_back(Wall(point_d, point_a));
-		//walls.emplace_back(Wall(window, vector2(-100, -100), vector2(100, 100)));
+		//walls.emplace_back(Wall(vector2(-100, -100), vector2(100, 100)));
 	}
 
 	void InitEnvironment(bool is_full_screen) {
@@ -191,5 +192,4 @@ private:
 	std::vector<Wall> _walls;
 
 	float _expectedDeltaTime = 1. / 60;
-	float _deltaTime = 0;
 };

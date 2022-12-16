@@ -1,7 +1,6 @@
 #pragma once
 #include <Math/vector2.h>
 #include <vector>
-#include <SFML/Graphics.hpp>
 #include <OpenGL/DeviceProgram/ComputeProgram.h>
 #include <OpenGL/DeviceBuffer.h>
 

@@ -134,7 +134,6 @@
     <ClInclude Include="Math\vector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Shaders\common.glsl">
       <Filter>Source Files\shaders</Filter>
     </None>
