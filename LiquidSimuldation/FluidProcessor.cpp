@@ -16,8 +16,7 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 		auto wall_center = (wall.a + wall.b) / 2;
 
 		for (auto& particle : _particle_grid.particles) {
-			float offset = 8;
-			float max_dist = particle.radius + offset;
+			float max_dist = 14;
 			float dist = particle.position.distance_to_line(wall.a, wall.b);
 
 			if (dist > max_dist) continue;
@@ -115,12 +114,16 @@ void FluidProcessor::CreateParticle(vector2 position) {
 }
 
 void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
+	if (_particle_grid.particles.size() == 0) return;
+
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
 	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
 }
 
 void FluidProcessor::Draw() {
+	if (_particle_grid.particles.size() == 0) return;
+
 	auto particle_shared_data = DataFactory<ElementSharedData<Particle>>::GetData();
 	particle_shared_data->render_program.Use();
 	glDrawElementsInstanced(GL_TRIANGLES, particle_shared_data->indexes.size(), GL_UNSIGNED_INT, 0, _particle_grid.particles.size());

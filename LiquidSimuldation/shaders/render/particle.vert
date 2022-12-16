@@ -8,6 +8,7 @@ layout(std430, binding = 0) buffer ParticlesInput
 	Particle particles[];
 };
 
+layout(std140, binding = 1) uniform ConfigInput { Config config; };
 layout(location = 0) uniform mat3 view_matrix;
 layout(location = 2) uniform vec4 color;
 

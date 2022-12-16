@@ -74,7 +74,6 @@ private:
 		for (auto& wall : _walls) {
 			wall.draw();
 		}
-		_fluidProcessor->Draw();
 
 		{
 			size_t pairs_count = CommonBuffers::GetInstance().pairs_count->Retrive().front();
@@ -82,20 +81,21 @@ private:
 			render_program.InitProgram({
 				{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
 				{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
-
+			
 			glUseProgram(render_program.program_id);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs->GetBufferId());
-
+			
 			glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 			auto& view_matrix = *DataFactory<matrix3x3>::GetData();
 			glUniformMatrix3fv(1, 1, GL_FALSE, (float*)&view_matrix);
 			vector3 color(1., 0.5, 0.5);
 			glUniform4fv(2, 1, (float*)&color);
-
+			
 			glDrawArraysInstanced(GL_LINES, 0, 2, pairs_count);
 		}
 
+		_fluidProcessor->Draw();
 
 		glfwSwapBuffers(_window);
 	}

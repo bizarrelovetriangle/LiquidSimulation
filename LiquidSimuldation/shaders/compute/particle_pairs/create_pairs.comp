@@ -38,7 +38,7 @@ void main() {
 				vec2 vector = particles[i].position - particles[org].position;
 				float dist = length(vector);
 
-				if (dist > config.interactionRange) continue;
+				if (dist > config.interactionRange || dist == 0) continue;
 
 				vec2 normal = vector / dist;
 				float proximity_coefficient = 1 - dist / config.interactionRange;
