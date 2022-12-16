@@ -23,6 +23,7 @@ public:
 	bool is_clockwise(const vector2& o, const vector2& relative) const;
 	vector2 projection_to(const vector2& v) const;
 	vector2 projection_to(const vector2& a, const vector2& b) const;
+	float distance_to_line(vector2 a, vector2 b) const;
 	vector2 operator*(const double& d) const;
 	void operator*=(const double& d);
 	vector2 operator/(const double& d) const;

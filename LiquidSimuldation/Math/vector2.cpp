@@ -103,6 +103,19 @@ vector2 vector2::projection_to(const vector2& a, const vector2& b) const
 	return a_b_normalize * a_b_normalize.dot_product(*this - b) + b;
 }
 
+float vector2::distance_to_line(vector2 a, vector2 b) const
+{
+	vector2 a_b = a - b;
+	vector2 o_b = *this - b;
+	double a_b_length = a_b.length();
+	vector2 a_b_normal = a_b / a_b_length;
+
+	float dot = a_b_normal.dot_product(o_b);
+	if (dot < 0) return o_b.length();
+	else if (dot > a_b_length) return (*this - a).length();
+	return std::abs(a_b_normal.cross_product(o_b));
+}
+
 vector2 vector2::operator*(const double& d) const
 {
 	return vector2(x * d, y * d);

@@ -75,9 +75,6 @@
     <ClInclude Include="FluidProcessor.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\VectorFunctions.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleGrid.h">
       <Filter>Source Files</Filter>
     </ClInclude>

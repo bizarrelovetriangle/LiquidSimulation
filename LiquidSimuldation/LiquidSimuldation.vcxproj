@@ -196,7 +196,6 @@
     <ClInclude Include="Sceen.h" />
     <ClInclude Include="Math\vector2.h" />
     <ClInclude Include="Math\vector3.h" />
-    <ClInclude Include="Math\VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,4 +1,5 @@
 #pragma once
+#include <Math/vector2.h>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <OpenGL/DeviceProgram/ComputeProgram.h>
@@ -26,7 +27,7 @@ private:
 };
 
 struct alignas(8) PairData {
-	PairData(int first, int second, const sf::Vector2f& normal, float proximity_coefficient)
+	PairData(int first, int second, const vector2& normal, float proximity_coefficient)
 		: first(first), second(second), normal(normal), proximity_coefficient(proximity_coefficient)
 	{}
 
@@ -34,6 +35,6 @@ struct alignas(8) PairData {
 
 	int first;
 	int second;
-	sf::Vector2f normal;
+	vector2 normal;
 	float proximity_coefficient;
 };

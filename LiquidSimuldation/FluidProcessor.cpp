@@ -1,7 +1,6 @@
 #include "FluidProcessor.h"
 
 #include <math.h>
-#include <Math/VectorFunctions.h>
 #include <Config.h>
 
 FluidProcessor::FluidProcessor(sf::Vector2i windowSize)
@@ -9,25 +8,28 @@ FluidProcessor::FluidProcessor(sf::Vector2i windowSize)
 	_particle_grid.Init(windowSize);
 }
 
-void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, double interval) {
+void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, double dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	for (auto& particle : _particle_grid.particles) {
-		for (auto& wall : walls) {
-			// take out of loop
-			auto wallVector = VectorFunctions::normalize(wall.a - wall.b);
-			bool isClockwise = VectorFunctions::isClockwise(wall.a, wall.b, particle.position);
-			auto wallPerp = (vector2)VectorFunctions::perpendicular(wallVector, isClockwise);
 
-			auto particleWallVelosity = -VectorFunctions::dotProduct(particle.velosity, wallPerp);
-			double distanse = VectorFunctions::linePointDistance(wall.a, wall.b, particle.position);
+	for (auto& wall : walls) {
+		auto wallVector = (wall.a - wall.b).normalize();
+		auto wall_center = (wall.a + wall.b) / 2;
 
+		for (auto& particle : _particle_grid.particles) {
 			float offset = 8;
-			distanse -= particleWallVelosity * interval + particle.radius + offset;
+			float max_dist = particle.radius + offset;
+			double dist = particle.position.distance_to_line(wall.a, wall.b);
 
-			if (distanse < 0) {
-				particle.position -= wallPerp * distanse;
-				particle.velosity -= wallPerp * (double)VectorFunctions::dotProduct(particle.velosity, wallPerp) * 1.5;
-			}
+			if (dist > max_dist) continue;
+
+			auto wallPerp = wallVector.is_clockwise(particle.position - wall_center)
+				? wallVector.clockwise_perpendicular()
+				: -wallVector.clockwise_perpendicular();
+			particle.position += wallPerp * (max_dist - dist);
+
+			auto particleWallVelosity = -wallPerp.dot_product(particle.velosity);
+			if (particleWallVelosity < 0) continue;
+			particle.velosity += wallPerp * particleWallVelosity * 1.5;
 		}
 	}
 }
@@ -45,8 +47,8 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 				auto& neighbour = _particle_grid.particles[j];
 				if (particle.index <= neighbour.index) continue;
 
-				sf::Vector2f vector = neighbour.position - particle.position;
-				float vectorLength = VectorFunctions::length(vector);
+				vector2 vector = neighbour.position - particle.position;
+				double vectorLength = vector.length();
 
 				if (vectorLength < Config::GetInstance().interactionRange) {
 					float proximity_coefficient = 1 - vectorLength / Config::GetInstance().interactionRange;
@@ -59,7 +61,7 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 	return result;
 }
 
-void FluidProcessor::ParticlesGravity(float& interval) {
+void FluidProcessor::ParticlesGravity(float& dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
 		auto& first_particle = _particle_grid.particles[pair.first];
@@ -81,7 +83,7 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 		float nearPressureM = Config::GetInstance().k_near * (first_particle.density_near + second_particle.density_near);
 
 		vector2 pressure = float(
-			interval *
+			dt *
 			(pressureM * pair.proximity_coefficient + nearPressureM * pow(pair.proximity_coefficient, 2))) *
 			pair.normal;
 
@@ -90,17 +92,17 @@ void FluidProcessor::ParticlesGravity(float& interval) {
 	}
 }
 
-void FluidProcessor::ApplyViscosity(float& interval) {
+void FluidProcessor::ApplyViscosity(float& dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	for (auto& pair : pairs) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
-		float inertia = VectorFunctions::dotProduct(first_particle.velosity - second_particle.velosity, pair.normal);
+		float inertia = pair.normal.dot_product(first_particle.velosity - second_particle.velosity);
 		if (inertia <= 0) continue;
 
 		vector2 inertiaViscocity = float(
-			0.5f * interval * pair.proximity_coefficient *
+			0.5f * dt * pair.proximity_coefficient *
 			(Config::GetInstance().kLinearViscocity * inertia + Config::GetInstance().kQuadraticViscocity * pow(inertia, 2))) *
 			pair.normal;
 
@@ -111,22 +113,14 @@ void FluidProcessor::ApplyViscosity(float& interval) {
 
 void FluidProcessor::CreateParticle(vector2 position) {
 	Particle particle(position);
-	//particle.acceleration = vector2(0, -200);
+	particle.acceleration = vector2(0, -200);
 	_particle_grid.AddParticle(particle);
 }
 
 void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
-
 	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
-	//pairs = gpu_compute.CreatePairs(_particle_grid);
-	//pairs = createPairs();
-
-	//applyViscosity(dt);
-	//particlesGravity(dt);
-
-	//gpu_compute.ParticleUpdate(_particle_grid, dt);
 }
 
 void FluidProcessor::Draw() {
