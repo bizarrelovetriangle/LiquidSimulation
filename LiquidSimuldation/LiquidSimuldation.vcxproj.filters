@@ -70,6 +70,9 @@
     <ClCompile Include="OpenGL\DeviceBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Math\vector2i.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -127,6 +130,8 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenGL\DeviceBuffer.h" />
+    <ClInclude Include="Math\vector2i.h" />
+    <ClInclude Include="Math\vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

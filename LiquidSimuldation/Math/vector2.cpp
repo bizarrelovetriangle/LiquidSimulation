@@ -1,37 +1,34 @@
 #include "vector2.h"
+#include <Math/vector2i.h>
 
 const vector2 vector2::zero_vector(0);
 
-vector2::vector2() : sf::Vector2f(0, 0)
+vector2::vector2()
 {
 }
 
-vector2::vector2(const double& v) : sf::Vector2f((float) v, (float) v)
-{
-	x = v;
-	y = v;
-}
-
-vector2::vector2(const double& x, const double& y) : sf::Vector2f((float) x, (float) y)
-{
-	this->x = x;
-	this->y = y;
-}
-
-vector2::vector2(const sf::Vector2f& v) : sf::Vector2f(v)
+vector2::vector2(const float& v) : x(v), y(v)
 {
 }
 
-vector2 vector2::rotate(const double& radians) const
+vector2::vector2(const float& x, const float& y) : x(x), y(y)
 {
-	double _x = x * cos(radians) - y * sin(radians);
-	double _y = x * sin(radians) + y * cos(radians);
+}
+
+vector2::vector2(const vector2i& v) : x(v.x), y(v.y)
+{
+}
+
+vector2 vector2::rotate(const float& radians) const
+{
+	float _x = x * cos(radians) - y * sin(radians);
+	float _y = x * sin(radians) + y * cos(radians);
 	return vector2(_x, _y);
 }
 
 vector2 vector2::normalize() const
 {
-	double length = this->length();
+	float length = this->length();
 
 	if (length == 0) {
 		return vector2(0, -1);
@@ -55,13 +52,13 @@ bool vector2::is_nan() const
 	return std::isnan(x) || std::isnan(y);
 }
 
-double vector2::length() const
+float vector2::length() const
 {
-	double _sqrt = sqrt(x * x + y * y);
+	float _sqrt = sqrt(x * x + y * y);
 	return std::isnan(_sqrt) ? 0 : _sqrt;
 }
 
-double vector2::distance(const vector2& o) const
+float vector2::distance(const vector2& o) const
 {
 	return (*this - o).length();
 }
@@ -71,12 +68,12 @@ vector2 vector2::negate() const
 	return vector2(-x, -y);
 }
 
-double vector2::dot_product(const vector2& o) const
+float vector2::dot_product(const vector2& o) const
 {
 	return x * o.x + y * o.y;
 }
 
-double vector2::cross_product(const vector2& o) const
+float vector2::cross_product(const vector2& o) const
 {
 	return x * o.y - y * o.x;
 }
@@ -107,7 +104,7 @@ float vector2::distance_to_line(vector2 a, vector2 b) const
 {
 	vector2 a_b = a - b;
 	vector2 o_b = *this - b;
-	double a_b_length = a_b.length();
+	float a_b_length = a_b.length();
 	vector2 a_b_normal = a_b / a_b_length;
 
 	float dot = a_b_normal.dot_product(o_b);
@@ -116,23 +113,23 @@ float vector2::distance_to_line(vector2 a, vector2 b) const
 	return std::abs(a_b_normal.cross_product(o_b));
 }
 
-vector2 vector2::operator*(const double& d) const
+vector2 vector2::operator*(const float& d) const
 {
 	return vector2(x * d, y * d);
 }
 
-void vector2::operator*=(const double& d)
+void vector2::operator*=(const float& d)
 {
 	x = x * d;
 	y = y * d;
 }
 
-vector2 vector2::operator/(const double& d) const
+vector2 vector2::operator/(const float& d) const
 {
 	return vector2(x / d, y / d);
 }
 
-void vector2::operator/=(const double& d)
+void vector2::operator/=(const float& d)
 {
 	x = x / d;
 	y = y / d;

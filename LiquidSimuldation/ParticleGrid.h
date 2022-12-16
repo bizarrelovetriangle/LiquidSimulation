@@ -5,6 +5,7 @@
 #include <Config.h>
 #include <Utils/NeatTimer.h>
 #include <Utils/Algorithms.h>
+#include <Math/vector2i.h>
 
 class ParticleGrid {
 public:
@@ -19,23 +20,23 @@ public:
 
 	using GridType = std::vector<GridCell>;
 
-	void Init(sf::Vector2i windowSize);
+	void Init(vector2i windowSize);
 	void AddParticle(const Particle& particle);
 	void UpdateParticleNeighbours();
 	std::vector<std::span<Particle>> GetNeighbours(const Particle& particle);
 	std::vector<GridCell> GetNeighbourIndexes(const Particle& particle);
-	GridCell& GetGridCell(const sf::Vector2i& grid_position);
+	GridCell& GetGridCell(const vector2i& grid_position);
 
 	std::vector<Particle> particles;
 	GridType grid;
 
 	int cellWidth;
-	sf::Vector2i size;
+	vector2i size;
 
 private:
-	sf::Vector2i GetGridPosition(const Particle& particle);
+	vector2i GetGridPosition(const Particle& particle);
 	bool IsOutsideWindow(const Particle& particle);
 
-	sf::Vector2i _windowSize;
-	sf::Vector2i _windowStart;
+	vector2i _windowSize;
+	vector2i _windowStart;
 };

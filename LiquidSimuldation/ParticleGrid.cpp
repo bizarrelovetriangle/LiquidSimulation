@@ -1,6 +1,7 @@
 #include "ParticleGrid.h"
+#include <Math/vector2i.h>
 
-void ParticleGrid::Init(sf::Vector2i windowSize) {
+void ParticleGrid::Init(vector2i windowSize) {
 	cellWidth = Config::GetInstance().interactionRange;
 	_windowSize = windowSize;
 	_windowStart = -windowSize / 2;
@@ -35,7 +36,7 @@ void ParticleGrid::UpdateParticleNeighbours() {
 	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.x; });
 	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.y; });
 
-	sf::Vector2i last_position = particles[0].gridPosition;
+	vector2i last_position = particles[0].gridPosition;
 	for (size_t i = 1; i < particles.size(); ++i) {
 		auto& particle = particles[i];
 		if (last_position == particle.gridPosition) continue;
@@ -48,10 +49,10 @@ void ParticleGrid::UpdateParticleNeighbours() {
 }
 
 std::vector<std::span<Particle>> ParticleGrid::GetNeighbours(const Particle& particle) {
-	sf::Vector2i gridPosition = GetGridPosition(particle);
+	vector2i gridPosition = GetGridPosition(particle);
 
-	sf::Vector2i range_a = gridPosition - sf::Vector2i(1, 1);
-	sf::Vector2i range_b = gridPosition + sf::Vector2i(1, 1);
+	vector2i range_a = gridPosition - vector2i(1, 1);
+	vector2i range_b = gridPosition + vector2i(1, 1);
 
 	range_a.x = std::clamp(range_a.x, 0, size.x - 1);
 	range_a.y = std::clamp(range_a.y, 0, size.y - 1);
@@ -75,8 +76,8 @@ std::vector<std::span<Particle>> ParticleGrid::GetNeighbours(const Particle& par
 }
 
 std::vector<ParticleGrid::GridCell> ParticleGrid::GetNeighbourIndexes(const Particle& particle) {
-	sf::Vector2i range_a = particle.gridPosition - sf::Vector2i(1, 1);
-	sf::Vector2i range_b = particle.gridPosition + sf::Vector2i(1, 1);
+	vector2i range_a = particle.gridPosition - vector2i(1, 1);
+	vector2i range_b = particle.gridPosition + vector2i(1, 1);
 
 	range_a.x = std::clamp(range_a.x, 0, size.x - 1);
 	range_a.y = std::clamp(range_a.y, 0, size.y - 1);
@@ -97,12 +98,12 @@ std::vector<ParticleGrid::GridCell> ParticleGrid::GetNeighbourIndexes(const Part
 	return result;
 }
 
-ParticleGrid::GridCell& ParticleGrid::GetGridCell(const sf::Vector2i& grid_position) {
+ParticleGrid::GridCell& ParticleGrid::GetGridCell(const vector2i& grid_position) {
 	return grid[grid_position.y * size.x + grid_position.x];
 }
 
-sf::Vector2i ParticleGrid::GetGridPosition(const Particle& particle) {
-	return (sf::Vector2i(particle.position) + _windowSize / 2) / cellWidth;
+vector2i ParticleGrid::GetGridPosition(const Particle& particle) {
+	return (vector2i(particle.position) + _windowSize / 2) / cellWidth;
 }
 
 bool ParticleGrid::IsOutsideWindow(const Particle& particle) {

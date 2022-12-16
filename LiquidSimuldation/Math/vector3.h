@@ -7,6 +7,6 @@ public:
 	float x, y, z;
 	vector3();
 	vector3(float x, float y, float z);
-	double dot_product(const vector2& v, const double& z) const;
-	void scale(const double& scale);
+	float dot_product(const vector2& v, const float& z) const;
+	void scale(const float& scale);
 };

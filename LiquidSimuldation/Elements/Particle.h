@@ -4,6 +4,7 @@
 #include <OpenGL/DeviceProgram/RenderProgram.h>
 #include <Utils/DataFactory.h>
 #include <Elements/ElementSharedData.h>
+#include <Math/vector2i.h>
 
 class alignas(8) Particle {
 public:
@@ -32,7 +33,7 @@ public:
 
 	Particle() {}
 
-	void Update(double interval) {
+	void Update(float interval) {
 		velosity += acceleration * interval;
 		position += velosity * interval;
 	}
@@ -42,7 +43,7 @@ public:
 	vector2 applied_impulse;
 	vector2 acceleration;
 
-	sf::Vector2i gridPosition;
+	vector2i gridPosition;
 	float radius;
 	float density = 0;
 	float density_near = 0;

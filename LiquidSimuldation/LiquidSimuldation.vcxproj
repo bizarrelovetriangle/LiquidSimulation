@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Math\vector2i.cpp" />
     <ClCompile Include="OpenGL\DeviceBuffer.cpp" />
     <ClCompile Include="FluidProcessor.cpp" />
     <ClCompile Include="OpenGL\DeviceProgram\ComputeProgram.cpp" />
@@ -177,6 +178,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Math\vector2i.h" />
+    <ClInclude Include="Math\vector4.h" />
     <ClInclude Include="OpenGL\DeviceBuffer.h" />
     <ClInclude Include="DeviceComputation\CommonBuffers.h" />
     <ClInclude Include="DeviceComputation\PairCreator.h" />

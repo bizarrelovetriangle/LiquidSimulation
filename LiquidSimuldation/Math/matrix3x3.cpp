@@ -7,12 +7,12 @@ matrix3x3::matrix3x3()
 	k.z = 1;
 }
 
-vector2 matrix3x3::multiply(const vector2& v, const double& z) const
+vector2 matrix3x3::multiply(const vector2& v, const float& z) const
 {
 	return vector2(i.dot_product(v, z), j.dot_product(v, z));
 }
 
-void matrix3x3::scale(const double& scale)
+void matrix3x3::scale(const float& scale)
 {
 	i.scale(scale);
 	j.scale(scale);
@@ -26,7 +26,7 @@ void matrix3x3::scale(const vector3& scale)
 	k.scale(scale.z);
 }
 
-void matrix3x3::rotate(const double& radians)
+void matrix3x3::rotate(const float& radians)
 {
 	i.x = cos(radians);
 	i.y = -sin(radians);

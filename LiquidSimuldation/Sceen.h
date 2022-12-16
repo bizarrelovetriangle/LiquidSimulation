@@ -45,7 +45,7 @@ public:
 			glfwPollEvents();
 
 			float interval = 1. / 100;
-			double time = clock.getElapsedTime().asSeconds();
+			float time = clock.getElapsedTime().asSeconds();
 			if (time < interval) sf::sleep(sf::seconds(interval - time));
 			_deltaTime = clock.restart().asSeconds();
 
@@ -113,7 +113,7 @@ private:
 	static void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
 	{
 		auto sceen = (Sceen*)glfwGetWindowUserPointer(window);
-		sceen->_mouse_position = sf::Vector2f(sf::Vector2i(xpos, ypos) - sceen->_window_size / 2);
+		sceen->_mouse_position = vector2(vector2i(xpos, ypos) - sceen->_window_size / 2);
 		sceen->_mouse_position.y = -sceen->_mouse_position.y;
 	}
 
@@ -134,7 +134,7 @@ private:
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				vector2 particlePosition(x - width / 2, y - height / 2);
-				_fluidProcessor->CreateParticle(particlePosition * (double)distance + position);
+				_fluidProcessor->CreateParticle(particlePosition * (float)distance + position);
 			}
 		}
 	}
@@ -143,16 +143,16 @@ private:
 		int wall_width = _window_size.x - 100;
 		int wall_height = _window_size.y - 100;
 
-		sf::Vector2f point_a(-wall_width / 2, -wall_height / 2);
-		sf::Vector2f point_b(wall_width / 2, -wall_height / 2);
-		sf::Vector2f point_c(wall_width / 2, wall_height / 2);
-		sf::Vector2f point_d(-wall_width / 2, wall_height / 2);
+		vector2 point_a(-wall_width / 2, -wall_height / 2);
+		vector2 point_b(wall_width / 2, -wall_height / 2);
+		vector2 point_c(wall_width / 2, wall_height / 2);
+		vector2 point_d(-wall_width / 2, wall_height / 2);
 
 		walls.emplace_back(Wall(point_a, point_b));
 		walls.emplace_back(Wall(point_b, point_c));
 		walls.emplace_back(Wall(point_c, point_d));
 		walls.emplace_back(Wall(point_d, point_a));
-		//walls.emplace_back(Wall(window, sf::Vector2f(-100, -100), sf::Vector2f(100, 100)));
+		//walls.emplace_back(Wall(window, vector2(-100, -100), vector2(100, 100)));
 	}
 
 	void InitEnvironment(bool is_full_screen) {
@@ -162,11 +162,11 @@ private:
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		if (is_full_screen) {
-			_window_size = sf::Vector2i(1920, 1080);
+			_window_size = vector2i(1920, 1080);
 			_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", glfwGetPrimaryMonitor(), nullptr);
 		}
 		else {
-			_window_size = sf::Vector2i(1000, 800);
+			_window_size = vector2i(1000, 800);
 			_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", nullptr, nullptr);
 		}
 
@@ -185,7 +185,7 @@ private:
 
 	bool _mouse_pressed = false;
 	vector2 _mouse_position;
-	sf::Vector2i _window_size;
+	vector2i _window_size;
 	GLFWwindow* _window = nullptr;
 	std::unique_ptr<FluidProcessor> _fluidProcessor;
 	std::vector<Wall> _walls;

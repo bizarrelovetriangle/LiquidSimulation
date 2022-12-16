@@ -8,8 +8,8 @@
 
 class FluidProcessor {
 public:
-	FluidProcessor(sf::Vector2i windowSize);
-	void WallCollicionHandling(const std::vector<Wall>& walls, double dt);
+	FluidProcessor(vector2i windowSize);
+	void WallCollicionHandling(const std::vector<Wall>& walls, float dt);
 	std::vector<PairData> CreatePairs();
 	void ParticlesGravity(float& interval);
 	void ApplyViscosity(float& interval);
