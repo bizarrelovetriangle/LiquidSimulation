@@ -7,6 +7,10 @@ layout(std430, binding = 0) buffer ParticlesInput
 {
 	Particle particles[];
 };
+layout(std430, binding = 4) buffer ParticleIndexesInput
+{
+	int particle_indexes[];
+};
 
 layout(std140, binding = 1) uniform ConfigInput { Config config; };
 layout(location = 0) uniform mat3 view_matrix;
@@ -18,9 +22,10 @@ out vec4 vertex_color;
 
 void main()
 {
-	radius = particles[gl_InstanceID].radius;
-	vertex_pos = pos * particles[gl_InstanceID].radius;
-	vec2 position = pos * particles[gl_InstanceID].radius + particles[gl_InstanceID].position;
+	int id = particle_indexes[gl_InstanceID];
+	radius = particles[id].radius;
+	vertex_pos = pos * particles[id].radius;
+	vec2 position = pos * particles[id].radius + particles[id].position;
 	gl_Position = vec4(view_matrix * vec3(position, 1.0), 1.0);
 	vertex_color = vec4(color.xyz, 1.0);
 }

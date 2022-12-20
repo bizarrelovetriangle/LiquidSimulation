@@ -11,14 +11,12 @@ class ParticleGrid {
 public:
 	struct GridCell {
 		bool empty() {
-			return particles_start == particles_end;
+			return start == end;
 		}
 
-		int particles_start;
-		int particles_end;
+		int start;
+		int end;
 	};
-
-	using GridType = std::vector<GridCell>;
 
 	void Init(vector2i windowSize);
 	void AddParticle(const Particle& particle);
@@ -28,7 +26,8 @@ public:
 	GridCell& GetGridCell(const vector2i& grid_position);
 
 	std::vector<Particle> particles;
-	GridType grid;
+	std::vector<int> particle_indexes;
+	std::vector<GridCell> grid;
 
 	int cellWidth;
 	vector2i size;

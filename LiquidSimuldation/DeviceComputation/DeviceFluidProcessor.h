@@ -21,9 +21,23 @@ public:
 
 private:
 	void ParticleUpdate(float dt);
+	void CreateThreads();
+	void ParticleThreadsCount();
+	void ParticleThreadsUpdate();
+
+	const int parallel = 200;
+	int threads_count = 0;
 
 	ParticleGrid& _particle_grid;
 	PairCreator _pair_creator;
 
 	ComputeProgram particle_update_program;
+	ComputeProgram create_threads_program;
+	ComputeProgram particle_thread_counts_program;
+	ComputeProgram particle_thread_offsets_program;
+	ComputeProgram particle_thread_offsets_skip_program;
+	ComputeProgram particle_thread_update_program;
+
+	DeviceBuffer<int> particle_thread_counts;
+	DeviceBuffer<int> particle_thread_offsets;
 };

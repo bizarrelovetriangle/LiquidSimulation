@@ -26,16 +26,15 @@ void PairCreator::ComputeDencity() {
 	glUseProgram(compute_dencity_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().threads_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, CommonBuffers::GetInstance().particle_indexes->GetBufferId());
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 	glUniform2i(1, _particle_grid.size.x, _particle_grid.size.y);
 
 	glDispatchCompute(_particle_grid.particles.size(), 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	compute_dencity_program.Wait();
-
-	glGetNamedBufferSubData(CommonBuffers::GetInstance().pairs_count->GetBufferId(), 0, sizeof(int), &pairs_count);
 }
 
 void PairCreator::CreatePairs(float dt) {
@@ -47,8 +46,10 @@ void PairCreator::CreatePairs(float dt) {
 	glUseProgram(create_pairs_program.program_id);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs_count->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().threads_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, CommonBuffers::GetInstance().particle_indexes->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, CommonBuffers::GetInstance().particle_threads->GetBufferId());
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 	glUniform2i(1, _particle_grid.size.x, _particle_grid.size.y);
 	glUniform1f(2, dt);
@@ -56,6 +57,4 @@ void PairCreator::CreatePairs(float dt) {
 	glDispatchCompute(_particle_grid.particles.size(), 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	create_pairs_program.Wait();
-
-	glGetNamedBufferSubData(CommonBuffers::GetInstance().pairs_count->GetBufferId(), 0, sizeof(int), &pairs_count);
 }

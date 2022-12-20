@@ -9,11 +9,12 @@ struct Particle {
 	float density;
 	float density_near;
 	int index;
+	bool sticky;
 };
 
 struct GridCell {
-	int particles_start;
-	int particles_end;
+	int start;
+	int end;
 };
 
 struct PairData {
@@ -21,6 +22,8 @@ struct PairData {
 	int second;
 	vec2 normal;
 	float proximity_coefficient;
+	float rest_length;
+	bool torn;
 };
 
 struct Config {

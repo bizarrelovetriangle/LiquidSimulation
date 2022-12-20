@@ -12,12 +12,12 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 	NeatTimer::GetInstance().StageBegin(__func__);
 
 	for (auto& wall : walls) {
-		auto wallVector = (wall.a - wall.b).normalize();
-		auto wall_center = (wall.a + wall.b) / 2;
+		auto wallVector = (wall.a() - wall.b()).normalize();
+		auto wall_center = (wall.a() + wall.b()) / 2;
 
 		for (auto& particle : _particle_grid.particles) {
-			float max_dist = 14;
-			float dist = particle.position.distance_to_line(wall.a, wall.b);
+			float max_dist = 10;
+			float dist = particle.position.distance_to_line(wall.a(), wall.b());
 
 			if (dist > max_dist) continue;
 
@@ -42,7 +42,7 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 		auto neighbour_cells = _particle_grid.GetNeighbourIndexes(particle);
 
 		for (auto& cell : neighbour_cells) {
-			for (size_t j = cell.particles_start; j < cell.particles_end; ++j) {
+			for (size_t j = cell.start; j < cell.end; ++j) {
 				auto& neighbour = _particle_grid.particles[j];
 				if (particle.index <= neighbour.index) continue;
 
@@ -109,7 +109,7 @@ void FluidProcessor::ApplyViscosity(float& dt) {
 
 void FluidProcessor::CreateParticle(vector2 position) {
 	Particle particle(position);
-	particle.acceleration = vector2(0, -200);
+	//particle.acceleration = vector2(0, -200);
 	_particle_grid.AddParticle(particle);
 }
 

@@ -19,23 +19,32 @@ layout(std430, binding = 3) buffer PairsOutput
 {
 	PairData pairs[];
 };
+layout(std430, binding = 4) buffer ParticleIndexesInput
+{
+	int particle_indexes[];
+};
+layout(std430, binding = 5) buffer ParticleThreads
+{
+	GridCell particle_threads[];
+};
 
 layout(std140, binding = 0) uniform ConfigInput { Config config; };
 layout(location = 1) uniform ivec2 grid_size;
 layout(location = 2) uniform float dt;
 
 void main() {
-	uint org = gl_GlobalInvocationID.x;
+	uint org = particle_indexes[gl_GlobalInvocationID.x];
 	Range range = GetRange(grid_size, particles[org].grid_position);
 
 	for (int y = range.a.y; y <= range.b.y; ++y) {
 		for (int x = range.a.x; x <= range.b.x; ++x) {
 			GridCell nghrCell = grid[y * grid_size.x + x];
 
-			for (int i = nghrCell.particles_start; i < nghrCell.particles_end; ++i) {
-				if (particles[org].index == particles[i].index) continue;
+			for (int i = nghrCell.start; i < nghrCell.end; ++i) {
+				int index = particle_indexes[i];
+				if (particles[org].index == particles[index].index) continue;
 
-				vec2 vector = particles[i].position - particles[org].position;
+				vec2 vector = particles[index].position - particles[org].position;
 				float dist = length(vector);
 
 				if (dist > config.interactionRange || dist == 0) continue;
@@ -44,7 +53,7 @@ void main() {
 				float proximity_coefficient = 1 - dist / config.interactionRange;
 
 				// viscosity
-				float inertia = dot(particles[org].velosity - particles[i].velosity, normal);
+				float inertia = dot(particles[org].velosity - particles[index].velosity, normal);
 				if (inertia > 0) {
 					vec2 viscosity = 0.5 * proximity_coefficient *
 						(config.kLinearViscocity * inertia + config.kQuadraticViscocity * pow(inertia, 2)) *
@@ -53,20 +62,30 @@ void main() {
 				}
 
 				// pressure
-				float pressureM = config.k * (particles[org].density - config.restDensity + particles[i].density - config.restDensity);
-				float nearPressureM = config.k_near * (particles[org].density_near + particles[i].density_near);
+				float pressureM = config.k * (particles[org].density - config.restDensity + particles[index].density - config.restDensity);
+				float nearPressureM = config.k_near * (particles[org].density_near + particles[index].density_near);
 				vec2 pressure = dt * (pressureM * proximity_coefficient + nearPressureM * pow(proximity_coefficient, 2)) * normal;
 				particles[org].applied_impulse -= pressure;
-
-				// pair
-				if (particles[org].index < particles[i].index) {
-					int pair_id = atomicAdd(pairs_count, 1);
-					pairs[pair_id].first = int(org);
-					pairs[pair_id].second = i;
-					pairs[pair_id].normal = normal;
-					pairs[pair_id].proximity_coefficient = proximity_coefficient;
-				}
 			}
 		}
+	}
+
+	// threads
+	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
+		vec2 vector = particles[pairs[i].second].position - particles[org].position;
+
+		float dist = length(vector);
+
+		if (dist == 0) continue;
+
+		if (pairs[i].rest_length < dist / 2) {
+			pairs[i].torn = true;
+			continue;
+		}
+
+		vec2 normal = vector / dist;
+		float stretch = (dist - pairs[i].rest_length) * dt;
+		if (stretch < 0) continue;
+		particles[org].applied_impulse += normal * stretch;
 	}
 }

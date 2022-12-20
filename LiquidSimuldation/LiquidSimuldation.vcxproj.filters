@@ -156,5 +156,10 @@
     <None Include="shaders\render\thread.vert" />
     <None Include="shaders\render\wall.frag" />
     <None Include="shaders\compute\particle_pairs\compute_dencity.comp" />
+    <None Include="shaders\compute\particle_pairs\create_threads.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_offsets.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_counts.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
   </ItemGroup>
 </Project>

@@ -48,4 +48,5 @@ public:
 	float density = 0;
 	float density_near = 0;
 	int index = 0;
+	bool sticky = true;
 };

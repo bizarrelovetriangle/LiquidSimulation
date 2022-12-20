@@ -72,13 +72,14 @@ private:
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		for (auto& wall : _walls) {
-			wall.draw();
+			//wall.draw();
 		}
+		//_walls[4].draw();
 
 		{
-			size_t pairs_count = CommonBuffers::GetInstance().pairs_count->Retrive().front();
+			size_t threads_count = CommonBuffers::GetInstance().threads_count->Retrive().front();
 			DeviceProgram render_program;
-			render_program.InitProgram({
+ 			render_program.InitProgram({
 				{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
 				{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
 			
@@ -92,7 +93,7 @@ private:
 			vector3 color(1., 0.5, 0.5);
 			glUniform4fv(2, 1, (float*)&color);
 			
-			glDrawArraysInstanced(GL_LINES, 0, 2, pairs_count);
+			glDrawArraysInstanced(GL_LINES, 0, 2, threads_count);
 		}
 
 		_fluidProcessor->Draw();
@@ -141,8 +142,8 @@ private:
 	}
 
 	void createWalls(std::vector<Wall>& walls) {
-		int wall_width = _window_size.x - 100;
-		int wall_height = _window_size.y - 100;
+		int wall_width = _window_size.x - 30;
+		int wall_height = _window_size.y - 30;
 
 		vector2 point_a(-wall_width / 2, -wall_height / 2);
 		vector2 point_b(wall_width / 2, -wall_height / 2);
@@ -153,7 +154,8 @@ private:
 		walls.emplace_back(Wall(point_b, point_c));
 		walls.emplace_back(Wall(point_c, point_d));
 		walls.emplace_back(Wall(point_d, point_a));
-		//walls.emplace_back(Wall(vector2(-100, -100), vector2(100, 100)));
+		//walls.emplace_back(Wall(vector2(-300, -100), vector2(300, 100)));
+		//walls[4].rotate_speed = 0.03;
 	}
 
 	void InitEnvironment(bool is_full_screen) {

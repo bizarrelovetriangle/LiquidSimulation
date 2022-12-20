@@ -34,6 +34,13 @@ void DeviceBuffer<T>::Clear()
 }
 
 template<typename T>
+void DeviceBuffer<T>::Resize(size_t size)
+{
+	_size = size;
+	glNamedBufferData(_buffer_id, _size * sizeof(T), nullptr, GL_DYNAMIC_DRAW);
+}
+
+template<typename T>
 void DeviceBuffer<T>::Flush(const std::vector<T>& data)
 {
 	_size = data.size();

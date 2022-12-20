@@ -1,0 +1,39 @@
+#version 430 core
+#include "../../common.glsl"
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 1) buffer PairsCount
+{
+	int pairs_count;
+};
+layout(std430, binding = 2) buffer PairsOutput
+{
+	PairData pairs[];
+};
+layout(std430, binding = 3) buffer PairsTempOutput
+{
+	PairData pairs_temp[];
+};
+layout(std430, binding = 5) buffer ParticleThreadOffsetsOutput
+{
+	int particle_thread_offsets[];
+};
+
+layout(location = 2) uniform int parallel;
+
+void main() {
+	int threads_chunk_size = int(ceil(float(pairs_count) / parallel));
+
+	int start = int(gl_GlobalInvocationID.x) * threads_chunk_size;
+	int end = min(start + threads_chunk_size, pairs_count);
+
+	if (start >= pairs_count) return;
+	
+	for (int i = start; i < end; ++i) {
+		if (pairs[i].torn) continue;
+		int particle_index = pairs[i].first;
+		int thread_index = atomicAdd(particle_thread_offsets[particle_index], 1);
+		pairs_temp[thread_index] = pairs[i];
+	}
+}

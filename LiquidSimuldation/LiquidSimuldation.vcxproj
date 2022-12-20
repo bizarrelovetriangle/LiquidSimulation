@@ -205,6 +205,11 @@
     <None Include="shaders\compute\particles\particles_update.comp" />
     <None Include="shaders\compute\particle_pairs\compute_dencity.comp" />
     <None Include="shaders\compute\particle_pairs\create_pairs.comp" />
+    <None Include="shaders\compute\particle_pairs\create_threads.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_counts.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_offsets.comp" />
+    <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
     <None Include="shaders\render\particle.frag" />
     <None Include="shaders\render\particle.vert" />
     <None Include="shaders\render\thread.frag" />

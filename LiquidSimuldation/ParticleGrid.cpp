@@ -7,45 +7,56 @@ void ParticleGrid::Init(vector2i windowSize) {
 	_windowStart = -windowSize / 2;
 	size.x = (_windowSize.x / cellWidth) + 1;
 	size.y = (_windowSize.y / cellWidth) + 1;
-	grid = GridType(size.y * size.x);
+	grid = std::vector<GridCell>(size.y * size.x);
 }
 
 void ParticleGrid::AddParticle(const Particle& particle) {
 	if (!IsOutsideWindow(particle)) {
 		particles.push_back(particle);
+		particle_indexes.push_back(particles.size() - 1);
 	}
 }
 
 void ParticleGrid::UpdateParticleNeighbours() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	auto it = std::remove_if(std::begin(particles), std::end(particles),
-		[this](auto& particle) { return IsOutsideWindow(particle); });
-	particles.erase(it, std::end(particles));
+
+	// ???
+	// auto it = std::remove_if(std::begin(particles), std::end(particles),
+	// 	[this](auto& particle) { return IsOutsideWindow(particle); });
+	// particles.erase(it, std::end(particles));
 
 	if (particles.empty()) return;
 
-	for (auto& particle : particles) {
+	for (auto index : particle_indexes) {
+		auto& particle = particles[index];
 		particle.gridPosition = GetGridPosition(particle);
 	}
 
-	for (size_t i = 0; i < size.y * size.x; ++i) {
-		grid[i].particles_start = 0;
-		grid[i].particles_end = 0;
+	std::vector<int> grid_counts(grid.size());
+	for (auto index : particle_indexes) {
+		auto& particle = particles[index];
+		int grid_index = particle.gridPosition.y * size.x + particle.gridPosition.x;
+		++grid_counts[grid_index];
 	}
 
-	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.x; });
-	Algorithms::RadixSort(particles, [](auto& obj) -> auto&& { return obj.gridPosition.y; });
-
-	vector2i last_position = particles[0].gridPosition;
-	for (size_t i = 1; i < particles.size(); ++i) {
-		auto& particle = particles[i];
-		if (last_position == particle.gridPosition) continue;
-
-		GetGridCell(last_position).particles_end = i;
-		GetGridCell(particle.gridPosition).particles_start = i;
-		last_position = particle.gridPosition;
+	grid[0].start = 0;
+	grid[0].end = grid_counts[0];
+	for (size_t i = 1; i < grid.size(); ++i) {
+		grid[i].start = grid[i - 1].end;
+		grid[i].end = grid[i].start + grid_counts[i];
 	}
-	GetGridCell(last_position).particles_end = particles.size();
+
+	auto grid_temp = grid;
+	std::vector<int> particle_indexes_temp(particle_indexes.size());
+
+	for (auto index : particle_indexes) {
+		auto& particle = particles[index];
+		int grid_index = particle.gridPosition.y * size.x + particle.gridPosition.x;
+		int bucket = grid_temp[grid_index].start++;
+		particle_indexes_temp[bucket] = index;
+	}
+
+	particle_indexes = particle_indexes_temp;
 }
 
 std::vector<std::span<Particle>> ParticleGrid::GetNeighbours(const Particle& particle) {
@@ -65,8 +76,8 @@ std::vector<std::span<Particle>> ParticleGrid::GetNeighbours(const Particle& par
 		for (size_t x = range_a.x; x <= range_b.x; ++x) {
 			auto& cell = grid[y * size.x + x];
 			if (!cell.empty()) {
-				auto start_it = std::next(std::begin(particles), cell.particles_start);
-				auto end_it = std::next(std::begin(particles), cell.particles_end);
+				auto start_it = std::next(std::begin(particles), cell.start);
+				auto end_it = std::next(std::begin(particles), cell.end);
 				result.emplace_back(start_it, end_it);
 			}
 		}

@@ -1,0 +1,38 @@
+#version 430 core
+#include "../../common.glsl"
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 3) buffer ParticleThreads
+{
+	GridCell particle_threads[];
+};
+layout(std430, binding = 4) buffer ParticleThreadCountsOutput
+{
+	int particle_thread_counts[];
+};
+layout(std430, binding = 5) buffer ParticleThreadOffsetsOutput
+{
+	int particle_thread_offsets[];
+};
+
+layout(location = 2) uniform int parallel;
+
+void main() {
+	int particle_thread_chunk_size = int(ceil(float(particle_thread_offsets.length()) / parallel));
+
+	int start = int(gl_GlobalInvocationID.x) * particle_thread_chunk_size;
+	int end = min(start + particle_thread_chunk_size, particle_thread_offsets.length());
+
+	if (start >= particle_thread_offsets.length()) return;
+
+	particle_threads[start].start = particle_thread_offsets[start];
+	particle_threads[start].end = particle_threads[start].start + particle_thread_counts[start];
+
+	for (int i = start + 1; i < end; ++i) {
+		particle_thread_offsets[i] += particle_thread_offsets[i - 1] + particle_thread_counts[i - 1];
+		
+		particle_threads[i].start = particle_thread_offsets[i];
+		particle_threads[i].end = particle_threads[i].start + particle_thread_counts[i];
+	}
+}

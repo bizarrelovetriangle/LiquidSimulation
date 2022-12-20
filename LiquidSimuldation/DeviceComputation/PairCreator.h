@@ -16,9 +16,6 @@ private:
 	void ComputeDencity();
 	void CreatePairs(float dt);
 
-	const int parallel = 200;
-	int pairs_count = 0;
-
 	ParticleGrid& _particle_grid;
 
 	ComputeProgram compute_dencity_program;
@@ -36,4 +33,5 @@ struct alignas(8) PairData {
 	int second;
 	vector2 normal;
 	float proximity_coefficient;
+	float distance;
 };
