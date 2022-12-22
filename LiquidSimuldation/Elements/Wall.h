@@ -25,11 +25,12 @@ public:
 	}
 
 	void draw() {
-		matrix3x3 rotate;
-		rotate.transfer(-center);
-		rotate.rotate(rotate_speed);
-		rotate.transfer(center);
-		for (auto& point : _initial_points) point = rotate.multiply(point, 1);
+		matrix3x3 rotate = 
+			matrix3x3::transfer(center) *
+			matrix3x3::rotate(rotate_speed) *
+			matrix3x3::transfer(-center);
+
+		for (auto& point : _initial_points) point = rotate * point;
 
 		_shared_data->render_program.UpdateVerteces(_initial_points);
 		_shared_data->render_program.Use();

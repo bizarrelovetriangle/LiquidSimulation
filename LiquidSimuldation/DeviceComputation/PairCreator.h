@@ -33,5 +33,6 @@ struct alignas(8) PairData {
 	int second;
 	vector2 normal;
 	float proximity_coefficient;
-	float distance;
+	float rest_length;
+	bool torn;
 };

@@ -1,5 +1,6 @@
 #include "vector2.h"
 #include <Math/vector2i.h>
+#include <Math/vector3.h>
 #include <cmath>
 
 const vector2 vector2::zero_vector(0);
@@ -17,6 +18,10 @@ vector2::vector2(const float& x, const float& y) : x(x), y(y)
 }
 
 vector2::vector2(const vector2i& v) : x(v.x), y(v.y)
+{
+}
+
+vector2::vector2(const vector3& v) : x(v.x), y(v.y)
 {
 }
 

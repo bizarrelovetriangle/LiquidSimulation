@@ -7,7 +7,7 @@ public:
 		return config;
 	}
 
-	float interactionRange = 30;
+	float interactionRange = 60;
 	float restDensity = 50;
 	float k = 15;
 	float k_near = 800;

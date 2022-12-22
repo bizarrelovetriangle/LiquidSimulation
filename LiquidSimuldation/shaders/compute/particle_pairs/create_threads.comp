@@ -44,13 +44,20 @@ void main() {
 
 				vec2 vector = particles[index].position - particles[org].position;
 				float dist = length(vector);
-				//if (dist > config.interactionRange || dist == 0) continue;
+				if (dist > config.interactionRange || dist == 0) continue;
 				vec2 normal = vector / dist;
 				float proximity_coefficient = 1 - dist / config.interactionRange;
 
 				int pair_id = atomicAdd(pairs_count, 1);
 				pairs[pair_id].first = org;
 				pairs[pair_id].second = index;
+				pairs[pair_id].normal = normal;
+				pairs[pair_id].proximity_coefficient = proximity_coefficient;
+				pairs[pair_id].rest_length = dist;
+				
+				pair_id = atomicAdd(pairs_count, 1);
+				pairs[pair_id].first = index;
+				pairs[pair_id].second = org;
 				pairs[pair_id].normal = normal;
 				pairs[pair_id].proximity_coefficient = proximity_coefficient;
 				pairs[pair_id].rest_length = dist;

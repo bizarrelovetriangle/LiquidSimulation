@@ -35,23 +35,23 @@ layout(location = 2) uniform float dt;
 void main() {
 	uint org = particle_indexes[gl_GlobalInvocationID.x];
 	Range range = GetRange(grid_size, particles[org].grid_position);
-
+	
 	for (int y = range.a.y; y <= range.b.y; ++y) {
 		for (int x = range.a.x; x <= range.b.x; ++x) {
 			GridCell nghrCell = grid[y * grid_size.x + x];
-
+	
 			for (int i = nghrCell.start; i < nghrCell.end; ++i) {
 				int index = particle_indexes[i];
 				if (particles[org].index == particles[index].index) continue;
-
+	
 				vec2 vector = particles[index].position - particles[org].position;
 				float dist = length(vector);
-
+	
 				if (dist > config.interactionRange || dist == 0) continue;
-
+	
 				vec2 normal = vector / dist;
 				float proximity_coefficient = 1 - dist / config.interactionRange;
-
+	
 				// viscosity
 				float inertia = dot(particles[org].velosity - particles[index].velosity, normal);
 				if (inertia > 0) {
@@ -60,7 +60,7 @@ void main() {
 						normal * dt;
 					particles[org].applied_impulse -= viscosity;
 				}
-
+	
 				// pressure
 				float pressureM = config.k * (particles[org].density - config.restDensity + particles[index].density - config.restDensity);
 				float nearPressureM = config.k_near * (particles[org].density_near + particles[index].density_near);
@@ -73,19 +73,17 @@ void main() {
 	// threads
 	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
 		vec2 vector = particles[pairs[i].second].position - particles[org].position;
-
+		float thread_length = pairs[i].rest_length;
 		float dist = length(vector);
 
 		if (dist == 0) continue;
-
-		if (pairs[i].rest_length < dist / 2) {
+		if (dist > thread_length * 2) {
 			pairs[i].torn = true;
 			continue;
 		}
 
 		vec2 normal = vector / dist;
-		float stretch = (dist - pairs[i].rest_length) * dt;
-		if (stretch < 0) continue;
-		particles[org].applied_impulse += normal * stretch;
+		float stretch = (dist - thread_length) * dt * 8;
+		particles[pairs[i].first].applied_impulse += normal * stretch;
 	}
 }

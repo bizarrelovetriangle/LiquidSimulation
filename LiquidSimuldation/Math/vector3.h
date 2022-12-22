@@ -7,6 +7,8 @@ public:
 	float x, y, z;
 	vector3();
 	vector3(float x, float y, float z);
-	float dot_product(const vector2& v, const float& z) const;
-	void scale(const float& scale);
+	vector3(const vector2& vec, float z);
+	float dot_product(const vector3& vec) const;
+	void operator*=(const float& v);
+	vector3 operator*(const float& v) const;
 };

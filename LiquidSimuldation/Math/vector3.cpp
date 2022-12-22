@@ -10,15 +10,25 @@ vector3::vector3(float x, float y, float z)
 {
 }
 
-float vector3::dot_product(const vector2& v, const float& z) const
+vector3::vector3(const vector2& vec, float z)
+	: vector3(vec.x, vec.y, z)
+{}
+
+float vector3::dot_product(const vector3& vec) const
 {
-	return this->x * v.x + this->y * v.y + this->z * z;
+	return x * vec.x + y * vec.y + z * vec.z;
 }
 
-void vector3::scale(const float& scale) 
+void vector3::operator*=(const float& v) 
 {
-	x *= scale;
-	y *= scale;
-	z *= scale;
+	x *= v;
+	y *= v;
+	z *= v;
 }
 
+vector3 vector3::operator*(const float& v) const
+{
+	vector3 vec = *this;
+	vec *= v;
+	return vec;
+}

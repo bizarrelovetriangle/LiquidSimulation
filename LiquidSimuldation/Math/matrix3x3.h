@@ -7,9 +7,13 @@ class matrix3x3
 public:
 	vector3 i, j, k;
 	matrix3x3();
-	vector2 multiply(const vector2& v, const float& z) const;
-	void scale(const float& scale);
-	void scale(const vector3& scale);
-	void rotate(const float& radians);
-	void transfer(const vector2& v);
+	matrix3x3(const vector3 col1, const vector3 col2, const vector3 col3);
+	vector3 operator*(const vector3& vec) const;
+	vector2 operator*(const vector2& vec) const;
+	matrix3x3 operator*(const matrix3x3& mat) const;
+	void operator*=(const float& scale);
+	void operator*=(const vector3& scale);
+	static matrix3x3 identity();
+	static matrix3x3 rotate(const float& radians);
+	static matrix3x3 transfer(const vector2& v);
 };

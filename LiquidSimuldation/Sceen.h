@@ -22,7 +22,7 @@ public:
 
 		DataFactory<matrix3x3>::GetData([&]() {
 			auto matrix = std::make_shared<matrix3x3>();
-			matrix->scale(vector3(2. / _window_size.x, 2. / _window_size.y, 1.));
+			*matrix *= vector3(2. / _window_size.x, 2. / _window_size.y, 1.);
 			return matrix;
 		 });
 
@@ -38,7 +38,7 @@ public:
 		glfwSetCursorPosCallback(_window, CursorPositionCallback);
 		glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-		createParticles(vector2());
+		//createParticles(vector2());
 
 		while (!glfwWindowShouldClose(_window))
 		{
@@ -59,11 +59,6 @@ public:
 
 private:
 	void Update() {
-		if (_mouse_pressed) {
-			vector2 deviation = vector2(float(rand()), float(rand())) - vector2(RAND_MAX / 2);
-			_fluidProcessor->CreateParticle(_mouse_position + deviation / RAND_MAX * 10);
-		}
-
 		_fluidProcessor->Update(_walls, _expectedDeltaTime);
 	}
 
@@ -115,8 +110,14 @@ private:
 	static void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
 	{
 		auto sceen = (Sceen*)glfwGetWindowUserPointer(window);
+		vector2 prev_position = sceen->_mouse_position;
 		sceen->_mouse_position = vector2(vector2i(xpos, ypos) - sceen->_window_size / 2);
 		sceen->_mouse_position.y = -sceen->_mouse_position.y;
+
+		if (sceen->_mouse_pressed && (sceen->_mouse_position - prev_position).length() > 3) {
+			//vector2 deviation = vector2(float(rand()), float(rand())) - vector2(RAND_MAX / 2);
+			sceen->_fluidProcessor->CreateParticle(sceen->_mouse_position);
+		}
 	}
 
 	static void MouseClickCallback(GLFWwindow* window, int button, int action, int mods)
@@ -154,8 +155,8 @@ private:
 		walls.emplace_back(Wall(point_b, point_c));
 		walls.emplace_back(Wall(point_c, point_d));
 		walls.emplace_back(Wall(point_d, point_a));
-		//walls.emplace_back(Wall(vector2(-300, -100), vector2(300, 100)));
-		//walls[4].rotate_speed = 0.03;
+		walls.emplace_back(Wall(vector2(200, -200), vector2(400, -200)));
+		walls[4].rotate_speed = 0.03;
 	}
 
 	void InitEnvironment(bool is_full_screen) {
@@ -169,7 +170,7 @@ private:
 			_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", glfwGetPrimaryMonitor(), nullptr);
 		}
 		else {
-			_window_size = vector2i(1000, 800);
+			_window_size = vector2i(1400, 1000);
 			_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", nullptr, nullptr);
 		}
 
