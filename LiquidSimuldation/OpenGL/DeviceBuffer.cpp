@@ -27,6 +27,14 @@ std::vector<T> DeviceBuffer<T>::Retrive()
 }
 
 template<typename T>
+std::vector<T> DeviceBuffer<T>::Retrive(size_t size)
+{
+	std::vector<T> data(size);
+	glGetNamedBufferSubData(_buffer_id, 0, size * sizeof(T), &data[0]);
+	return data;
+}
+
+template<typename T>
 void DeviceBuffer<T>::Clear()
 {
 	uint32_t zero = 0;

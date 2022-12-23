@@ -3,6 +3,10 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer ParticlesInput
+{
+	Particle particles[];
+};
 layout(std430, binding = 1) buffer GridInput
 {
 	GridCell grid[];
@@ -37,12 +41,23 @@ void main() {
 	if (start >= pairs_count) return;
 
 	for (int i = start; i < end; ++i) {
-		if (pairs[i].torn) continue;
+		float thread_length = pairs[i].rest_length;
+		float dist = distance(particles[pairs[i].first].position, particles[pairs[i].second].position);
+
+		bool particle_removed = particles[pairs[i].first].state == 2 || particles[pairs[i].second].state == 2;
+		bool overstretch = dist > thread_length * 2;
+
+		if (particle_removed || overstretch) {
+			pairs[i].torn = true;
+			continue;
+		}
+
 		int particle_index = pairs[i].first;
 		atomicAdd(particle_thread_counts[particle_index], 1);
 		
 		int particle_thread_offset_skip = particle_thread_chunk_size * (particle_index / particle_thread_chunk_size + 1);
-		if (particle_thread_offset_skip < particle_thread_offsets.length())
+		if (particle_thread_offset_skip < particle_thread_offsets.length()) {
 			atomicAdd(particle_thread_offsets[particle_thread_offset_skip], 1);
+		}
 	}
 }

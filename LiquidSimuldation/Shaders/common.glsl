@@ -9,7 +9,7 @@ struct Particle {
 	float density;
 	float density_near;
 	int index;
-	bool sticky;
+	int state;
 };
 
 struct GridCell {

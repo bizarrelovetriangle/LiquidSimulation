@@ -9,6 +9,7 @@ public:
 	DeviceBuffer(size_t size = 0);
 	uint32_t& GetBufferId();
 	std::vector<T> Retrive();
+	std::vector<T> Retrive(size_t size);
 	void Clear();
 	void Resize(size_t size);
 	void Flush(const std::vector<T>& data);

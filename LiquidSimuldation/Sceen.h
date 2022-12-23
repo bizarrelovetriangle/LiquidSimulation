@@ -69,7 +69,7 @@ private:
 		for (auto& wall : _walls) {
 			//wall.draw();
 		}
-		//_walls[4].draw();
+		_walls[4].draw();
 
 		{
 			size_t threads_count = CommonBuffers::GetInstance().threads_count->Retrive().front();

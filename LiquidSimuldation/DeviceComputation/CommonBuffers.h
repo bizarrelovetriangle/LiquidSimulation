@@ -17,6 +17,7 @@ struct CommonBuffers {
 	std::unique_ptr<DeviceBuffer<int>> particle_indexes;
 	std::unique_ptr<DeviceBuffer<ParticleGrid::GridCell>> grid;
 	std::unique_ptr<DeviceBuffer<int>> threads_count;
+	std::unique_ptr<DeviceBuffer<int>> threads_count_temp;
 	std::unique_ptr<DeviceBuffer<ParticleGrid::GridCell>> particle_threads;
 	std::unique_ptr<DeviceBuffer<PairData>> pairs;
 	std::unique_ptr<DeviceBuffer<PairData>> pairs_temp;
@@ -28,6 +29,7 @@ private:
 		particle_indexes = std::make_unique<DeviceBuffer<int>>(0);
 		grid = std::make_unique<DeviceBuffer<ParticleGrid::GridCell>>(0);
 		threads_count = std::make_unique<DeviceBuffer<int>>(1);
+		threads_count_temp = std::make_unique<DeviceBuffer<int>>(1);
 		particle_threads = std::make_unique<DeviceBuffer<ParticleGrid::GridCell>>(0);
 		pairs = std::make_unique<DeviceBuffer<PairData>>(max_pairs);
 		pairs_temp = std::make_unique<DeviceBuffer<PairData>>(max_pairs);

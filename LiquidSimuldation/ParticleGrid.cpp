@@ -20,10 +20,11 @@ void ParticleGrid::AddParticle(const Particle& particle) {
 void ParticleGrid::UpdateParticleNeighbours() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 
-	// ???
-	// auto it = std::remove_if(std::begin(particles), std::end(particles),
-	// 	[this](auto& particle) { return IsOutsideWindow(particle); });
-	// particles.erase(it, std::end(particles));
+	auto it = std::remove_if(std::begin(particle_indexes), std::end(particle_indexes),
+		[this](int index) { return IsOutsideWindow(particles[index]); });
+	std::for_each(it, std::end(particle_indexes),
+		[this](int index) { particles[index].state = Particle::State::Deactive; });
+	particle_indexes.erase(it, std::end(particle_indexes));
 
 	if (particles.empty()) return;
 

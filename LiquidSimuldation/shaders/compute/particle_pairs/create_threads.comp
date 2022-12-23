@@ -29,8 +29,8 @@ layout(location = 1) uniform ivec2 grid_size;
 
 void main() {
 	int org = particle_indexes[gl_GlobalInvocationID.x];
-	if (!particles[org].sticky) return;
-	particles[org].sticky = false;
+	if (particles[org].state != 1) return;
+	particles[org].state = 0;
 
 	Range range = GetRange(grid_size, particles[org].grid_position);
 

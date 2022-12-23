@@ -38,6 +38,12 @@ public:
 		position += velosity * interval;
 	}
 
+	enum class State {
+		Active,
+		Sticky,
+		Deactive
+	};
+
 	vector2 position;
 	vector2 velosity;
 	vector2 applied_impulse;
@@ -48,5 +54,5 @@ public:
 	float density = 0;
 	float density_near = 0;
 	int index = 0;
-	bool sticky = true;
+	State state = State::Sticky;
 };

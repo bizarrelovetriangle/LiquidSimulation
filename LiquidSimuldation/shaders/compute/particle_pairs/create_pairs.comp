@@ -75,12 +75,7 @@ void main() {
 		vec2 vector = particles[pairs[i].second].position - particles[org].position;
 		float thread_length = pairs[i].rest_length;
 		float dist = length(vector);
-
 		if (dist == 0) continue;
-		if (dist > thread_length * 2) {
-			pairs[i].torn = true;
-			continue;
-		}
 
 		vec2 normal = vector / dist;
 		float stretch = (dist - thread_length) * dt * 8;

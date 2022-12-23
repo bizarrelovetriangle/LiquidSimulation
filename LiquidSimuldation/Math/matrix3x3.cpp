@@ -7,10 +7,8 @@ matrix3x3::matrix3x3()
 	k.z = 1;
 }
 
-matrix3x3::matrix3x3(const vector3 col1, const vector3 col2, const vector3 col3)
-	: i(col1.x, col2.x, col3.x),
-	  j(col1.y, col2.y, col3.y),
-	  k(col1.z, col2.z, col3.z)
+matrix3x3::matrix3x3(const vector3& i, const vector3& j, const vector3& k)
+	: i(i), j(j), k(k)
 {
 }
 
@@ -30,7 +28,7 @@ matrix3x3 matrix3x3::operator*(const matrix3x3& mat) const
 	vector3 col1(mat.i.x, mat.j.x, mat.k.x);
 	vector3 col2(mat.i.y, mat.j.y, mat.k.y);
 	vector3 col3(mat.i.z, mat.j.z, mat.k.z);
-	return matrix3x3(operator*(col1), operator*(col2), operator*(col3));
+	return transpose(matrix3x3(operator*(col1), operator*(col2), operator*(col3)));
 }
 
 void matrix3x3::operator*=(const float& scale)
@@ -68,4 +66,12 @@ matrix3x3 matrix3x3::transfer(const vector2& v)
 	mat.i.z += v.x;
 	mat.j.z += v.y;
 	return mat;
+}
+
+matrix3x3 matrix3x3::transpose(const matrix3x3& mat)
+{
+	return matrix3x3(
+		vector3(mat.i.x, mat.j.x, mat.k.x),
+		vector3(mat.i.y, mat.j.y, mat.k.y),
+		vector3(mat.i.z, mat.j.z, mat.k.z));
 }

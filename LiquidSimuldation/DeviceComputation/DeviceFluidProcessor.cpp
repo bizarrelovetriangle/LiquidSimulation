@@ -65,6 +65,7 @@ void DeviceFluidProcessor::ParticleThreadsCount() {
 	particle_thread_offsets.Clear();
 
 	glUseProgram(particle_thread_counts_program.program_id);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().threads_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
@@ -89,8 +90,6 @@ void DeviceFluidProcessor::ParticleThreadsCount() {
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	particle_thread_offsets_program.Wait();
-
-	//auto data = CommonBuffers::GetInstance().particle_threads->Retrive();
 }
 
 void DeviceFluidProcessor::ParticleThreadsUpdate() {
@@ -99,6 +98,7 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().threads_count->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs_temp->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, particle_thread_offsets.GetBufferId());
 	glUniform1i(2, parallel);
 	glDispatchCompute(parallel, 1, 1);
@@ -106,6 +106,15 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	particle_thread_update_program.Wait();
 
 	std::swap(CommonBuffers::GetInstance().pairs->GetBufferId(), CommonBuffers::GetInstance().pairs_temp->GetBufferId());
+	std::swap(CommonBuffers::GetInstance().threads_count->GetBufferId(), CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
+	CommonBuffers::GetInstance().threads_count_temp->Flush({0});
+
+	//auto data = CommonBuffers::GetInstance().particle_threads->Retrive();
+	//size_t size = CommonBuffers::GetInstance().threads_count->Retrive().front();
+	//if (!size) return;
+	//auto particles = CommonBuffers::GetInstance().particles->Retrive();
+	//auto threads = CommonBuffers::GetInstance().pairs->Retrive(size);
+
 }
 
 void DeviceFluidProcessor::Update(float dt) {
