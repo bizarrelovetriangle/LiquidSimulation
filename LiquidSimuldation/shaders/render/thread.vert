@@ -18,9 +18,13 @@ out vec4 vertex_color;
 
 void main()
 {
-	int particle_id = gl_VertexID == 0 ? pairs[gl_InstanceID].first : pairs[gl_InstanceID].second;
+	PairData thread = pairs[gl_InstanceID];
+	int particle_id = gl_VertexID == 0 ? thread.first : thread.second;
 	vec2 pos = particles[particle_id].position;
 	gl_Position = vec4(view_matrix * vec3(pos, 1), 1);
-	float factor = pairs[gl_InstanceID].proximity_coefficient;
-	vertex_color = mix(color / 2, color, factor);
+
+	float dist = distance(particles[thread.first].position, particles[thread.second].position);
+
+	float factor = (dist - thread.rest_length) / thread.rest_length;
+	vertex_color = mix(color / 10, color, abs(factor));
 }

@@ -48,16 +48,13 @@ void ParticleGrid::UpdateParticleNeighbours() {
 	}
 
 	auto grid_temp = grid;
-	std::vector<int> particle_indexes_temp(particle_indexes.size());
 
-	for (auto index : particle_indexes) {
+	for (auto index : std::vector<int>(particle_indexes)) {
 		auto& particle = particles[index];
 		int grid_index = particle.gridPosition.y * size.x + particle.gridPosition.x;
 		int bucket = grid_temp[grid_index].start++;
-		particle_indexes_temp[bucket] = index;
+		particle_indexes[bucket] = index;
 	}
-
-	particle_indexes = particle_indexes_temp;
 }
 
 std::vector<std::span<Particle>> ParticleGrid::GetNeighbours(const Particle& particle) {

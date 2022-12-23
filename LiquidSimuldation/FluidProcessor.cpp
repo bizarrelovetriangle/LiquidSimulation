@@ -66,8 +66,10 @@ void FluidProcessor::ParticlesGravity(float& dt) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
-		float proximityCoefficient2 = pow(pair.proximity_coefficient, 2);
-		float proximityCoefficient3 = proximityCoefficient2 * pair.proximity_coefficient;
+		float proximity_coefficient = 0;
+
+		float proximityCoefficient2 = pow(proximity_coefficient, 2);
+		float proximityCoefficient3 = proximityCoefficient2 * proximity_coefficient;
 		first_particle.density += proximityCoefficient2;
 		first_particle.density_near += proximityCoefficient3;
 		second_particle.density += proximityCoefficient2;
@@ -80,9 +82,12 @@ void FluidProcessor::ParticlesGravity(float& dt) {
 
 		float pressureM = Config::GetInstance().k * (first_particle.density - Config::GetInstance().restDensity + second_particle.density - Config::GetInstance().restDensity);
 		float nearPressureM = Config::GetInstance().k_near * (first_particle.density_near + second_particle.density_near);
+		
+		float proximity_coefficient = 0;
+		vector2 normal;
 
-		vector2 pressure = pair.normal *
-			dt * (pressureM * pair.proximity_coefficient + nearPressureM * powf(pair.proximity_coefficient, 2));
+		vector2 pressure = normal *
+			dt * (pressureM * proximity_coefficient + nearPressureM * powf(proximity_coefficient, 2));
 
 		first_particle.velosity -= pressure;
 		second_particle.velosity += pressure;
@@ -95,11 +100,14 @@ void FluidProcessor::ApplyViscosity(float& dt) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
-		float inertia = pair.normal.dot_product(first_particle.velosity - second_particle.velosity);
+		float proximity_coefficient = 0;
+		vector2 normal;
+
+		float inertia = normal.dot_product(first_particle.velosity - second_particle.velosity);
 		if (inertia <= 0) continue;
 
-		vector2 inertiaViscocity = pair.normal *
-			0.5f * dt * pair.proximity_coefficient *
+		vector2 inertiaViscocity = normal *
+			0.5f * dt * proximity_coefficient *
 			(Config::GetInstance().kLinearViscocity * inertia + Config::GetInstance().kQuadraticViscocity * powf(inertia, 2));
 
 		first_particle.velosity -= inertiaViscocity;

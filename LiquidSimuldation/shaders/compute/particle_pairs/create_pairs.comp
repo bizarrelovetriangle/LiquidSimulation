@@ -73,12 +73,11 @@ void main() {
 	// threads
 	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
 		vec2 vector = particles[pairs[i].second].position - particles[org].position;
-		float thread_length = pairs[i].rest_length;
 		float dist = length(vector);
 		if (dist == 0) continue;
 
 		vec2 normal = vector / dist;
-		float stretch = (dist - thread_length) * dt * 8;
+		float stretch = (dist - pairs[i].rest_length) * dt * 18;
 		particles[pairs[i].first].applied_impulse += normal * stretch;
 	}
 }

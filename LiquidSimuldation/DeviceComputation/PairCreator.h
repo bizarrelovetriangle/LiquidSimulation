@@ -24,15 +24,13 @@ private:
 
 struct alignas(8) PairData {
 	PairData(int first, int second, const vector2& normal, float proximity_coefficient)
-		: first(first), second(second), normal(normal), proximity_coefficient(proximity_coefficient)
+		: first(first), second(second)
 	{}
 
 	PairData() {}
 
 	int first;
 	int second;
-	vector2 normal;
-	float proximity_coefficient;
 	float rest_length;
 	bool torn;
 };

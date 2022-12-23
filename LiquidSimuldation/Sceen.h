@@ -85,7 +85,7 @@ private:
 			glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 			auto& view_matrix = *DataFactory<matrix3x3>::GetData();
 			glUniformMatrix3fv(1, 1, GL_FALSE, (float*)&view_matrix);
-			vector3 color(1., 0.5, 0.5);
+			vector3 color(0.9, 0.6, 0.7);
 			glUniform4fv(2, 1, (float*)&color);
 			
 			glDrawArraysInstanced(GL_LINES, 0, 2, threads_count);

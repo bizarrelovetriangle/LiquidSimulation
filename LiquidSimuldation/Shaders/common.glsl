@@ -20,8 +20,6 @@ struct GridCell {
 struct PairData {
 	int first;
 	int second;
-	vec2 normal;
-	float proximity_coefficient;
 	float rest_length;
 	bool torn;
 };
