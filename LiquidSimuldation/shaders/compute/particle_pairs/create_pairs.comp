@@ -3,34 +3,7 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
-layout(std430, binding = 1) buffer GridInput
-{
-	GridCell grid[];
-};
-layout(std430, binding = 2) buffer PairsCount
-{
-	int pairs_count;
-};
-layout(std430, binding = 3) buffer PairsOutput
-{
-	PairData pairs[];
-};
-layout(std430, binding = 4) buffer ParticleIndexesInput
-{
-	int particle_indexes[];
-};
-layout(std430, binding = 5) buffer ParticleThreads
-{
-	GridCell particle_threads[];
-};
-
-layout(std140, binding = 0) uniform ConfigInput { Config config; };
-layout(location = 1) uniform ivec2 grid_size;
-layout(location = 2) uniform float dt;
+layout(location = 0) uniform float dt;
 
 void main() {
 	uint org = particle_indexes[gl_GlobalInvocationID.x];

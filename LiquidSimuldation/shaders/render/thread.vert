@@ -1,17 +1,7 @@
 #version 430 core
 #include "../common.glsl"
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
-layout(std430, binding = 1) buffer PairsInput
-{
-	PairData pairs[];
-};
-
-layout(std140, binding = 0) uniform ConfigInput { Config config; };
-layout(location = 1) uniform mat3 view_matrix;
+layout(location = 0) uniform mat3 view_matrix;
 layout(location = 2) uniform vec4 color;
 
 out vec4 vertex_color;

@@ -28,13 +28,9 @@ void DeviceFluidProcessor::ParticleUpdate(float dt) {
 	auto& particles = _particle_grid.particles;
 	if (particles.empty()) return;
 
-	glUseProgram(particle_update_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, CommonBuffers::GetInstance().particle_indexes->GetBufferId());
+	particle_update_program.Use();
 	glUniform1f(0, dt);
-
 	glDispatchCompute(particles.size(), 1, 1);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	particle_update_program.Wait();
 }
 
@@ -43,20 +39,10 @@ void DeviceFluidProcessor::CreateThreads() {
 	auto& particles = _particle_grid.particles;
 	if (particles.empty()) return;
 
-	glUseProgram(create_threads_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().threads_count->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, CommonBuffers::GetInstance().particle_indexes->GetBufferId());
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
-	glUniform2i(1, _particle_grid.size.x, _particle_grid.size.y);
-
+	create_threads_program.Use();
 	glDispatchCompute(particles.size(), 1, 1);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	create_threads_program.Wait();
-
-	glGetNamedBufferSubData(CommonBuffers::GetInstance().threads_count->GetBufferId(), 0, sizeof(int), &threads_count);
+	threads_count = CommonBuffers::GetInstance().threads_count->Retrive().front();
 }
 
 void DeviceFluidProcessor::ParticleThreadsCount() {
@@ -64,29 +50,21 @@ void DeviceFluidProcessor::ParticleThreadsCount() {
 	particle_thread_counts.Clear();
 	particle_thread_offsets.Clear();
 
-	glUseProgram(particle_thread_counts_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().grid->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().threads_count->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, particle_thread_counts.GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, particle_thread_offsets.GetBufferId());
-	glUniform2i(0, _particle_grid.size.x, _particle_grid.size.y);
-	glUniform1i(2, parallel);
+	particle_thread_counts_program.Use();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_thread_counts.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particle_thread_offsets.GetBufferId());
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	glUseProgram(particle_thread_offsets_skip_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, particle_thread_offsets.GetBufferId());
-	glUniform1i(2, parallel);
+	particle_thread_offsets_skip_program.Use();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_thread_counts.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particle_thread_offsets.GetBufferId());
 	glDispatchCompute(1, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	glUseProgram(particle_thread_offsets_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().particle_threads->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, particle_thread_counts.GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, particle_thread_offsets.GetBufferId());
-	glUniform1i(2, parallel);
+	particle_thread_offsets_program.Use();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_thread_counts.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particle_thread_offsets.GetBufferId());
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	particle_thread_offsets_program.Wait();
@@ -94,15 +72,10 @@ void DeviceFluidProcessor::ParticleThreadsCount() {
 
 void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	glUseProgram(particle_thread_update_program.program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().threads_count->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, CommonBuffers::GetInstance().pairs->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, CommonBuffers::GetInstance().pairs_temp->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, particle_thread_offsets.GetBufferId());
-	glUniform1i(2, parallel);
+	particle_thread_update_program.Use();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_thread_counts.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particle_thread_offsets.GetBufferId());
 	glDispatchCompute(parallel, 1, 1);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	particle_thread_update_program.Wait();
 
 	std::swap(CommonBuffers::GetInstance().pairs->GetBufferId(), CommonBuffers::GetInstance().pairs_temp->GetBufferId());
@@ -114,7 +87,6 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	//if (!size) return;
 	//auto particles = CommonBuffers::GetInstance().particles->Retrive();
 	//auto threads = CommonBuffers::GetInstance().pairs->Retrive(size);
-
 }
 
 void DeviceFluidProcessor::Update(float dt) {

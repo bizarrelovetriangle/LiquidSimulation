@@ -54,3 +54,40 @@ Range GetRange(ivec2 grid_size, ivec2 grid_pos) {
 	range.b.y = clamp(range.b.y, 0, grid_size.y - 1);
 	return range;
 }
+
+layout(std430, binding = 6) buffer GridInput
+{
+	GridCell grid[];
+};
+layout(std430, binding = 7) buffer ParticleIndexesInput
+{
+	int particle_indexes[];
+};
+layout(std430, binding = 8) buffer ParticlesInput
+{
+	Particle particles[];
+};
+layout(std430, binding = 9) buffer ParticleThreads
+{
+	GridCell particle_threads[];
+};
+layout(std430, binding = 10) buffer PairsCount
+{
+	int pairs_count;
+};
+layout(std430, binding = 11) buffer PairsOutput
+{
+	PairData pairs[];
+};
+layout(std430, binding = 12) buffer PairsCountTemp
+{
+	int pairs_count_temp;
+};
+layout(std430, binding = 13) buffer PairsTempOutput
+{
+	PairData pairs_temp[];
+};
+
+layout(std140, binding = 10) uniform ConfigInput{ Config config; };
+layout(location = 11) uniform ivec2 grid_size;
+layout(location = 12) uniform int parallel;

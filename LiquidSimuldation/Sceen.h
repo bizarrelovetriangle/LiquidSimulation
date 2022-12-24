@@ -38,7 +38,7 @@ public:
 		glfwSetCursorPosCallback(_window, CursorPositionCallback);
 		glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-		//createParticles(vector2());
+		createParticles(vector2());
 
 		while (!glfwWindowShouldClose(_window))
 		{
@@ -84,7 +84,7 @@ private:
 			
 			glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
 			auto& view_matrix = *DataFactory<matrix3x3>::GetData();
-			glUniformMatrix3fv(1, 1, GL_FALSE, (float*)&view_matrix);
+			glUniformMatrix3fv(0, 1, GL_FALSE, (float*)&view_matrix);
 			vector3 color(0.9, 0.6, 0.7);
 			glUniform4fv(2, 1, (float*)&color);
 			

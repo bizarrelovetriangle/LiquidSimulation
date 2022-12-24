@@ -2,10 +2,12 @@
 #include <math.h>
 #include <Config.h>
 #include <Math/vector2.h>
+#include <OpenGL/DeviceProgram/DeviceProgram.h>
 
 FluidProcessor::FluidProcessor(vector2i windowSize)
 {
 	_particle_grid.Init(windowSize);
+	DeviceProgram::_particle_grid = &_particle_grid;
 }
 
 void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float dt) {

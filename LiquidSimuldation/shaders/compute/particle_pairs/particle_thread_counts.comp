@@ -3,33 +3,14 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
-layout(std430, binding = 1) buffer GridInput
-{
-	GridCell grid[];
-};
-layout(std430, binding = 2) buffer PairsCount
-{
-	int pairs_count;
-};
-layout(std430, binding = 3) buffer PairsOutput
-{
-	PairData pairs[];
-};
-layout(std430, binding = 4) buffer ParticleThreadCountsOutput
+layout(std430, binding = 0) buffer ParticleThreadCountsOutput
 {
 	int particle_thread_counts[];
 };
-layout(std430, binding = 5) buffer ParticleThreadOffsetsOutput
+layout(std430, binding = 1) buffer ParticleThreadOffsetsOutput
 {
 	int particle_thread_offsets[];
 };
-
-layout(location = 0) uniform ivec2 grid_size;
-layout(location = 2) uniform int parallel;
 
 void main() {
 	int threads_chunk_size = int(ceil(float(pairs_count) / parallel));

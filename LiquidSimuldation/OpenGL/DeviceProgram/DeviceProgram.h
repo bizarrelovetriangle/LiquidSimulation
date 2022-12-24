@@ -3,11 +3,16 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
+class ParticleGrid;
+
 class DeviceProgram {
 public:
 	void InitProgram(std::initializer_list<std::pair<GLenum, std::string>> shader_infos);
+	void Use() const;
 
 	uint32_t program_id;
+
+	static ParticleGrid* _particle_grid;
 
 protected:
 	uint32_t CreateShader(GLenum type, const std::string& path);

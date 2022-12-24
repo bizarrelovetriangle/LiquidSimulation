@@ -4,5 +4,6 @@
 class ComputeProgram : public DeviceProgram
 {
 public:
+	void Use() const;
 	void Wait() const;
 };

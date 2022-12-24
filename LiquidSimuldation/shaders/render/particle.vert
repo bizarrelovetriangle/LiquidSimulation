@@ -3,16 +3,6 @@
 
 layout(location = 0) in vec2 pos;
 
-layout(std430, binding = 0) buffer ParticlesInput
-{
-	Particle particles[];
-};
-layout(std430, binding = 4) buffer ParticleIndexesInput
-{
-	int particle_indexes[];
-};
-
-layout(std140, binding = 1) uniform ConfigInput { Config config; };
 layout(location = 0) uniform mat3 view_matrix;
 layout(location = 2) uniform vec4 color;
 
