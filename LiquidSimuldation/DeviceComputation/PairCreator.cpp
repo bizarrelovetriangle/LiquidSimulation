@@ -19,23 +19,23 @@ void PairCreator::ComputePairs(float dt) {
 
 void PairCreator::ComputeDencity() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	auto& particles = _particle_grid.particles;
+	auto& particle_indexes = _particle_grid.particle_indexes;
 	auto& grid = _particle_grid.grid;
-	if (particles.empty()) return;
+	if (particle_indexes.empty()) return;
 
 	compute_dencity_program.Use();
-	glDispatchCompute(_particle_grid.particles.size(), 1, 1);
+	glDispatchCompute(_particle_grid.particle_indexes.size(), 1, 1);
 	compute_dencity_program.Wait();
 }
 
 void PairCreator::CreatePairs(float dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	auto& particles = _particle_grid.particles;
+	auto& particle_indexes = _particle_grid.particle_indexes;
 	auto& grid = _particle_grid.grid;
-	if (particles.empty()) return;
+	if (particle_indexes.empty()) return;
 
 	create_pairs_program.Use();
 	glUniform1f(0, dt);
-	glDispatchCompute(_particle_grid.particles.size(), 1, 1);
+	glDispatchCompute(_particle_grid.particle_indexes.size(), 1, 1);
 	create_pairs_program.Wait();
 }

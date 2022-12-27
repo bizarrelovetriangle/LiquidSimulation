@@ -124,17 +124,17 @@ void FluidProcessor::CreateParticle(vector2 position) {
 }
 
 void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
-	if (_particle_grid.particles.size() == 0) return;
-
 	_particle_grid.UpdateParticleNeighbours();
 	WallCollicionHandling(walls, dt);
+
+	if (_particle_grid.particle_indexes.size() == 0) return;
 	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
 }
 
 void FluidProcessor::Draw() {
-	if (_particle_grid.particles.size() == 0) return;
+	if (_particle_grid.particle_indexes.size() == 0) return;
 
 	auto particle_shared_data = DataFactory<ElementSharedData<Particle>>::GetData();
 	particle_shared_data->render_program.Use();
-	glDrawElementsInstanced(GL_TRIANGLES, particle_shared_data->indexes.size(), GL_UNSIGNED_INT, 0, _particle_grid.particles.size());
+	glDrawElementsInstanced(GL_TRIANGLES, particle_shared_data->indexes.size(), GL_UNSIGNED_INT, 0, _particle_grid.particle_indexes.size());
 }

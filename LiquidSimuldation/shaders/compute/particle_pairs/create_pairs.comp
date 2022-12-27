@@ -45,6 +45,7 @@ void main() {
 
 	// threads
 	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
+		if (pairs[i].torn) continue;
 		vec2 vector = particles[pairs[i].second].position - particles[org].position;
 		float dist = length(vector);
 		if (dist == 0) continue;

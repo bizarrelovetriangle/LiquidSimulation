@@ -73,6 +73,15 @@
     <ClCompile Include="Math\vector2i.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tools\HolderTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\EmitterTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -81,7 +90,7 @@
     <ClInclude Include="ParticleGrid.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sceen.h">
+    <ClInclude Include="Scene.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="DeviceComputation\DeviceFluidProcessor.h">
@@ -132,6 +141,9 @@
     <ClInclude Include="OpenGL\DeviceBuffer.h" />
     <ClInclude Include="Math\vector2i.h" />
     <ClInclude Include="Math\vector4.h" />
+    <ClInclude Include="Tools\HolderTool.h" />
+    <ClInclude Include="Tools\Tool.h" />
+    <ClInclude Include="Tools\EmitterTool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\common.glsl">

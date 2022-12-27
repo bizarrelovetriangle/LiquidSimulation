@@ -16,7 +16,7 @@ void main() {
 
 			for (int i = nghrCell.start; i < nghrCell.end; ++i) {
 				int index = particle_indexes[i];
-				if (particles[org].index == particles[index].index) continue;
+				if (particles[org].index <= particles[index].index) continue;
 
 				float dist = distance(particles[org].position, particles[index].position);
 				if (dist > config.interactionRange || dist == 0) continue;

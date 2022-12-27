@@ -1,4 +1,4 @@
-#include "Sceen.h"
+#include "Scene.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,7 +14,7 @@ extern "C" {
 
 int main()
 {
-    Sceen sceen(false);
-    sceen.Start();
+    Scene scene;
+    scene.Start();
     return 0;
 }

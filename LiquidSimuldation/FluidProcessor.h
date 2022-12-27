@@ -18,6 +18,6 @@ public:
 	void Draw();
 
 	std::vector<PairData> pairs;
-private:
+//private:
 	ParticleGrid _particle_grid;
 };

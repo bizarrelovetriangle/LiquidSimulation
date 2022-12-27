@@ -25,22 +25,22 @@ DeviceFluidProcessor& DeviceFluidProcessor::GetInstance(ParticleGrid& particle_g
 
 void DeviceFluidProcessor::ParticleUpdate(float dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	auto& particles = _particle_grid.particles;
-	if (particles.empty()) return;
+	auto& particle_indexes = _particle_grid.particle_indexes;
+	if (particle_indexes.empty()) return;
 
 	particle_update_program.Use();
 	glUniform1f(0, dt);
-	glDispatchCompute(particles.size(), 1, 1);
+	glDispatchCompute(particle_indexes.size(), 1, 1);
 	particle_update_program.Wait();
 }
 
 void DeviceFluidProcessor::CreateThreads() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	auto& particles = _particle_grid.particles;
-	if (particles.empty()) return;
+	auto& particle_indexes = _particle_grid.particle_indexes;
+	if (particle_indexes.empty()) return;
 
 	create_threads_program.Use();
-	glDispatchCompute(particles.size(), 1, 1);
+	glDispatchCompute(particle_indexes.size(), 1, 1);
 	create_threads_program.Wait();
 	threads_count = CommonBuffers::GetInstance().threads_count->Retrive().front();
 }
@@ -98,10 +98,11 @@ void DeviceFluidProcessor::Update(float dt) {
 	CommonBuffers::GetInstance().particles->Flush(particles);
 	CommonBuffers::GetInstance().particle_indexes->Flush(particle_indexes);
 	CommonBuffers::GetInstance().grid->Flush(grid);
-	CommonBuffers::GetInstance().particle_threads->Resize(particles.size());
+	CommonBuffers::GetInstance().particle_threads->Resize(particle_indexes.size());
 
-	particle_thread_counts.Resize(particle_indexes.size());
-	particle_thread_offsets.Resize(particle_indexes.size());
+	CommonBuffers::GetInstance().particle_threads->Resize(particles.size());
+	particle_thread_counts.Resize(particles.size());
+	particle_thread_offsets.Resize(particles.size());
 
 	CreateThreads();
 	ParticleThreadsCount();
