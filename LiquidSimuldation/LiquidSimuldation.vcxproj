@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Tools\KnifeTool.cpp" />
     <ClCompile Include="Tools\EmitterTool.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Tools\HolderTool.cpp" />
@@ -181,6 +182,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tools\KnifeTool.h" />
     <ClInclude Include="Tools\EmitterTool.h" />
     <ClInclude Include="Tools\Tool.h" />
     <ClInclude Include="Tools\HolderTool.h" />
@@ -216,6 +218,7 @@
     <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
     <None Include="shaders\compute\particle_pairs\particle_thread_offsets.comp" />
     <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
+    <None Include="shaders\compute\tools\knife.comp" />
     <None Include="shaders\render\particle.frag" />
     <None Include="shaders\render\particle.vert" />
     <None Include="shaders\render\thread.frag" />

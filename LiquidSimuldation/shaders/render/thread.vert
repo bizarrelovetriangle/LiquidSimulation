@@ -15,6 +15,6 @@ void main()
 
 	float dist = distance(particles[thread.first].position, particles[thread.second].position);
 
-	float factor = (dist - thread.rest_length) / thread.rest_length;
-	vertex_color = mix(color / 5, color, abs(factor));
+	float factor = (dist - thread.rest_length) / thread.rest_length * 1.5;
+	vertex_color = mix(color / 10, color, abs(factor));
 }

@@ -51,7 +51,7 @@ void main() {
 		if (dist == 0) continue;
 
 		vec2 normal = vector / dist;
-		float stretch = (dist - pairs[i].rest_length) * dt * 18;
+		float stretch = (dist - pairs[i].rest_length) * 30 * dt;
 		particles[pairs[i].first].applied_impulse += normal * stretch;
 	}
 }

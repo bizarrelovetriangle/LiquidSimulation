@@ -27,10 +27,8 @@ void main() {
 		bool particle_removed = particles[pairs[i].first].state == 2 || particles[pairs[i].second].state == 2;
 		bool overstretch = dist > pairs[i].rest_length * 2;
 
-		if (particle_removed || overstretch) {
-			pairs[i].torn = true;
-			continue;
-		}
+		if (particle_removed || overstretch) pairs[i].torn = true;
+		if (pairs[i].torn) continue;
 
 		int particle_index = pairs[i].first;
 		atomicAdd(particle_thread_counts[particle_index], 1);

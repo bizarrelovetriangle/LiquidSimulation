@@ -82,6 +82,9 @@
     <ClCompile Include="Tools\EmitterTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tools\KnifeTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FluidProcessor.h">
@@ -144,6 +147,7 @@
     <ClInclude Include="Tools\HolderTool.h" />
     <ClInclude Include="Tools\Tool.h" />
     <ClInclude Include="Tools\EmitterTool.h" />
+    <ClInclude Include="Tools\KnifeTool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\common.glsl">
@@ -173,5 +177,6 @@
     <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
     <None Include="shaders\compute\particle_pairs\particle_thread_counts.comp" />
     <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
+    <None Include="shaders\compute\tools\knife.comp" />
   </ItemGroup>
 </Project>

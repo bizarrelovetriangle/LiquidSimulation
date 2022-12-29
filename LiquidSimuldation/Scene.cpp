@@ -107,6 +107,8 @@ void Scene::KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		scene->_tool = std::make_unique<EmitterTool>(*scene);
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
 		scene->_tool = std::make_unique<HolderTool>(*scene);
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+		scene->_tool = std::make_unique<KnifeTool>(*scene);
 
 	scene->_tool->OnKey(key, action);
 }
@@ -141,8 +143,8 @@ void Scene::createParticles(vector2 position) {
 }
 
 void Scene::createWalls(std::vector<Wall>& walls) {
-	int wall_width = _window_size.x - 100;
-	int wall_height = _window_size.y - 100;
+	int wall_width = _window_size.x - 30;
+	int wall_height = _window_size.y - 30;
 
 	vector2 point_a(-wall_width / 2, -wall_height / 2);
 	vector2 point_b(wall_width / 2, -wall_height / 2);
