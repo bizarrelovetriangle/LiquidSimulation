@@ -12,8 +12,19 @@ void ParticleGrid::Init(vector2i windowSize) {
 
 void ParticleGrid::AddParticle(const Particle& particle) {
 	if (!IsOutsideWindow(particle)) {
-		particles.push_back(particle);
-		particle_indexes.push_back(particles.size() - 1);
+		int index;
+		
+		if (!deactivated_indexes.empty()) {
+			index = deactivated_indexes.back();
+			deactivated_indexes.pop_back();
+			particles[index] = particle;
+		}
+		else {
+			particles.push_back(particle);
+			index = particles.size() - 1;
+		}
+
+ 		particle_indexes.push_back(index);
 	}
 }
 
@@ -24,6 +35,7 @@ void ParticleGrid::UpdateParticleNeighbours() {
 		[this](int index) { return !IsOutsideWindow(particles[index]); });
 	std::for_each(it, std::end(particle_indexes),
 		[this](int index) { particles[index].state = Particle::State::Deactive; });
+	deactivated_indexes.insert(std::end(deactivated_indexes), it, std::end(particle_indexes));
 	particle_indexes.erase(it, std::end(particle_indexes));
 
 	if (particles.empty()) return;

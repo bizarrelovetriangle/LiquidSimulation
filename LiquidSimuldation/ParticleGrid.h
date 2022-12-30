@@ -6,6 +6,7 @@
 #include <Utils/NeatTimer.h>
 #include <Utils/Algorithms.h>
 #include <Math/vector2i.h>
+#include <deque>
 
 class ParticleGrid {
 public:
@@ -25,6 +26,7 @@ public:
 	std::vector<GridCell> GetNeighbourIndexes(const Particle& particle);
 	GridCell& GetGridCell(const vector2i& grid_position);
 
+	std::deque<int> deactivated_indexes;
 	std::vector<Particle> particles;
 	std::vector<int> particle_indexes;
 	std::vector<GridCell> grid;

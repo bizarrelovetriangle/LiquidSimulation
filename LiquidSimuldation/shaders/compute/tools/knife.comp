@@ -25,16 +25,14 @@ void main() {
 		vec2 scratch_a_b = scratch_a - scratch_b;
 		vec2 pair_a_b = pair_a - pair_b;
 
-		bool opposide_scratch =
+		bool bilateral_scratch =
 			cross(pair_a - scratch_b, scratch_a_b) > 0 !=
 			cross(pair_b - scratch_b, scratch_a_b) > 0;
-		bool opposide_pair =
+		bool bilateral_pair =
 			cross(scratch_a - pair_b, pair_a_b) > 0 !=
 			cross(scratch_b - pair_b, pair_a_b) > 0;
 
-		if (opposide_scratch && opposide_pair) {
-			pairs[i].torn = true;
-		}
+		if (bilateral_scratch && bilateral_pair) pairs[i].torn = true;
 	}
 }
 
