@@ -11,6 +11,7 @@
 #include <OpenGL/DeviceProgram/DeviceProgram.h>
 #include <Tools/HolderTool.h>
 #include <Tools/EmitterTool.h>
+#include <Tools/KnifeTool.h>
 
 Scene::Scene()
 {
@@ -61,6 +62,11 @@ void Scene::Start() {
 
 void Scene::Update() {
 	_tool->OnMoved(_mouse_pos);
+
+	for (auto& wall : _walls) {
+		wall.Update(_expectedDeltaTime);
+	}
+
 	_fluidProcessor->Update(_walls, _expectedDeltaTime);
 }
 
@@ -155,8 +161,8 @@ void Scene::createWalls(std::vector<Wall>& walls) {
 	walls.emplace_back(Wall(point_b, point_c));
 	walls.emplace_back(Wall(point_c, point_d));
 	walls.emplace_back(Wall(point_d, point_a));
-	walls.emplace_back(Wall(vector2(200, -200), vector2(400, -200)));
-	walls[4].rotate_speed = 0.03;
+	walls.emplace_back(Wall(vector2(100, -200), vector2(500, -200)));
+	walls[4].rotate_speed = 1;
 }
 
 void Scene::InitEnvironment(bool is_full_screen) {

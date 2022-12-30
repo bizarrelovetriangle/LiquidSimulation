@@ -24,14 +24,16 @@ public:
 		center = (a + b) / 2;
 	}
 
-	void draw() {
-		matrix3x3 rotate = 
+	void Update(float dt) {
+		matrix3x3 rotate =
 			matrix3x3::transfer(center) *
-			matrix3x3::rotate(rotate_speed) *
+			matrix3x3::rotate(rotate_speed * dt) *
 			matrix3x3::transfer(-center);
 
 		for (auto& point : _initial_points) point = rotate * point;
+	}
 
+	void draw() {
 		_shared_data->render_program.UpdateVerteces(_initial_points);
 		_shared_data->render_program.Use();
 		glDrawElements(GL_LINES, _shared_data->indexes.size(), GL_UNSIGNED_INT, 0);

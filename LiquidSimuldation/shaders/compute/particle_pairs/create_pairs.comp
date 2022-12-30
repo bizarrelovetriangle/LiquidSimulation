@@ -27,9 +27,9 @@ void main() {
 	
 				// viscosity
 				float inertia = dot(particles[org].velosity - particles[index].velosity, normal);
-				if (inertia > 0) {
+				if (inertia > 0 && inertia < 1000) {
 					vec2 viscosity = 0.5 * proximity_coefficient *
-						(config.kLinearViscocity * inertia + config.kQuadraticViscocity * pow(inertia, 2)) *
+						(config.kLinearViscocity * inertia + config.kQuadraticViscocity / 1 * pow(inertia, 2)) *
 						normal * dt;
 					particles[org].applied_impulse -= viscosity;
 				}

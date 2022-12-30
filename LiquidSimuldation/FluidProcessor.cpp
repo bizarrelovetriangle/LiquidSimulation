@@ -3,6 +3,8 @@
 #include <Config.h>
 #include <Math/vector2.h>
 #include <OpenGL/DeviceProgram/DeviceProgram.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 FluidProcessor::FluidProcessor(vector2i windowSize)
 {
@@ -14,23 +16,35 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 	NeatTimer::GetInstance().StageBegin(__func__);
 
 	for (auto& wall : walls) {
-		auto wallVector = (wall.a() - wall.b()).normalize();
+		auto wall_vector = (wall.a() - wall.b()).normalize();
+		auto wall_length = (wall.a() - wall.b()).length();
 		auto wall_center = (wall.a() + wall.b()) / 2;
 
 		for (auto& particle : _particle_grid.particles) {
 			float max_dist = 10;
+
+			auto wall_perp = wall_vector.is_clockwise(particle.position - wall_center)
+				? wall_vector.clockwise_perpendicular()
+				: -wall_vector.clockwise_perpendicular();
+
 			float dist = particle.position.distance_to_line(wall.a(), wall.b());
 
-			if (dist > max_dist) continue;
+			if (dist < max_dist) {
+				particle.position += wall_perp * (max_dist - dist);
+			}
 
-			auto wallPerp = wallVector.is_clockwise(particle.position - wall_center)
-				? wallVector.clockwise_perpendicular()
-				: -wallVector.clockwise_perpendicular();
-			particle.position += wallPerp * (max_dist - dist);
+			auto particle_wall_proj = wall_vector * wall_vector.dot_product(particle.position - wall_center);
+			if (particle_wall_proj.length() > wall_length / 2) continue;
+			auto rotate_vector = wall.rotate_speed > 0
+				? -particle_wall_proj.clockwise_perpendicular()
+				: particle_wall_proj.clockwise_perpendicular();
+			auto wall_velocity = rotate_vector * wall.rotate_speed;
 
-			auto particleWallVelosity = -wallPerp.dot_product(particle.velosity);
-			if (particleWallVelosity < 0) continue;
-			particle.velosity += wallPerp * particleWallVelosity * 1.5;
+			float particle_wall_approximation = wall_perp.dot_product(wall_velocity - particle.velosity);
+
+			if (dist - particle_wall_approximation * dt < max_dist && particle_wall_approximation > 0) {
+				particle.velosity += wall_perp * particle_wall_approximation * 1.5;
+			}
 		}
 	}
 }

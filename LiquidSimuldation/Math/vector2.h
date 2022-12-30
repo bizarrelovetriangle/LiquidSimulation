@@ -16,7 +16,6 @@ public:
 	vector2(const float& x, const float& y);
 	vector2(const vector2i& v);
 	vector2(const vector3& v);
-	vector2 rotate(const float& radians) const;
 	vector2 normalize() const;
 	vector2 clockwise_perpendicular() const;
 	bool is_zero() const;

@@ -13,7 +13,7 @@ void ParticleGrid::Init(vector2i windowSize) {
 void ParticleGrid::AddParticle(const Particle& particle) {
 	if (!IsOutsideWindow(particle)) {
 		int index;
-		
+
 		if (!deactivated_indexes.empty()) {
 			index = deactivated_indexes.back();
 			deactivated_indexes.pop_back();

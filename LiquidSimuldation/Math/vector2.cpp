@@ -25,21 +25,10 @@ vector2::vector2(const vector3& v) : x(v.x), y(v.y)
 {
 }
 
-vector2 vector2::rotate(const float& radians) const
-{
-	float _x = x * cos(radians) - y * sin(radians);
-	float _y = x * sin(radians) + y * cos(radians);
-	return vector2(_x, _y);
-}
-
 vector2 vector2::normalize() const
 {
 	float length = this->length();
-
-	if (length == 0) {
-		return vector2(0, -1);
-	}
-
+	if (length == 0) return vector2(0, -1);
 	return vector2(x / length, y / length);
 }
 

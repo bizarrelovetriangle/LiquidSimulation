@@ -80,14 +80,8 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 
 	std::swap(CommonBuffers::GetInstance().pairs->GetBufferId(), CommonBuffers::GetInstance().pairs_temp->GetBufferId());
 	std::swap(CommonBuffers::GetInstance().threads_count->GetBufferId(), CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
-	CommonBuffers::GetInstance().threads_count_temp->Flush({0});
-
-	//auto data = CommonBuffers::GetInstance().particle_threads->Retrive();
-	//size_t size = CommonBuffers::GetInstance().threads_count->Retrive().front();
-	//if (!size) return;
-	//auto particles = CommonBuffers::GetInstance().particles->Retrive();
-	//auto threads = CommonBuffers::GetInstance().pairs->Retrive(size);
-}
+	CommonBuffers::GetInstance().threads_count_temp->Flush({ 0 });
+} 
 
 void DeviceFluidProcessor::Update(float dt) {
 	NeatTimer::GetInstance().StageBegin(std::string(__func__) + " - write data");
@@ -98,7 +92,6 @@ void DeviceFluidProcessor::Update(float dt) {
 	CommonBuffers::GetInstance().particles->Flush(particles);
 	CommonBuffers::GetInstance().particle_indexes->Flush(particle_indexes);
 	CommonBuffers::GetInstance().grid->Flush(grid);
-	CommonBuffers::GetInstance().particle_threads->Resize(particle_indexes.size());
 
 	CommonBuffers::GetInstance().particle_threads->Resize(particles.size());
 	particle_thread_counts.Resize(particles.size());
