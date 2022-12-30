@@ -37,6 +37,7 @@ void DeviceProgram::Use() const
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, CommonBuffers::GetInstance().pairs->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 12, CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 13, CommonBuffers::GetInstance().pairs_temp->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 14, CommonBuffers::GetInstance().threads_torn->GetBufferId());
 
 	int parallel = 200;
 	glBindBufferBase(GL_UNIFORM_BUFFER, 10, CommonBuffers::GetInstance().config->GetBufferId());

@@ -87,6 +87,10 @@ layout(std430, binding = 13) buffer PairsTempOutput
 {
 	PairData pairs_temp[];
 };
+layout(std430, binding = 14) buffer ThreadsTorn
+{
+	int threads_torn;
+};
 
 layout(std140, binding = 10) uniform ConfigInput{ Config config; };
 layout(location = 11) uniform ivec2 grid_size;

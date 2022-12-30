@@ -25,6 +25,7 @@ void ParticleGrid::AddParticle(const Particle& particle) {
 		}
 
  		particle_indexes.push_back(index);
+		particles_updated = true;
 	}
 }
 
@@ -36,6 +37,7 @@ void ParticleGrid::UpdateParticleNeighbours() {
 	std::for_each(it, std::end(particle_indexes),
 		[this](int index) { particles[index].state = Particle::State::Deactive; });
 	deactivated_indexes.insert(std::end(deactivated_indexes), it, std::end(particle_indexes));
+	particles_updated |= it != std::end(particle_indexes);
 	particle_indexes.erase(it, std::end(particle_indexes));
 
 	if (particles.empty()) return;

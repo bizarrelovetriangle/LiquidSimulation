@@ -14,8 +14,8 @@ DeviceFluidProcessor::DeviceFluidProcessor(ParticleGrid& particle_grid)
 	particle_thread_offsets_skip_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/particle_thread_offsets_skip.comp" } });
 	particle_thread_update_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_pairs/particle_thread_update.comp" } });
 
-	int threads_count = 0;
-	CommonBuffers::GetInstance().threads_count->Flush({ threads_count });
+	CommonBuffers::GetInstance().threads_count->Flush({ 0 });
+	CommonBuffers::GetInstance().threads_torn->Flush({ 0 });
 }
 
 DeviceFluidProcessor& DeviceFluidProcessor::GetInstance(ParticleGrid& particle_grid) {
@@ -98,8 +98,16 @@ void DeviceFluidProcessor::Update(float dt) {
 	particle_thread_offsets.Resize(particles.size());
 
 	CreateThreads();
-	ParticleThreadsCount();
-	ParticleThreadsUpdate();
+
+	constexpr int threads_torn_threshold = 1000;
+	bool remove_torn = CommonBuffers::GetInstance().threads_torn->Retrive().front() > threads_torn_threshold;
+
+	if (_particle_grid.particles_updated || remove_torn) {
+		ParticleThreadsCount();
+		ParticleThreadsUpdate();
+		_particle_grid.particles_updated = false;
+		CommonBuffers::GetInstance().threads_torn->Flush({ 0 });
+	}
 
 	_pair_creator.ComputePairs(dt);
 	ParticleUpdate(dt);

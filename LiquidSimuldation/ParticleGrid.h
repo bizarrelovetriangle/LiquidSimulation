@@ -34,6 +34,8 @@ public:
 	int cellWidth;
 	vector2i size;
 
+	bool particles_updated = false;
+
 private:
 	vector2i GetGridPosition(const Particle& particle);
 	bool IsOutsideWindow(const Particle& particle);

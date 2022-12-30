@@ -32,7 +32,10 @@ void main() {
 			cross(scratch_a - pair_b, pair_a_b) > 0 !=
 			cross(scratch_b - pair_b, pair_a_b) > 0;
 
-		if (bilateral_scratch && bilateral_pair) pairs[i].torn = true;
+		if (bilateral_scratch && bilateral_pair) {
+			atomicAdd(threads_torn, 1);
+			pairs[i].torn = true;
+		}
 	}
 }
 

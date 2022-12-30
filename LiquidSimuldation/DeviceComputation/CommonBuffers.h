@@ -21,6 +21,7 @@ struct CommonBuffers {
 	std::unique_ptr<DeviceBuffer<ParticleGrid::GridCell>> particle_threads;
 	std::unique_ptr<DeviceBuffer<PairData>> pairs;
 	std::unique_ptr<DeviceBuffer<PairData>> pairs_temp;
+	std::unique_ptr<DeviceBuffer<int>> threads_torn;
 
 private:
 	CommonBuffers() {
@@ -33,5 +34,6 @@ private:
 		particle_threads = std::make_unique<DeviceBuffer<ParticleGrid::GridCell>>(0);
 		pairs = std::make_unique<DeviceBuffer<PairData>>(max_pairs);
 		pairs_temp = std::make_unique<DeviceBuffer<PairData>>(max_pairs);
+		threads_torn = std::make_unique<DeviceBuffer<int>>(1);
 	}
 };

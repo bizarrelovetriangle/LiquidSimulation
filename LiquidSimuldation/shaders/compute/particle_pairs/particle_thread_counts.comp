@@ -25,9 +25,7 @@ void main() {
 		float dist = distance(particles[pairs[i].first].position, particles[pairs[i].second].position);
 
 		bool particle_removed = particles[pairs[i].first].state == 2 || particles[pairs[i].second].state == 2;
-		bool overstretch = dist > pairs[i].rest_length * 2;
-
-		if (particle_removed || overstretch) pairs[i].torn = true;
+		if (particle_removed) pairs[i].torn = true;
 		if (pairs[i].torn) continue;
 
 		int particle_index = pairs[i].first;
