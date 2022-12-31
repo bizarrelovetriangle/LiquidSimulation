@@ -7,7 +7,7 @@
 #include <Utils/NeatTimer.h>
 #include <Utils/Algorithms.h>
 #include <Math/vector2.h>
-#include <DeviceComputation/PairCreator.h>
+#include <OpenGL/DeviceBuffer.h>
 
 class ParticleGrid;
 
@@ -20,24 +20,27 @@ public:
 	void Update(float dt);
 
 private:
-	void ParticleUpdate(float dt);
 	void CreateThreads();
 	void ParticleThreadsCount();
 	void ParticleThreadsUpdate();
+
+	void ParticlesAppliedForce();
+	void ParticleUpdate(float dt);
 
 	const int parallel = 200;
 	int threads_count = 0;
 
 	ParticleGrid& _particle_grid;
-	PairCreator _pair_creator;
 
-	ComputeProgram particle_update_program;
 	ComputeProgram create_threads_program;
-	ComputeProgram particle_thread_counts_program;
-	ComputeProgram particle_thread_offsets_program;
-	ComputeProgram particle_thread_offsets_skip_program;
-	ComputeProgram particle_thread_update_program;
+	ComputeProgram thread_counts_program;
+	ComputeProgram thread_offsets_program;
+	ComputeProgram thread_offsets_skip_program;
+	ComputeProgram thread_update_program;
 
-	DeviceBuffer<int> particle_thread_counts;
-	DeviceBuffer<int> particle_thread_offsets;
+	ComputeProgram particles_applied_force_program;
+	ComputeProgram particle_update_program;
+
+	DeviceBuffer<int> thread_counts;
+	DeviceBuffer<int> thread_offsets;
 };

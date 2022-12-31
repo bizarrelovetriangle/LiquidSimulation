@@ -35,12 +35,12 @@ Scene::~Scene() = default;
 
 void Scene::Start() {
 	std::chrono::steady_clock clock;
-	std::chrono::steady_clock::time_point then;
+	std::chrono::steady_clock::time_point then = clock.now();
 	glfwSetKeyCallback(_window, KeyCallback);
 	glfwSetCursorPosCallback(_window, CursorPositionCallback);
 	glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-	//createParticles(vector2());
+	createParticles(vector2());
 
 	while (!glfwWindowShouldClose(_window))
 	{
@@ -50,7 +50,7 @@ void Scene::Start() {
 		auto interval = std::chrono::milliseconds(1000) / 100;
 		auto dt = clock.now() - then;
 		if (dt < interval) std::this_thread::sleep_for(interval - dt);
-		_deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(clock.now() - then).count();
+		_delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(clock.now() - then).count();
 		then = clock.now();
 
 		Update();
@@ -64,10 +64,10 @@ void Scene::Update() {
 	_tool->OnMoved(_mouse_pos);
 
 	for (auto& wall : _walls) {
-		wall.Update(_expectedDeltaTime);
+		wall.Update(_expected_delta_time);
 	}
 
-	_fluidProcessor->Update(_walls, _expectedDeltaTime);
+	_fluidProcessor->Update(_walls, _expected_delta_time);
 }
 
 void Scene::Draw() {
@@ -80,17 +80,17 @@ void Scene::Draw() {
 	_walls[4].draw();
 
 	{
-		size_t threads_count = CommonBuffers::GetInstance().threads_count->Retrive().front();
+		size_t threads_count = CommonBuffers::GetInstance().threads_count.Retrive().front();
 		DeviceProgram render_program;
  		render_program.InitProgram({
 			{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
 			{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
 			
 		glUseProgram(render_program.program_id);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles->GetBufferId());
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().pairs->GetBufferId());
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles.GetBufferId());
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().threads.GetBufferId());
 			
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config->GetBufferId());
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config.GetBufferId());
 		auto& view_matrix = *DataFactory<matrix3x3>::GetData();
 		glUniformMatrix3fv(0, 1, GL_FALSE, (float*)&view_matrix);
 		vector3 color(0.9, 0.6, 0.7);

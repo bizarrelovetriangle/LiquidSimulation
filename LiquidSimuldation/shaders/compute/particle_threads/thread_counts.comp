@@ -13,22 +13,22 @@ layout(std430, binding = 1) buffer ParticleThreadOffsetsOutput
 };
 
 void main() {
-	int threads_chunk_size = int(ceil(float(pairs_count) / parallel));
+	int threads_chunk_size = int(ceil(float(threads_count) / parallel));
 	int particle_thread_chunk_size = int(ceil(float(particle_thread_offsets.length()) / parallel));
 
 	int start = int(gl_GlobalInvocationID.x) * threads_chunk_size;
-	int end = min(start + threads_chunk_size, pairs_count);
+	int end = min(start + threads_chunk_size, threads_count);
 
-	if (start >= pairs_count) return;
+	if (start >= threads_count) return;
 
 	for (int i = start; i < end; ++i) {
-		float dist = distance(particles[pairs[i].first].position, particles[pairs[i].second].position);
+		float dist = distance(particles[threads[i].first].position, particles[threads[i].second].position);
 
-		bool particle_removed = particles[pairs[i].first].state == 2 || particles[pairs[i].second].state == 2;
-		if (particle_removed) pairs[i].torn = true;
-		if (pairs[i].torn) continue;
+		bool particle_removed = particles[threads[i].first].state == 2 || particles[threads[i].second].state == 2;
+		if (particle_removed) threads[i].torn = true;
+		if (threads[i].torn) continue;
 
-		int particle_index = pairs[i].first;
+		int particle_index = threads[i].first;
 		atomicAdd(particle_thread_counts[particle_index], 1);
 		
 		int particle_thread_offset_skip = particle_thread_chunk_size * (particle_index / particle_thread_chunk_size + 1);

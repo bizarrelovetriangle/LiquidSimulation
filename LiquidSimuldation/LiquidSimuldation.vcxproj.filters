@@ -55,9 +55,6 @@
     <ClCompile Include="Utils\DataFactory.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceComputation\PairCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGL\DeviceProgram\RenderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,6 +80,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tools\KnifeTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Elements\ParticlesThread.h">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,9 +138,6 @@
     <ClInclude Include="DeviceComputation\CommonBuffers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceComputation\PairCreator.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGL\DeviceBuffer.h" />
     <ClInclude Include="Math\vector2i.h" />
     <ClInclude Include="Math\vector4.h" />
@@ -165,18 +162,17 @@
     <None Include="shaders\compute\particles\particles_update.comp">
       <Filter>Source Files\shaders\compute\particles</Filter>
     </None>
-    <None Include="shaders\compute\particle_pairs\create_pairs.comp">
+    <None Include="shaders\compute\particles\particles_applied_force.comp">
       <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
     <None Include="shaders\render\thread.frag" />
     <None Include="shaders\render\thread.vert" />
     <None Include="shaders\render\wall.frag" />
-    <None Include="shaders\compute\particle_pairs\compute_dencity.comp" />
-    <None Include="shaders\compute\particle_pairs\create_threads.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_offsets.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_counts.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
+    <None Include="shaders\compute\particle_threads\create_threads.comp" />
+    <None Include="shaders\compute\particle_threads\thread_offsets.comp" />
+    <None Include="shaders\compute\particle_threads\thread_update.comp" />
+    <None Include="shaders\compute\particle_threads\thread_counts.comp" />
+    <None Include="shaders\compute\particle_threads\thread_offsets_skip.comp" />
     <None Include="shaders\compute\tools\knife.comp" />
   </ItemGroup>
 </Project>

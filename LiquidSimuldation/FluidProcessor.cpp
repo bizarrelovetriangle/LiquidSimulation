@@ -49,9 +49,9 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 	}
 }
 
-std::vector<PairData> FluidProcessor::CreatePairs() {
+std::vector<ParticlesThread> FluidProcessor::Createthreads() {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	std::vector<PairData> result;
+	std::vector<ParticlesThread> result;
 
 	for (size_t i = 0; i < _particle_grid.particles.size(); ++i) {
 		auto& particle = _particle_grid.particles[i];
@@ -78,7 +78,7 @@ std::vector<PairData> FluidProcessor::CreatePairs() {
 
 void FluidProcessor::ParticlesGravity(float& dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	for (auto& pair : pairs) {
+	for (auto& pair : threads) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
@@ -92,7 +92,7 @@ void FluidProcessor::ParticlesGravity(float& dt) {
 		second_particle.density_near += proximityCoefficient3;
 	}
 
-	for (auto& pair : pairs) {
+	for (auto& pair : threads) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
@@ -112,7 +112,7 @@ void FluidProcessor::ParticlesGravity(float& dt) {
 
 void FluidProcessor::ApplyViscosity(float& dt) {
 	NeatTimer::GetInstance().StageBegin(__func__);
-	for (auto& pair : pairs) {
+	for (auto& pair : threads) {
 		auto& first_particle = _particle_grid.particles[pair.first];
 		auto& second_particle = _particle_grid.particles[pair.second];
 
@@ -133,7 +133,7 @@ void FluidProcessor::ApplyViscosity(float& dt) {
 
 void FluidProcessor::CreateParticle(vector2 position) {
 	Particle particle(position);
-	particle.acceleration = vector2(0, -200);
+	particle.external_force = vector2(0, -200);
 	_particle_grid.AddParticle(particle);
 }
 

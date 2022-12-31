@@ -8,7 +8,7 @@ out vec4 vertex_color;
 
 void main()
 {
-	PairData thread = pairs[gl_InstanceID];
+	ParticlesThread thread = threads[gl_InstanceID];
 	if (thread.torn) return;
 	int particle_id = gl_VertexID == 0 ? thread.first : thread.second;
 	vec2 pos = particles[particle_id].position;

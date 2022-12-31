@@ -1,8 +1,8 @@
 struct Particle {
 	vec2 position;
 	vec2 velosity;
-	vec2 applied_impulse;
-	vec2 acceleration;
+	vec2 applied_force;
+	vec2 external_force;
 
 	ivec2 grid_position;
 	float radius;
@@ -17,7 +17,7 @@ struct GridCell {
 	int end;
 };
 
-struct PairData {
+struct ParticlesThread {
 	int first;
 	int second;
 	float rest_length;
@@ -71,21 +71,21 @@ layout(std430, binding = 9) buffer ParticleThreads
 {
 	GridCell particle_threads[];
 };
-layout(std430, binding = 10) buffer PairsCount
+layout(std430, binding = 10) buffer ThreadsCount
 {
-	int pairs_count;
+	int threads_count;
 };
-layout(std430, binding = 11) buffer PairsOutput
+layout(std430, binding = 11) buffer ThreadsOutput
 {
-	PairData pairs[];
+	ParticlesThread threads[];
 };
-layout(std430, binding = 12) buffer PairsCountTemp
+layout(std430, binding = 12) buffer ThreadsCountTemp
 {
-	int pairs_count_temp;
+	int threads_count_temp;
 };
-layout(std430, binding = 13) buffer PairsTempOutput
+layout(std430, binding = 13) buffer ThreadsTempOutput
 {
-	PairData pairs_temp[];
+	ParticlesThread threads_temp[];
 };
 layout(std430, binding = 14) buffer ThreadsTorn
 {

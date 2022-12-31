@@ -35,6 +35,6 @@ public:
 	GLFWwindow* _window = nullptr;
 	std::vector<Wall> _walls;
 
-	float _expectedDeltaTime = 1. / 60;
-	float _deltaTime = 0;
+	float _expected_delta_time = 1. / 60;
+	float _delta_time = 0;
 };

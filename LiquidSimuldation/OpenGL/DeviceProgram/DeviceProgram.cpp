@@ -29,18 +29,18 @@ ParticleGrid* DeviceProgram::_particle_grid = nullptr;
 void DeviceProgram::Use() const
 {
 	glUseProgram(program_id);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, CommonBuffers::GetInstance().grid->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, CommonBuffers::GetInstance().particle_indexes->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, CommonBuffers::GetInstance().particles->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, CommonBuffers::GetInstance().particle_threads->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, CommonBuffers::GetInstance().threads_count->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, CommonBuffers::GetInstance().pairs->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 12, CommonBuffers::GetInstance().threads_count_temp->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 13, CommonBuffers::GetInstance().pairs_temp->GetBufferId());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 14, CommonBuffers::GetInstance().threads_torn->GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, CommonBuffers::GetInstance().grid.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, CommonBuffers::GetInstance().particle_indexes.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, CommonBuffers::GetInstance().particles.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, CommonBuffers::GetInstance().particle_threads.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, CommonBuffers::GetInstance().threads_count.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, CommonBuffers::GetInstance().threads.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 12, CommonBuffers::GetInstance().threads_count_temp.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 13, CommonBuffers::GetInstance().threads_temp.GetBufferId());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 14, CommonBuffers::GetInstance().threads_torn.GetBufferId());
 
 	int parallel = 200;
-	glBindBufferBase(GL_UNIFORM_BUFFER, 10, CommonBuffers::GetInstance().config->GetBufferId());
+	glBindBufferBase(GL_UNIFORM_BUFFER, 10, CommonBuffers::GetInstance().config.GetBufferId());
 	if (_particle_grid) glUniform2i(11, _particle_grid->size.x, _particle_grid->size.y);
 	glUniform1i(12, parallel);
 }

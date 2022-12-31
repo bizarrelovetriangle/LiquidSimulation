@@ -10,31 +10,31 @@ layout(location = 1) uniform vec2 scratch_b;
 float cross(vec2 a, vec2 b);
 
 void main() {
-	int threads_chunk_size = int(ceil(float(pairs_count) / parallel));
+	int threads_chunk_size = int(ceil(float(threads_count) / parallel));
 
 	int start = int(gl_GlobalInvocationID.x) * threads_chunk_size;
-	int end = min(start + threads_chunk_size, pairs_count);
+	int end = min(start + threads_chunk_size, threads_count);
 
-	if (start >= pairs_count) return;
+	if (start >= threads_count) return;
 	
 	for (int i = start; i < end; ++i) {
-		if (pairs[i].torn) continue;
-		vec2 pair_a = particles[pairs[i].first].position;
-		vec2 pair_b = particles[pairs[i].second].position;
+		if (threads[i].torn) continue;
+		vec2 thread_a = particles[threads[i].first].position;
+		vec2 thread_b = particles[threads[i].second].position;
 
 		vec2 scratch_a_b = scratch_a - scratch_b;
-		vec2 pair_a_b = pair_a - pair_b;
+		vec2 thread_a_b = thread_a - thread_b;
 
 		bool bilateral_scratch =
-			cross(pair_a - scratch_b, scratch_a_b) > 0 !=
-			cross(pair_b - scratch_b, scratch_a_b) > 0;
+			cross(thread_a - scratch_b, scratch_a_b) > 0 !=
+			cross(thread_b - scratch_b, scratch_a_b) > 0;
 		bool bilateral_pair =
-			cross(scratch_a - pair_b, pair_a_b) > 0 !=
-			cross(scratch_b - pair_b, pair_a_b) > 0;
+			cross(scratch_a - thread_b, thread_a_b) > 0 !=
+			cross(scratch_b - thread_b, thread_a_b) > 0;
 
 		if (bilateral_scratch && bilateral_pair) {
 			atomicAdd(threads_torn, 1);
-			pairs[i].torn = true;
+			threads[i].torn = true;
 		}
 	}
 }

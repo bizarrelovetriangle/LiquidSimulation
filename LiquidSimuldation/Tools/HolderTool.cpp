@@ -28,7 +28,7 @@ void HolderTool::OnMoved(const vector2& pos) {
 	for (auto& pair : _controlled_particles) {
 		auto& particle = particles[pair.first];
 		auto stretch = (_mouse_pos + pair.second) - particle.position;
-		particle.velosity += (stretch - particle.velosity / 4) * _scene._expectedDeltaTime * 30;
+		particle.velosity += (stretch - particle.velosity / 4) * _scene._expected_delta_time * 30;
 	}
 }
 

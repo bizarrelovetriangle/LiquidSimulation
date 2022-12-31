@@ -21,16 +21,16 @@ void main() {
 				float dist = distance(particles[org].position, particles[index].position);
 				if (dist > config.interactionRange || dist == 0) continue;
 
-				int pair_id = atomicAdd(pairs_count, 2);
-				pairs[pair_id].first = org;
-				pairs[pair_id].second = index;
-				pairs[pair_id].rest_length = dist;
-				pairs[pair_id].torn = false;
+				int thread_id = atomicAdd(threads_count, 2);
+				threads[thread_id].first = org;
+				threads[thread_id].second = index;
+				threads[thread_id].rest_length = dist;
+				threads[thread_id].torn = false;
 				
-				pairs[pair_id + 1].first = index;
-				pairs[pair_id + 1].second = org;
-				pairs[pair_id + 1].rest_length = dist;
-				pairs[pair_id + 1].torn = false;
+				threads[thread_id + 1].first = index;
+				threads[thread_id + 1].second = org;
+				threads[thread_id + 1].rest_length = dist;
+				threads[thread_id + 1].torn = false;
 			}
 		}
 	}

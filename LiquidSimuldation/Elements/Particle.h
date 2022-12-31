@@ -34,7 +34,7 @@ public:
 	Particle() {}
 
 	void Update(float interval) {
-		velosity += acceleration * interval;
+		velosity += external_force * interval;
 		position += velosity * interval;
 	}
 
@@ -46,8 +46,8 @@ public:
 
 	vector2 position;
 	vector2 velosity;
-	vector2 applied_impulse;
-	vector2 acceleration;
+	vector2 applied_force;
+	vector2 external_force;
 
 	vector2i gridPosition;
 	float radius;

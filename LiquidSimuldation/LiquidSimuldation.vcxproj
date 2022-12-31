@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Elements\ParticlesThread.h" />
     <ClCompile Include="Tools\KnifeTool.cpp" />
     <ClCompile Include="Tools\EmitterTool.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -169,7 +170,6 @@
     <ClCompile Include="DeviceComputation\DeviceFluidProcessor.cpp" />
     <ClCompile Include="LiquidSimuldation.cpp" />
     <ClCompile Include="Math\matrix3x3.cpp" />
-    <ClCompile Include="DeviceComputation\PairCreator.cpp" />
     <ClCompile Include="Utils\DataFactory.h" />
     <ClCompile Include="Utils\NeatTimer.cpp" />
     <ClCompile Include="ParticleGrid.cpp" />
@@ -190,7 +190,6 @@
     <ClInclude Include="Math\vector4.h" />
     <ClInclude Include="OpenGL\DeviceBuffer.h" />
     <ClInclude Include="DeviceComputation\CommonBuffers.h" />
-    <ClInclude Include="DeviceComputation\PairCreator.h" />
     <ClInclude Include="Utils\Algorithms.h" />
     <ClInclude Include="OpenGL\DeviceProgram\ComputeProgram.h" />
     <ClInclude Include="Config.h" />
@@ -211,13 +210,12 @@
   <ItemGroup>
     <None Include="Shaders\common.glsl" />
     <None Include="shaders\compute\particles\particles_update.comp" />
-    <None Include="shaders\compute\particle_pairs\compute_dencity.comp" />
-    <None Include="shaders\compute\particle_pairs\create_pairs.comp" />
-    <None Include="shaders\compute\particle_pairs\create_threads.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_counts.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_offsets_skip.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_offsets.comp" />
-    <None Include="shaders\compute\particle_pairs\particle_thread_update.comp" />
+    <None Include="shaders\compute\particles\particles_applied_force.comp" />
+    <None Include="shaders\compute\particle_threads\create_threads.comp" />
+    <None Include="shaders\compute\particle_threads\thread_counts.comp" />
+    <None Include="shaders\compute\particle_threads\thread_offsets_skip.comp" />
+    <None Include="shaders\compute\particle_threads\thread_offsets.comp" />
+    <None Include="shaders\compute\particle_threads\thread_update.comp" />
     <None Include="shaders\compute\tools\knife.comp" />
     <None Include="shaders\render\particle.frag" />
     <None Include="shaders\render\particle.vert" />

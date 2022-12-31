@@ -1,9 +1,9 @@
 #include "DeviceBuffer.h"
 #include <glad/glad.h>
-#include <DeviceComputation/PairCreator.h>
 #include <Config.h>
 #include <ParticleGrid.h>
 #include <Elements/Particle.h>
+#include <Elements/ParticlesThread.h>
 
 template <typename T>
 DeviceBuffer<T>::DeviceBuffer(size_t size) : _size(size)
@@ -55,7 +55,7 @@ void DeviceBuffer<T>::Flush(const std::vector<T>& data)
 	glNamedBufferData(_buffer_id, data.size() * sizeof(T), &data[0], GL_DYNAMIC_DRAW);
 }
 
-template class DeviceBuffer<PairData>;
+template class DeviceBuffer<ParticlesThread>;
 template class DeviceBuffer<int>;
 template class DeviceBuffer<Config>;
 template class DeviceBuffer<Particle>;
