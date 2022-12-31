@@ -33,9 +33,9 @@ public:
 
 	Particle() {}
 
-	void Update(float interval) {
-		velosity += external_force * interval;
-		position += velosity * interval;
+	void Update(float dt) {
+		velosity += (applied_force + external_force) * dt;
+		position += velosity * dt;
 	}
 
 	enum class State {

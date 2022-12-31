@@ -32,9 +32,9 @@ vector2 vector2::normalize() const
 	return vector2(x / length, y / length);
 }
 
-vector2 vector2::clockwise_perpendicular() const
+vector2 vector2::perpendicular(bool clockwise) const
 {
-	return vector2(y, -x);
+	return clockwise ? vector2(y, -x) : vector2(-y, x);
 }
 
 bool vector2::is_zero() const

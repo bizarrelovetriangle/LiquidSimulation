@@ -16,5 +16,5 @@ public:
 	static matrix3x3 identity();
 	static matrix3x3 rotate(const float& radians);
 	static matrix3x3 transfer(const vector2& v);
-	static matrix3x3 transpose(const matrix3x3& mat);
+	matrix3x3 transpose() const;
 };

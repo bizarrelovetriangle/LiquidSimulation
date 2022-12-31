@@ -25,10 +25,8 @@ vector2 matrix3x3::operator*(const vector2& vec) const
 
 matrix3x3 matrix3x3::operator*(const matrix3x3& mat) const
 {
-	vector3 col1(mat.i.x, mat.j.x, mat.k.x);
-	vector3 col2(mat.i.y, mat.j.y, mat.k.y);
-	vector3 col3(mat.i.z, mat.j.z, mat.k.z);
-	return transpose(matrix3x3(operator*(col1), operator*(col2), operator*(col3)));
+	auto trans = mat.transpose();
+	return matrix3x3(operator*(trans.i), operator*(trans.j), operator*(trans.k)).transpose();
 }
 
 void matrix3x3::operator*=(const float& scale)
@@ -68,10 +66,10 @@ matrix3x3 matrix3x3::transfer(const vector2& v)
 	return mat;
 }
 
-matrix3x3 matrix3x3::transpose(const matrix3x3& mat)
+matrix3x3 matrix3x3::transpose() const
 {
 	return matrix3x3(
-		vector3(mat.i.x, mat.j.x, mat.k.x),
-		vector3(mat.i.y, mat.j.y, mat.k.y),
-		vector3(mat.i.z, mat.j.z, mat.k.z));
+		vector3(i.x, j.x, k.x),
+		vector3(i.y, j.y, k.y),
+		vector3(i.z, j.z, k.z));
 }

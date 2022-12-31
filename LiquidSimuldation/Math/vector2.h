@@ -17,7 +17,7 @@ public:
 	vector2(const vector2i& v);
 	vector2(const vector3& v);
 	vector2 normalize() const;
-	vector2 clockwise_perpendicular() const;
+	vector2 perpendicular(bool clockwise) const;
 	bool is_zero() const;
 	bool is_nan() const;
 	float length() const;

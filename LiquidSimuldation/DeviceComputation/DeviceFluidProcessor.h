@@ -21,7 +21,6 @@ public:
 
 private:
 	void CreateThreads();
-	void ParticleThreadsCount();
 	void ParticleThreadsUpdate();
 
 	void ParticlesComputeDencity();

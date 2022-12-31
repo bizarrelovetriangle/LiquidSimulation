@@ -37,8 +37,16 @@ void DeviceFluidProcessor::CreateThreads() {
 	threads_count = CommonBuffers::GetInstance().threads_count.Retrive().front();
 }
 
-void DeviceFluidProcessor::ParticleThreadsCount() {
+void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	NeatTimer::GetInstance().StageBegin(__func__);
+
+	constexpr int threshold = 1000;
+	bool torn_threshold = CommonBuffers::GetInstance().threads_torn.Retrive().front() > threshold;
+	if (!_particle_grid.particles_updated && !torn_threshold) return;
+
+	_particle_grid.particles_updated = false;
+	CommonBuffers::GetInstance().threads_torn.Flush({ 0 });
+
 	thread_counts.Clear();
 	thread_offsets.Clear();
 
@@ -60,10 +68,7 @@ void DeviceFluidProcessor::ParticleThreadsCount() {
 	glDispatchCompute(parallel, 1, 1);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	thread_offsets_program.Wait();
-}
 
-void DeviceFluidProcessor::ParticleThreadsUpdate() {
-	NeatTimer::GetInstance().StageBegin(__func__);
 	thread_update_program.Use();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, thread_counts.GetBufferId());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, thread_offsets.GetBufferId());
@@ -78,7 +83,6 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 void DeviceFluidProcessor::ParticlesComputeDencity() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	auto& particle_indexes = _particle_grid.particle_indexes;
-	auto& grid = _particle_grid.grid;
 	if (particle_indexes.empty()) return;
 
 	compute_dencity_program.Use();
@@ -89,7 +93,6 @@ void DeviceFluidProcessor::ParticlesComputeDencity() {
 void DeviceFluidProcessor::ParticlesComputeForce() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	auto& particle_indexes = _particle_grid.particle_indexes;
-	auto& grid = _particle_grid.grid;
 	if (particle_indexes.empty()) return;
 
 	particles_compute_force_program.Use();
@@ -123,16 +126,7 @@ void DeviceFluidProcessor::Update(float dt) {
 	thread_offsets.Resize(particles.size());
 
 	CreateThreads();
-
-	constexpr int threads_torn_threshold = 1000;
-	bool remove_torn = CommonBuffers::GetInstance().threads_torn.Retrive().front() > threads_torn_threshold;
-
-	if (_particle_grid.particles_updated || remove_torn) {
-		ParticleThreadsCount();
-		ParticleThreadsUpdate();
-		_particle_grid.particles_updated = false;
-		CommonBuffers::GetInstance().threads_torn.Flush({ 0 });
-	}
+	ParticleThreadsUpdate();
 
 	ParticlesComputeDencity();
 	ParticlesComputeForce();

@@ -3,7 +3,7 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient);
+vec2 ComputeViscosity(uint org, uint second, vec2 normal, float proximity_coefficient);
 vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coefficient);
 vec2 ThreadStretches(uint org);
 
@@ -26,7 +26,7 @@ void main() {
 				vec2 normal = vector / dist;
 				float proximity_coefficient = 1 - dist / config.interactionRange;
 	
-				applied_force += ComputeVisosity(org, index, normal, proximity_coefficient);
+				applied_force += ComputeViscosity(org, index, normal, proximity_coefficient);
 				applied_force += ComputePressure(org, index, normal, proximity_coefficient);
 			}
 		}
@@ -37,7 +37,7 @@ void main() {
 	particles[org].applied_force = applied_force;
 }
 
-vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient) {
+vec2 ComputeViscosity(uint org, uint second, vec2 normal, float proximity_coefficient) {
 	float inertia = dot(particles[second].velosity - particles[org].velosity, normal);
 	if (inertia < 0 || inertia > 1000) return vec2(0, 0);
 

@@ -23,9 +23,8 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 		for (auto& particle : _particle_grid.particles) {
 			float max_dist = 10;
 
-			auto wall_perp = wall_vector.is_clockwise(particle.position - wall_center)
-				? wall_vector.clockwise_perpendicular()
-				: -wall_vector.clockwise_perpendicular();
+			bool clockwise = wall_vector.is_clockwise(particle.position - wall_center);
+			auto wall_perp = wall_vector.perpendicular(clockwise);
 
 			float dist = particle.position.distance_to_line(wall.a(), wall.b());
 
@@ -35,9 +34,7 @@ void FluidProcessor::WallCollicionHandling(const std::vector<Wall>& walls, float
 
 			auto particle_wall_proj = wall_vector * wall_vector.dot_product(particle.position - wall_center);
 			if (particle_wall_proj.length() > wall_length / 2) continue;
-			auto rotate_vector = wall.rotate_speed > 0
-				? -particle_wall_proj.clockwise_perpendicular()
-				: particle_wall_proj.clockwise_perpendicular();
+			auto rotate_vector = particle_wall_proj.perpendicular(wall.rotate_speed < 0);
 			auto wall_velocity = rotate_vector * wall.rotate_speed;
 
 			float particle_wall_approximation = wall_perp.dot_product(wall_velocity - particle.velosity);
@@ -143,6 +140,16 @@ void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 
 	if (_particle_grid.particle_indexes.size() == 0) return;
 	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
+
+	//for (auto particle_index : _particle_grid.particle_indexes) {
+	//	auto& particle = _particle_grid.particles[particle_index];
+	//	particle.velosity += (particle.applied_force + particle.external_force) * dt;
+	//}
+	//
+	//for (auto particle_index : _particle_grid.particle_indexes) {
+	//	auto& particle = _particle_grid.particles[particle_index];
+	//	particle.position += particle.velosity * dt;
+	//}
 }
 
 void FluidProcessor::Draw() {
