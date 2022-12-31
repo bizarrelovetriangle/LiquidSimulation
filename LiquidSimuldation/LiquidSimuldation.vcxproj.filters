@@ -162,7 +162,7 @@
     <None Include="shaders\compute\particles\particles_update.comp">
       <Filter>Source Files\shaders\compute\particles</Filter>
     </None>
-    <None Include="shaders\compute\particles\particles_applied_force.comp">
+    <None Include="shaders\compute\particles\particles_compute_force.comp">
       <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>
     <None Include="shaders\render\thread.frag" />

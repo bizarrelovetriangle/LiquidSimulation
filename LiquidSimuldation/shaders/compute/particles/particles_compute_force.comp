@@ -1,0 +1,107 @@
+#version 430 core
+#include "../../common.glsl"
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+void ComputeDencity(uint org, Range range);
+vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient);
+vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coefficient);
+vec2 ThreadStretches(uint org);
+
+void main() {
+	uint org = particle_indexes[gl_GlobalInvocationID.x];
+	Range range = GetRange(grid_size, particles[org].grid_position);
+	ComputeDencity(org, range);
+	vec2 applied_force;
+
+	for (int y = range.a.y; y <= range.b.y; ++y) {
+		for (int x = range.a.x; x <= range.b.x; ++x) {
+			GridCell nghrCell = grid[y * grid_size.x + x];
+	
+			for (int i = nghrCell.start; i < nghrCell.end; ++i) {
+				int index = particle_indexes[i];
+				if (particles[org].index == particles[index].index) continue;
+	
+				vec2 vector = particles[index].position - particles[org].position;
+				float dist = length(vector);
+				if (dist > config.interactionRange || dist == 0) continue;
+				vec2 normal = vector / dist;
+				float proximity_coefficient = 1 - dist / config.interactionRange;
+	
+				applied_force += ComputeVisosity(org, index, normal, proximity_coefficient);
+				applied_force += ComputePressure(org, index, normal, proximity_coefficient);
+			}
+		}
+	}
+
+	applied_force += ThreadStretches(org);
+
+	particles[org].applied_force = applied_force;
+}
+
+void ComputeDencity(uint org, Range range) {
+	float density = 0;
+	float density_near = 0;
+
+	for (int y = range.a.y; y <= range.b.y; ++y) {
+		for (int x = range.a.x; x <= range.b.x; ++x) {
+			GridCell nghrCell = grid[y * grid_size.x + x];
+
+			for (uint i = nghrCell.start; i < nghrCell.end; ++i) {
+				int index = particle_indexes[i];
+				if (particles[org].index == particles[index].index) continue;
+
+				float dist = distance(particles[org].position, particles[index].position);
+				if (dist > config.interactionRange) continue;
+
+				float proximity_coefficient = 1 - dist / config.interactionRange;
+				density += pow(proximity_coefficient, 2);
+				density_near += pow(proximity_coefficient, 3);
+			}
+		}
+	}
+	
+	particles[org].density = density;
+	particles[org].density_near = density_near;
+}
+
+vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient) {
+	float inertia = dot(particles[second].velosity - particles[org].velosity, normal);
+	if (inertia < 0 || inertia > 1000) return vec2(0, 0);
+
+	vec2 viscosity = 0.5 * proximity_coefficient *
+		(config.kLinearViscocity * inertia + config.kQuadraticViscocity / 1 * pow(inertia, 2)) *
+		normal;
+	return viscosity;
+}
+
+vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coefficient) {
+	float pressureM = config.k * (particles[org].density - config.restDensity + particles[second].density - config.restDensity);
+	float nearPressureM = config.k_near * (particles[org].density_near + particles[second].density_near);
+	vec2 pressure = (pressureM * proximity_coefficient + nearPressureM * pow(proximity_coefficient, 2)) * normal;
+	return -pressure;
+}
+
+vec2 ThreadStretches(uint org) {
+	vec2 stretch;
+
+	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
+		if (threads[i].torn) continue;
+		vec2 vector = particles[threads[i].second].position - particles[org].position;
+		float dist = length(vector);
+		if (dist == 0) continue;
+
+		bool overstretch = dist > threads[i].rest_length * 2;
+		if (overstretch) {
+			atomicAdd(threads_torn, 1);
+			threads[i].torn = true;
+		}
+
+		if (threads[i].torn) continue;
+
+		vec2 normal = vector / dist;
+		stretch += normal * (dist - threads[i].rest_length) * 30;
+	}
+	
+	return stretch;
+}

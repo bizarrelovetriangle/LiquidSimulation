@@ -210,7 +210,7 @@
   <ItemGroup>
     <None Include="Shaders\common.glsl" />
     <None Include="shaders\compute\particles\particles_update.comp" />
-    <None Include="shaders\compute\particles\particles_applied_force.comp" />
+    <None Include="shaders\compute\particles\particles_compute_force.comp" />
     <None Include="shaders\compute\particle_threads\create_threads.comp" />
     <None Include="shaders\compute\particle_threads\thread_counts.comp" />
     <None Include="shaders\compute\particle_threads\thread_offsets_skip.comp" />
