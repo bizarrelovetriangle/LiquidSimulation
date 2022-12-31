@@ -174,5 +174,6 @@
     <None Include="shaders\compute\particle_threads\thread_counts.comp" />
     <None Include="shaders\compute\particle_threads\thread_offsets_skip.comp" />
     <None Include="shaders\compute\tools\knife.comp" />
+    <None Include="shaders\compute\particles\compute_dencity.comp" />
   </ItemGroup>
 </Project>

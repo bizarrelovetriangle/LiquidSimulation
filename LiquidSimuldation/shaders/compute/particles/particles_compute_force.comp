@@ -3,7 +3,6 @@
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-void ComputeDencity(uint org, Range range);
 vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient);
 vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coefficient);
 vec2 ThreadStretches(uint org);
@@ -11,7 +10,6 @@ vec2 ThreadStretches(uint org);
 void main() {
 	uint org = particle_indexes[gl_GlobalInvocationID.x];
 	Range range = GetRange(grid_size, particles[org].grid_position);
-	ComputeDencity(org, range);
 	vec2 applied_force;
 
 	for (int y = range.a.y; y <= range.b.y; ++y) {
@@ -37,32 +35,6 @@ void main() {
 	applied_force += ThreadStretches(org);
 
 	particles[org].applied_force = applied_force;
-}
-
-void ComputeDencity(uint org, Range range) {
-	float density = 0;
-	float density_near = 0;
-
-	for (int y = range.a.y; y <= range.b.y; ++y) {
-		for (int x = range.a.x; x <= range.b.x; ++x) {
-			GridCell nghrCell = grid[y * grid_size.x + x];
-
-			for (uint i = nghrCell.start; i < nghrCell.end; ++i) {
-				int index = particle_indexes[i];
-				if (particles[org].index == particles[index].index) continue;
-
-				float dist = distance(particles[org].position, particles[index].position);
-				if (dist > config.interactionRange) continue;
-
-				float proximity_coefficient = 1 - dist / config.interactionRange;
-				density += pow(proximity_coefficient, 2);
-				density_near += pow(proximity_coefficient, 3);
-			}
-		}
-	}
-	
-	particles[org].density = density;
-	particles[org].density_near = density_near;
 }
 
 vec2 ComputeVisosity(uint org, uint second, vec2 normal, float proximity_coefficient) {

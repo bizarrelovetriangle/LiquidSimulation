@@ -13,6 +13,7 @@ DeviceFluidProcessor::DeviceFluidProcessor(ParticleGrid& particle_grid)
 	thread_offsets_skip_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_threads/thread_offsets_skip.comp" } });
 	thread_update_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particle_threads/thread_update.comp" } });
 
+	compute_dencity_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/compute_dencity.comp" } });
 	particles_compute_force_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_compute_force.comp" } });
 	particle_update_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_update.comp" } });
 
@@ -74,6 +75,17 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	CommonBuffers::GetInstance().threads_count_temp.Flush({ 0 });
 }
 
+void DeviceFluidProcessor::ParticlesComputeDencity() {
+	NeatTimer::GetInstance().StageBegin(__func__);
+	auto& particle_indexes = _particle_grid.particle_indexes;
+	auto& grid = _particle_grid.grid;
+	if (particle_indexes.empty()) return;
+
+	compute_dencity_program.Use();
+	glDispatchCompute(_particle_grid.particle_indexes.size(), 1, 1);
+	compute_dencity_program.Wait();
+}
+
 void DeviceFluidProcessor::ParticlesComputeForce() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 	auto& particle_indexes = _particle_grid.particle_indexes;
@@ -122,6 +134,7 @@ void DeviceFluidProcessor::Update(float dt) {
 		CommonBuffers::GetInstance().threads_torn.Flush({ 0 });
 	}
 
+	ParticlesComputeDencity();
 	ParticlesComputeForce();
 	ParticleUpdate(dt);
 

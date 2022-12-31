@@ -24,6 +24,7 @@ private:
 	void ParticleThreadsCount();
 	void ParticleThreadsUpdate();
 
+	void ParticlesComputeDencity();
 	void ParticlesComputeForce();
 	void ParticleUpdate(float dt);
 
@@ -38,6 +39,7 @@ private:
 	ComputeProgram thread_offsets_skip_program;
 	ComputeProgram thread_update_program;
 
+	ComputeProgram compute_dencity_program;
 	ComputeProgram particles_compute_force_program;
 	ComputeProgram particle_update_program;
 
