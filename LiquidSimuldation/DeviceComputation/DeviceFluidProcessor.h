@@ -25,7 +25,6 @@ private:
 
 	void ParticlesComputeDencity();
 	void ParticlesComputeForce();
-	void ParticleUpdate(float dt);
 
 	const int parallel = 200;
 	int threads_count = 0;
@@ -40,7 +39,6 @@ private:
 
 	ComputeProgram compute_dencity_program;
 	ComputeProgram particles_compute_force_program;
-	ComputeProgram particle_update_program;
 
 	DeviceBuffer<int> thread_counts;
 	DeviceBuffer<int> thread_offsets;

@@ -15,7 +15,6 @@ DeviceFluidProcessor::DeviceFluidProcessor(ParticleGrid& particle_grid)
 
 	compute_dencity_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/compute_dencity.comp" } });
 	particles_compute_force_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_compute_force.comp" } });
-	particle_update_program.InitProgram({ { GL_COMPUTE_SHADER, "shaders/compute/particles/particles_update.comp" } });
 
 	CommonBuffers::GetInstance().threads_count.Flush({ 0 });
 	CommonBuffers::GetInstance().threads_torn.Flush({ 0 });
@@ -41,11 +40,17 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	NeatTimer::GetInstance().StageBegin(__func__);
 
 	constexpr int threshold = 1000;
+	int torn = CommonBuffers::GetInstance().threads_torn.Retrive().front();
 	bool torn_threshold = CommonBuffers::GetInstance().threads_torn.Retrive().front() > threshold;
 	if (!_particle_grid.particles_updated && !torn_threshold) return;
 
 	_particle_grid.particles_updated = false;
 	CommonBuffers::GetInstance().threads_torn.Flush({ 0 });
+	auto& particles = _particle_grid.particles;
+
+	CommonBuffers::GetInstance().particle_threads.Resize(particles.size());
+	thread_counts.Resize(particles.size());
+	thread_offsets.Resize(particles.size());
 
 	thread_counts.Clear();
 	thread_offsets.Clear();
@@ -100,17 +105,6 @@ void DeviceFluidProcessor::ParticlesComputeForce() {
 	particles_compute_force_program.Wait();
 }
 
-void DeviceFluidProcessor::ParticleUpdate(float dt) {
-	NeatTimer::GetInstance().StageBegin(__func__);
-	auto& particle_indexes = _particle_grid.particle_indexes;
-	if (particle_indexes.empty()) return;
-
-	particle_update_program.Use();
-	glUniform1f(0, dt);
-	glDispatchCompute(particle_indexes.size(), 1, 1);
-	particle_update_program.Wait();
-}
-
 void DeviceFluidProcessor::Update(float dt) {
 	NeatTimer::GetInstance().StageBegin(std::string(__func__) + " - write data");
 	auto& particles = _particle_grid.particles;
@@ -121,18 +115,13 @@ void DeviceFluidProcessor::Update(float dt) {
 	CommonBuffers::GetInstance().particle_indexes.Flush(particle_indexes);
 	CommonBuffers::GetInstance().grid.Flush(grid);
 
-	CommonBuffers::GetInstance().particle_threads.Resize(particles.size());
-	thread_counts.Resize(particles.size());
-	thread_offsets.Resize(particles.size());
-
 	CreateThreads();
 	ParticleThreadsUpdate();
 
 	ParticlesComputeDencity();
 	ParticlesComputeForce();
-	ParticleUpdate(dt);
 
 	NeatTimer::GetInstance().StageBegin(std::string(__func__) + " - read data");
 
- 	glGetNamedBufferSubData(CommonBuffers::GetInstance().particles.GetBufferId(), 0, sizeof(Particle) * particles.size(), &particles[0]);
+	glGetNamedBufferSubData(CommonBuffers::GetInstance().particles.GetBufferId(), 0, sizeof(Particle) * particles.size(), &particles[0]);
 }

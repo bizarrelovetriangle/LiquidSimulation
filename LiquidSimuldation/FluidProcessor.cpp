@@ -141,15 +141,11 @@ void FluidProcessor::Update(const std::vector<Wall>& walls, float dt) {
 	if (_particle_grid.particle_indexes.size() == 0) return;
 	DeviceFluidProcessor::GetInstance(_particle_grid).Update(dt);
 
-	//for (auto particle_index : _particle_grid.particle_indexes) {
-	//	auto& particle = _particle_grid.particles[particle_index];
-	//	particle.velosity += (particle.applied_force + particle.external_force) * dt;
-	//}
-	//
-	//for (auto particle_index : _particle_grid.particle_indexes) {
-	//	auto& particle = _particle_grid.particles[particle_index];
-	//	particle.position += particle.velosity * dt;
-	//}
+	for (auto particle_index : _particle_grid.particle_indexes) {
+		auto& particle = _particle_grid.particles[particle_index];
+		particle.velosity += (particle.applied_force + particle.external_force) * dt;
+		particle.position += particle.velosity * dt;
+	}
 }
 
 void FluidProcessor::Draw() {

@@ -159,9 +159,6 @@
     <None Include="shaders\render\wall.vert">
       <Filter>Source Files\shaders\render</Filter>
     </None>
-    <None Include="shaders\compute\particles\particles_update.comp">
-      <Filter>Source Files\shaders\compute\particles</Filter>
-    </None>
     <None Include="shaders\compute\particles\particles_compute_force.comp">
       <Filter>Source Files\shaders\compute\particle_pairs</Filter>
     </None>

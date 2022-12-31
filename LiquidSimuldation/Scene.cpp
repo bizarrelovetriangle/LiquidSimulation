@@ -40,7 +40,7 @@ void Scene::Start() {
 	glfwSetCursorPosCallback(_window, CursorPositionCallback);
 	glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-	//createParticles(vector2());
+	createParticles(vector2());
 
 	while (!glfwWindowShouldClose(_window))
 	{
