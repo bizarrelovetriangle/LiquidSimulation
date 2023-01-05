@@ -10,7 +10,7 @@ vec2 ThreadStretches(uint org);
 void main() {
 	uint org = particle_indexes[gl_GlobalInvocationID.x];
 	Range range = GetRange(grid_size, particles[org].grid_position);
-	vec2 applied_force;
+	vec2 applied_force = vec2(0, 0);
 
 	for (int y = range.a.y; y <= range.b.y; ++y) {
 		for (int x = range.a.x; x <= range.b.x; ++x) {
@@ -55,7 +55,7 @@ vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coeffic
 }
 
 vec2 ThreadStretches(uint org) {
-	vec2 stretch;
+	vec2 stretch = vec2(0, 0);
 
 	for (int i = particle_threads[org].start; i < particle_threads[org].end; ++i) {
 		if (threads[i].torn) continue;

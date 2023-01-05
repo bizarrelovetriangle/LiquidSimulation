@@ -83,6 +83,13 @@ void DeviceFluidProcessor::ParticleThreadsUpdate() {
 	std::swap(CommonBuffers::GetInstance().threads.GetBufferId(), CommonBuffers::GetInstance().threads_temp.GetBufferId());
 	std::swap(CommonBuffers::GetInstance().threads_count.GetBufferId(), CommonBuffers::GetInstance().threads_count_temp.GetBufferId());
 	CommonBuffers::GetInstance().threads_count_temp.Flush({ 0 });
+
+	//auto data = CommonBuffers::GetInstance().particle_threads.Retrive();
+	//auto threads_count = CommonBuffers::GetInstance().threads_count.Retrive().front();
+	//auto threads_prev_count = CommonBuffers::GetInstance().threads_count.Retrive().front();
+	//if (!threads_count) return;
+	//auto threads = CommonBuffers::GetInstance().threads.Retrive(threads_count);
+	//auto threads_prev = CommonBuffers::GetInstance().threads_count_temp.Retrive(threads_prev_count);
 }
 
 void DeviceFluidProcessor::ParticlesComputeDencity() {

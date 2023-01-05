@@ -9,7 +9,11 @@ out vec4 vertex_color;
 void main()
 {
 	ParticlesThread thread = threads[gl_InstanceID];
-	if (thread.torn) return;
+	if (thread.torn) {
+		gl_Position = vec4(0, 0, 0, 1);
+		return;
+	}
+
 	int particle_id = gl_VertexID == 0 ? thread.first : thread.second;
 	vec2 pos = particles[particle_id].position;
 	gl_Position = vec4(view_matrix * vec3(pos, 1), 1);

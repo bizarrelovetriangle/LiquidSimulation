@@ -24,6 +24,10 @@ Scene::Scene()
 		return matrix;
 		});
 
+	thread_render_program.InitProgram({
+		{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
+		{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
+
 	createWalls(_walls);
 
 	_fluidProcessor = std::make_unique<FluidProcessor>(_window_size);
@@ -40,7 +44,7 @@ void Scene::Start() {
 	glfwSetCursorPosCallback(_window, CursorPositionCallback);
 	glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-	createParticles(vector2());
+	//createParticles(vector2());
 
 	while (!glfwWindowShouldClose(_window))
 	{
@@ -81,21 +85,11 @@ void Scene::Draw() {
 
 	{
 		size_t threads_count = CommonBuffers::GetInstance().threads_count.Retrive().front();
-		DeviceProgram render_program;
- 		render_program.InitProgram({
-			{ GL_VERTEX_SHADER, "shaders/render/thread.vert" },
-			{ GL_FRAGMENT_SHADER, "shaders/render/thread.frag" } });
-			
-		glUseProgram(render_program.program_id);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, CommonBuffers::GetInstance().particles.GetBufferId());
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, CommonBuffers::GetInstance().threads.GetBufferId());
-			
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, CommonBuffers::GetInstance().config.GetBufferId());
+		glUseProgram(thread_render_program.program_id);
 		auto& view_matrix = *DataFactory<matrix3x3>::GetData();
 		glUniformMatrix3fv(0, 1, GL_FALSE, (float*)&view_matrix);
 		vector3 color(0.9, 0.6, 0.7);
 		glUniform4fv(2, 1, (float*)&color);
-			
 		glDrawArraysInstanced(GL_LINES, 0, 2, threads_count);
 	}
 
@@ -172,11 +166,11 @@ void Scene::InitEnvironment(bool is_full_screen) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	if (is_full_screen) {
-		_window_size = vector2i(1920, 1080);
+		_window_size = vector2i(3456, 2160);
 		_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", glfwGetPrimaryMonitor(), nullptr);
 	}
 	else {
-		_window_size = vector2i(1400, 1000);
+		_window_size = vector2i(2400, 1500);
 		_window = glfwCreateWindow(_window_size.x, _window_size.y, "LearnOpenGL", nullptr, nullptr);
 	}
 

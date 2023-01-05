@@ -28,6 +28,8 @@ public:
 	static void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
 	static void MouseClickCallback(GLFWwindow* window, int button, int action, int mods);
 
+	DeviceProgram thread_render_program;
+
 	std::unique_ptr<Tool> _tool;
 	vector2 _mouse_pos;
 
