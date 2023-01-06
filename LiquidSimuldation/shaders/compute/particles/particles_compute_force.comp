@@ -39,12 +39,11 @@ void main() {
 
 vec2 ComputeViscosity(uint org, uint second, vec2 normal, float proximity_coefficient) {
 	float inertia = dot(particles[second].velosity - particles[org].velosity, normal);
-	if (inertia < 0 || inertia > 1000) return vec2(0, 0);
-
-	vec2 viscosity = 0.5 * proximity_coefficient *
-		(config.kLinearViscocity * inertia + config.kQuadraticViscocity / 1 * pow(inertia, 2)) *
-		normal;
-	return viscosity;
+	if (inertia < 0) return vec2(0, 0);
+	float viscosity = 0.5 * proximity_coefficient *
+		(config.kLinearViscocity * inertia + config.kQuadraticViscocity / 1 * pow(inertia, 2));
+	viscosity = clamp(viscosity, 0, 1000);
+	return viscosity * normal;
 }
 
 vec2 ComputePressure(uint org, uint second, vec2 normal, float proximity_coefficient) {

@@ -39,28 +39,28 @@ Scene::~Scene() = default;
 
 void Scene::Start() {
 	std::chrono::steady_clock clock;
-	std::chrono::steady_clock::time_point then = clock.now();
 	glfwSetKeyCallback(_window, KeyCallback);
 	glfwSetCursorPosCallback(_window, CursorPositionCallback);
 	glfwSetMouseButtonCallback(_window, MouseClickCallback);
 
-	//createParticles(vector2());
+	createParticles(vector2());
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		auto then = clock.now();
+
 		NeatTimer::GetInstance().StageBegin("Events");
 		glfwPollEvents();
-
-		auto interval = std::chrono::milliseconds(1000) / 100;
-		auto dt = clock.now() - then;
-		if (dt < interval) std::this_thread::sleep_for(interval - dt);
-		_delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(clock.now() - then).count();
-		then = clock.now();
 
 		Update();
 		NeatTimer::GetInstance().StageBegin("Draw");
 		Draw();
 		NeatTimer::GetInstance().Refresh(std::chrono::seconds(1));
+
+		auto interval = std::chrono::milliseconds(1000) / 100;
+		auto dt = clock.now() - then;
+		//if (dt < interval) std::this_thread::sleep_for(interval - dt);
+		_delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(clock.now() - then).count();
 	}
 }
 
@@ -90,6 +90,7 @@ void Scene::Draw() {
 		glUniformMatrix3fv(0, 1, GL_FALSE, (float*)&view_matrix);
 		vector3 color(0.9, 0.6, 0.7);
 		glUniform4fv(2, 1, (float*)&color);
+		glLineWidth(3);
 		glDrawArraysInstanced(GL_LINES, 0, 2, threads_count);
 	}
 
@@ -130,7 +131,7 @@ void Scene::MouseClickCallback(GLFWwindow* window, int button, int action, int m
 }
 
 void Scene::createParticles(vector2 position) {
-	int distance = 15;
+	int distance = 20;
 	int width = 20;
 	int height = 20;
 

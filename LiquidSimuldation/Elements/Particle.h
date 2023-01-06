@@ -8,7 +8,7 @@
 
 class alignas(8) Particle {
 public:
-	Particle(vector2 position, float radius = 2)
+	Particle(vector2 position, float radius = 4)
 		: position(position), radius(radius)
 	{
 		DataFactory<ElementSharedData<Particle>>::GetData([]() {
